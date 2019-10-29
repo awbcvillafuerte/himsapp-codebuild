@@ -1,0 +1,13 @@
+image: node:10.15.3
+
+stages:
+  - build
+
+
+build:
+  stage: build
+  script:
+    - curl --request POST --form "token=$CI_JOB_TOKEN" --form ref=$CI_COMMIT_REF_NAME https://gitlab.com/api/v4/projects/13652369/trigger/pipeline
+  only:
+    - dev
+    - stg
