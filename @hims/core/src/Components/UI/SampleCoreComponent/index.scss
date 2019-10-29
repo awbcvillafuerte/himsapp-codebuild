@@ -1,0 +1,102 @@
+/*
+.titleBack {
+    font-size: 100px;
+    color: #EEEFF0;
+    font-weight: 800;
+    line-height: 86px;
+}
+.titleFront {
+    color: #0B1C3D;
+    font-size: 38px;
+    font-weight: 500;
+    position: absolute;
+}
+
+.titleContact {
+    font-size: 30px;
+}
+*/
+.title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "Montserrat";
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    &Back {
+        font-size: 100px;
+        color: #EEEFF0;
+        font-weight: 800;
+        line-height: 86px;
+    }
+
+    &Front {
+        color: #0B1C3D;
+        font-size: 38px;
+        font-weight: 500;
+        position: absolute;
+    }   
+    &Contact{
+        .titleBack{
+            font-size: 70px;
+        }
+        .titleFront{
+            font-size: 38px;
+        }
+    }
+    
+}
+
+@media only screen and (max-width: 991px) {
+    .title {
+        &Front {
+            font-size: 32px;
+        }
+
+        &Back {
+            font-size: 75px;
+        }
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .title {
+        &Front {
+            font-size: 21px;
+        }
+
+        &Back {
+            font-size: 50px;
+        }
+        &RecruitmentTitle{
+            .titleBack{
+                line-height: 65px;
+            }
+            .titleFront{
+                line-height: 35px;
+            }
+        }
+        &Contact{
+            display: none;
+        }
+    } 
+}
+
+@media only screen and (max-width: 575px) {
+    .title {
+        &Back {
+            font-size: 40px !important;
+        }
+        &RecruitmentTitle{
+            .titleBack{
+                line-height: 53px;
+            }
+            .titleFront{
+                line-height: 23px;
+            }
+        }
+        
+    }
+}
