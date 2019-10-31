@@ -26,11 +26,18 @@ const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 
+//Claims URL
+const claimsUrl = "http://13.229.218.10:5101";
+const claimsPageURL = "claims/index.html";
+
 const encodeFormData = (data: any) => {
   return Object.keys(data)
     .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
     .join('&');
 };
+
+const claims_users: any = ["batch_encoder_1", "claims_encoder_1",
+  "claims_analyst_1"]
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<LoginDataType>({
@@ -57,8 +64,11 @@ const LoginPage = () => {
       alert('Password is required.');
       return;
     }
-
-    await callLoginPost();
+    if(claims_users.indexOf(loginData.username) !== -1){
+      await claimsLoginPost();
+    }else{
+      await callLoginPost();
+    }
   };
 
   const callLoginPost = async () => {
@@ -125,6 +135,58 @@ const LoginPage = () => {
           } else {
             window.location.replace(systemAdminUrl);
           }
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        alert(error);
+      });
+  };
+  const claimsLoginPost = async () => {
+
+    await fetch(claimsUrl+"/auth/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: encodeFormData(loginData),
+    })
+      .then(response => response.json())
+      .then(async data => {
+        if(data !== undefined && data["status"] === 200 && data.data !== undefined
+          && data.data.token && data.data.token !== undefined &&  data.data.token !== null){
+          await claimsUserMe(data);
+        }else{
+          if(data.message){
+            alert(`Error: ${data.message}`);
+          }
+          return;
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        alert(error);
+      });
+  };
+
+  const claimsUserMe = (requestData: any) => {
+
+    fetch(claimsUrl+"/me", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: 'Bearer '+ requestData.data.token,
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        if (data === undefined || data["status"] !== 200) {
+          alert(`Error: ${data.message}`);
+          return;
+        } else {
+          localStorage.setItem('token',requestData.data.token);
+          window.location.replace(claimsPageURL);
         }
       })
       .catch(error => {
