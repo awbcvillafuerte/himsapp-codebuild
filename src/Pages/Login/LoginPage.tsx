@@ -27,7 +27,7 @@ const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 
 //Claims URL
-const claimsUrl = "http://13.229.218.10:5101";
+const claimsUrl = "http://18.138.94.224:5101";
 const claimsPageURL = "claims/index.html";
 
 const encodeFormData = (data: any) => {
