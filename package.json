@@ -1,11 +1,9 @@
 {
-  "name": "hims-client",
-  "productName": "HIMS Client",
-  "version": "1.0.0",
+  "name": "hims-desktop",
+  "productName": "hims-desktop",
+  "version": "0.1.0",
   "description": "Consolidated app",
-  "author": "Lambert Honrade <lambert.honrade@seer-technologies.com>",
-  "license": "MIT",
-  "repository": "git@gitlab.com:hims_client/hims-desktop.git",
+  "author": "Veridata",
   "main": "public/electron.js",
   "build": {
     "appId": "com.veridata.neo",
@@ -33,9 +31,10 @@
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
     "electron-build": "electron-builder",
-    "release": "yarn react-build && electron-builder --publish=always", 
+    "release": "yarn react-build && electron-builder --publish=always",
     "build": "yarn react-build && yarn electron-build -mw",
-    "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\""
+    "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "publish": "yarn react-build && electron-builder --win -p always"
   },
   "private": true,
   "jest": {
@@ -71,6 +70,7 @@
     "@types/react-dom": "16.9.0",
     "cross-env": "^5.2.1",
     "electron-is-dev": "^1.1.0",
+    "electron-updater": "^4.2.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.1.1",
@@ -96,6 +96,16 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "build": {
+    "appId": "ph.com.veridata.hims",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "veridata-hims",
+        "repo": "hims-desktop"
+      }
     ]
   }
 }

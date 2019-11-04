@@ -1,6 +1,7 @@
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const {autoUpdater} = require("electron-updater");
 const path = require("path");
 const isDev = require("electron-is-dev");
 let mainWindow;
@@ -20,17 +21,23 @@ if (isWin) {
     )}`;
 }
 
+function updaterLog(text) {
+  console.log(text);
+}
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 900,
         height: 600,
         show: false,
+        title: "HIMS UAT"
     });
     mainWindow.setIcon(path.join(__dirname, "../build/HIMS-Icon.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 600,
+        title: "HIMS UAT",
     });
     splash.loadURL(splashPath);
 
@@ -38,6 +45,7 @@ function createWindow() {
         width: 900,
         height: 600,
         show: false,
+        title: "HIMS UAT",
     });
 
     setTimeout(() => {
@@ -80,3 +88,28 @@ app.on("activate", () => {
         createWindow();
     }
 });
+autoUpdater.on('checking-for-update', () => {
+    updaterLog('Checking for update...');
+});
+autoUpdater.on('update-available', (info) => {
+    updaterLog('Update available.');
+});
+autoUpdater.on('update-not-available', (info) => {
+    updaterLog('Update not available.');
+});
+autoUpdater.on('error', (err) => {
+    updaterLog('Error in auto-updater. ' + err);
+});
+autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    updaterLog(log_message);
+});
+autoUpdater.on('update-downloaded', (info) => {
+    updaterLog('Update downloaded');
+});  
+app.on('ready', function()  {
+    autoUpdater.checkForUpdatesAndNotify();
+});
+  
