@@ -37,7 +37,7 @@ const encodeFormData = (data: any) => {
 };
 
 const claims_users: any = ["batch_encoder_1", "claims_encoder_1",
-  "claims_analyst_1"]
+  "claims_analyst_1","pr_processor_1"]
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<LoginDataType>({
