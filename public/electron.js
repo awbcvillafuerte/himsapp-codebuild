@@ -3,22 +3,14 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
-const isDev = require("electron-is-dev");
 let mainWindow;
 let isWin = process.platform === "win32";
-let splashPath, loginPath, landingPagePath;
+let splashPath;
 
 if (isWin) {
     splashPath = `file://${__dirname}/../build/splash.html`;
-    loginPath = `file://${__dirname}/../build/login.html`;
-    landingPagePath = `file://${__dirname}/../build/customer-care/index.html#/customer-care/`;
 } else {
     splashPath = `file://${path.join(__dirname, "../build/splash.html")}`;
-    loginPath = `file://${path.join(__dirname, "../build/login.html")}`;
-    landingPagePath = `file://${path.join(
-        __dirname,
-        "../build/customer-care/index.html#/customer-care/",
-    )}`;
 }
 
 function updaterLog(text) {
@@ -49,7 +41,6 @@ function createWindow() {
     });
 
     setTimeout(() => {
-        // login.loadURL(loginPath);
         login.loadFile('build/index.html');
     }, 2000);
 
@@ -58,23 +49,6 @@ function createWindow() {
         login.show();
     });
 
-    // login.on("scroll-touch-begin", () => {
-    //     login.close();
-    //     mainWindow.loadURL(
-    //         isDev ? "http://localhost:3000/#/customer-care/" : landingPagePath,
-    //     );
-    //     mainWindow.show();
-    // });
-
-    // login.on('resize', () => {
-    //     login.close();
-    //     mainWindow.loadURL(
-    //         isDev
-    //         ? "http://localhost:3000/#/customer-care/"
-    //         : `file://${path.join(__dirname, "../build/membership/index.html#/membership/")}`
-    //     );
-    //     mainWindow.show();
-    // });
     mainWindow.on("closed", () => (mainWindow = null));
 }
 app.on("ready", createWindow);

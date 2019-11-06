@@ -12,14 +12,6 @@ interface LoginDataType {
   password: string;
 }
 
-// Login URL
-const localLoginUrl = 'https://neo-local.seerlabs.com/api/oidc/token';
-const stagingLoginUrl = 'http://18.138.94.224:4101/api/oidc/token';
-
-// User URL
-const localUserUrl = 'https://neo-local.seerlabs.com/api/users/me';
-const stagingUserUrl = 'http://18.138.94.224:4101/api/users/me';
-
 // Module URL
 const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
@@ -27,7 +19,7 @@ const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 
 //Claims URL
-const claimsUrl = "http://18.138.94.224:5101";
+const claimsUrl = "http://18.140.193.122:5101";
 const claimsPageURL = "claims/index.html";
 
 const encodeFormData = (data: any) => {
@@ -72,9 +64,8 @@ const LoginPage = () => {
   };
 
   const callLoginPost = async () => {
-    const backendLoginUrl =
-      process.env.NODE_ENV === 'development' ? localLoginUrl : stagingLoginUrl;
-
+    const backendLoginUrl = process.env.REACT_APP_BASE_URL+'oidc/token';
+      
     await fetch(backendLoginUrl, {
       method: 'POST',
       headers: {
@@ -106,9 +97,8 @@ const LoginPage = () => {
   };
 
   const callUserMeGet = (requestData: any) => {
-    const backendUserUrl =
-      process.env.NODE_ENV === 'development' ? localUserUrl : stagingUserUrl;
-
+    const backendUserUrl = process.env.REACT_APP_BASE_URL+'users/me';
+      
     fetch(backendUserUrl, {
       method: 'GET',
       headers: {
