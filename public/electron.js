@@ -41,9 +41,7 @@ function createWindow() {
     });
 
     setTimeout(() => {
-        // login.loadURL(loginPath);
         login.loadFile('build/index.html');
-        console.log(app.app.getVersion())
     }, 2000);
 
     login.once("ready-to-show", () => {
