@@ -22,14 +22,14 @@ function createWindow() {
         width: 900,
         height: 600,
         show: false,
-        title: "HIMS UAT"
+        title: "HIMS STG"
     });
     mainWindow.setIcon(path.join(__dirname, "../build/HIMS-Icon.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 600,
-        title: "HIMS UAT",
+        title: "HIMS STG",
     });
     splash.loadURL(splashPath);
 
@@ -37,7 +37,7 @@ function createWindow() {
         width: 900,
         height: 600,
         show: false,
-        title: "HIMS UAT",
+        title: "HIMS STG",
     });
 
     setTimeout(() => {
