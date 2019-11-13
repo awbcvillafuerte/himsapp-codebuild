@@ -69,6 +69,7 @@ const LoginPage = () => {
     })
       .then(response => response.json())
       .then(async data => {
+        console.log('data ',data);
         if (data['access_token']){
           localStorage.setItem('api_token',data['access_token']);
         }
@@ -78,7 +79,7 @@ const LoginPage = () => {
         if (data.error_description) {
           if(data.error_description !== undefined && data.error_description !== null
             && data.error_description !== ""
-            && data.error_description.toLowerCase().includes("user is a claims account.")){
+            && data.error_description.toLowerCase().includes("user is a claims account")){
             await claimsLoginPost();
           }else{
             alert(`Error: ${data.error_description}`);
