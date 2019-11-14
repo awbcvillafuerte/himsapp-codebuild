@@ -19,7 +19,6 @@ const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 
 //Claims URL
-const claimsUrl = "http://18.140.193.122:5101";
 const claimsPageURL = "claims/index.html";
 
 const encodeFormData = (data: any) => {
@@ -27,9 +26,6 @@ const encodeFormData = (data: any) => {
     .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
     .join('&');
 };
-
-const claims_users: any = ["batch_encoder_1", "claims_encoder_1",
-  "claims_analyst_1","pr_processor_1"]
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<LoginDataType>({
@@ -56,11 +52,7 @@ const LoginPage = () => {
       alert('Password is required.');
       return;
     }
-    if(claims_users.indexOf(loginData.username) !== -1){
-      await claimsLoginPost();
-    }else{
-      await callLoginPost();
-    }
+    await callLoginPost();
   };
 
   const callLoginPost = async () => {
@@ -77,6 +69,7 @@ const LoginPage = () => {
     })
       .then(response => response.json())
       .then(async data => {
+        console.log('data',data)
         if (data['access_token']){
           localStorage.setItem('api_token',data['access_token']);
         }
@@ -84,8 +77,14 @@ const LoginPage = () => {
           localStorage.setItem('pm_token',data['pmclient']['access_token']);
         }
         if (data.error_description) {
-          alert(`Error: ${data.error_description}`);
-          return;
+          if(data.error_description !== undefined && data.error_description !== null
+            && data.error_description !== ""
+            && data.error_description.toLowerCase().includes("user is a claims account")){
+            await claimsLoginPost();
+          }else{
+            alert(`Error: ${data.error_description}`);
+            return;
+          }
         } else {
           await callUserMeGet(data);
         }
@@ -134,7 +133,7 @@ const LoginPage = () => {
   };
   const claimsLoginPost = async () => {
 
-    await fetch(claimsUrl+"/auth/login", {
+    await fetch(process.env.REACT_APP_CLAIMS_URL+"/auth/login", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -161,7 +160,7 @@ const LoginPage = () => {
 
   const claimsUserMe = (requestData: any) => {
 
-    fetch(claimsUrl+"/me", {
+    fetch(process.env.REACT_APP_CLAIMS_URL+"/me", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
