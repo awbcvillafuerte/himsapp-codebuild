@@ -67,6 +67,7 @@ autoUpdater.on('checking-for-update', () => {
 });
 autoUpdater.on('update-available', (info) => {
     updaterLog('Update available.');
+    window.alert('Update available.')
 });
 autoUpdater.on('update-not-available', (info) => {
     updaterLog('Update not available.');
