@@ -1,7 +1,7 @@
 {
   "name": "hims-desktop",
   "productName": "hims-desktop",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Consolidated app",
   "author": "Veridata",
   "main": "public/electron.js",
