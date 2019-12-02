@@ -3,6 +3,8 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
+const isDev = require('electron-is-dev')
+
 let mainWindow;
 let isWin = process.platform === "win32";
 let splashPath;
@@ -41,7 +43,9 @@ function createWindow() {
     });
 
     setTimeout(() => {
-        login.loadFile('build/index.html');
+        if (isDev) login.loadURL('http://localhost:3000')
+        else  login.loadFile('build/index.html');
+
     }, 2000);
 
     login.once("ready-to-show", () => {
