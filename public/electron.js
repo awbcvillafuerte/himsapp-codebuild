@@ -22,7 +22,7 @@ function updaterLog(text) {
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 900,
-        height: 600,
+        height: 720,
         show: false,
         title: "HIMS DEV"
     });
@@ -30,14 +30,14 @@ function createWindow() {
 
     splash = new BrowserWindow({
         width: 900,
-        height: 600,
+        height: 720,
         title: "HIMS DEV",
     });
     splash.loadURL(splashPath);
 
     login = new BrowserWindow({
         width: 900,
-        height: 600,
+        height: 720,
         show: false,
         title: "HIMS DEV",
     });
