@@ -71,7 +71,7 @@ const LoginPage = () => {
     })
       .then(response => response.json())
       .then(async data => {
-        console.log('data',data)
+        console.log('data ',data);
         if (data['access_token']){
           localStorage.setItem('api_token',data['access_token']);
         }
@@ -83,6 +83,10 @@ const LoginPage = () => {
             && data.error_description !== ""
             && data.error_description.toLowerCase().includes("user is a claims account")){
             await claimsLoginPost();
+          } else if(data.error_description !== undefined && data.error_description !== null
+            && data.error_description !== ""
+            && data.error_description.toLowerCase().includes("user not found.")){
+              alert(`Invalid Username or Password`);
           }else{
             alert(`Error: ${data.error_description}`);
             window.location.reload();

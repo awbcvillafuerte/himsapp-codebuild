@@ -3,6 +3,8 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
+const isDev = require('electron-is-dev')
+
 let mainWindow;
 let isWin = process.platform === "win32";
 let splashPath;
@@ -22,14 +24,14 @@ function createWindow() {
         width: 900,
         height: 600,
         show: false,
-        title: "HIMS UAT"
+        title: "HIMS DEV"
     });
     mainWindow.setIcon(path.join(__dirname, "../build/HIMS-Icon.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 600,
-        title: "HIMS UAT",
+        title: "HIMS DEV",
     });
     splash.loadURL(splashPath);
 
@@ -37,11 +39,13 @@ function createWindow() {
         width: 900,
         height: 600,
         show: false,
-        title: "HIMS UAT",
+        title: "HIMS DEV",
     });
 
     setTimeout(() => {
-        login.loadFile('build/index.html');
+        if (isDev) login.loadURL('http://localhost:3000')
+        else  login.loadFile('build/index.html');
+
     }, 2000);
 
     login.once("ready-to-show", () => {
