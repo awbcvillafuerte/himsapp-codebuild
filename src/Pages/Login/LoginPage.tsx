@@ -45,11 +45,13 @@ const LoginPage = () => {
   const onLogin = async () => {
     if (loginData.username.length === 0) {
       alert('Username is required.');
+      window.location.reload();
       return;
     }
 
     if (loginData.password.length === 0) {
       alert('Password is required.');
+      window.location.reload();
       return;
     }
     await callLoginPost();
@@ -86,7 +88,8 @@ const LoginPage = () => {
             && data.error_description.toLowerCase().includes("user not found.")){
               alert(`Invalid Username or Password`);
           }else{
-            alert(`${data.error_description}`);
+            alert(`Error: ${data.error_description}`);
+            window.location.reload();
             return;
           }
         } else {
@@ -114,6 +117,7 @@ const LoginPage = () => {
         console.log(data)
         if (data.error_description) {
           alert(`Error: ${data.error_description}`);
+          window.location.reload();
           return;
         } else {
           localStorage.setItem('employee_id',data.employee_id);
@@ -133,6 +137,7 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
   const claimsLoginPost = async () => {
@@ -152,6 +157,7 @@ const LoginPage = () => {
         }else{
           if(data.message){
             alert(`Error: ${data.message}`);
+            window.location.reload();
           }
           return;
         }
@@ -176,6 +182,7 @@ const LoginPage = () => {
         console.log(data)
         if (data === undefined || data["status"] !== 200) {
           alert(`Error: ${data.message}`);
+          window.location.reload();
           return;
         } else {
           localStorage.setItem('token',requestData.data.token);
@@ -185,6 +192,7 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
 
