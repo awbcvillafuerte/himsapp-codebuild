@@ -87,8 +87,9 @@ const LoginPage = () => {
             && data.error_description !== ""
             && data.error_description.toLowerCase().includes("user not found.")){
               alert(`Invalid Username or Password`);
+              window.location.reload();
           }else{
-            alert(`Error: ${data.error_description}`);
+            alert(`${data.error_description}`);
             window.location.reload();
             return;
           }
@@ -99,6 +100,7 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
 
@@ -120,6 +122,7 @@ const LoginPage = () => {
           window.location.reload();
           return;
         } else {
+          localStorage.setItem('user_id',data._id);
           localStorage.setItem('employee_id',data.employee_id);
           localStorage.setItem('first_name',data.first_name);
           localStorage.setItem('last_name',data.last_name);
@@ -165,6 +168,7 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
 
