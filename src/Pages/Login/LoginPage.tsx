@@ -58,7 +58,7 @@ const LoginPage = () => {
   };
 
   const callLoginPost = async () => {
-    const backendLoginUrl = process.env.REACT_APP_BASE_URL+'oidc/token';
+    const backendLoginUrl = process.env.HIMS_API_CLIENT_URL+'oidc/token';
       
     await fetch(backendLoginUrl, {
       method: 'POST',
@@ -105,7 +105,7 @@ const LoginPage = () => {
   };
 
   const callUserMeGet = (requestData: any) => {
-    const backendUserUrl = process.env.REACT_APP_BASE_URL+'users/me';
+    const backendUserUrl = process.env.HIMS_API_CLIENT_URL+'users/me';
       
     fetch(backendUserUrl, {
       method: 'GET',
@@ -145,7 +145,7 @@ const LoginPage = () => {
   };
   const claimsLoginPost = async () => {
 
-    await fetch(process.env.REACT_APP_CLAIMS_URL+"/auth/login", {
+    await fetch(process.env.HIMS_API_PARTNER_URL+"/auth/login", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -174,7 +174,7 @@ const LoginPage = () => {
 
   const claimsUserMe = (requestData: any) => {
 
-    fetch(process.env.REACT_APP_CLAIMS_URL+"/me", {
+    fetch(process.env.HIMS_API_PARTNER_URL+"/me", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
