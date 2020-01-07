@@ -1,12 +1,12 @@
 {
   "name": "hims-desktop",
   "productName": "hims-desktop",
-  "version": "0.1.17",
-  "description": "Consolidated app",
+  "version": "0.2.0",
+  "description": "HIMS Desktop for UAT",
   "author": "Veridata",
   "main": "public/electron.js",
   "build": {
-    "appId": "com.veridata.neo",
+    "appId": "ph.com.veridata.hims-desktop",
     "files": [
       "build/*",
       "build/**/*",
@@ -14,11 +14,18 @@
       "public/**/*"
     ],
     "mac": {
-      "icon": "public/HIMS-Icon.png"
+      "icon": "public/hims-uat.png"
     },
     "win": {
-      "icon": "public/HIMS-Icon.png"
-    }
+      "icon": "public/hims-uat.png"
+    },
+	"publish": [
+      {
+        "provider": "github",
+        "owner": "veridata-hims",
+        "repo": "hims-desktop"
+      }
+    ]
   },
   "homepage": "./",
   "engines": {
@@ -34,7 +41,8 @@
     "release": "yarn react-build && electron-builder --publish=always",
     "build": "yarn react-build && yarn electron-build -m",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "publish": "yarn react-build && electron-builder --win -p always"
+    "publish": "yarn react-build && electron-builder --win -p always",
+	"publish-only": "electron-builder --win -p always"
   },
   "private": true,
   "jest": {
@@ -96,16 +104,6 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
-  },
-  "build": {
-    "appId": "ph.com.veridata.hims",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "veridata-hims",
-        "repo": "hims-desktop"
-      }
     ]
   }
 }
