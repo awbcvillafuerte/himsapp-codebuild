@@ -3,6 +3,8 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
+const isDev = require('electron-is-dev')
+
 let mainWindow;
 let isWin = process.platform === "win32";
 let splashPath;
@@ -17,31 +19,95 @@ function updaterLog(text) {
   console.log(text);
 }
 
+
+// make my own menu
+let template = []
+
+const name = app.getName();
+const version = app.getVersion();
+template.unshift({
+  label: 'HIMS UAT ' + version,
+  submenu: [
+    {
+      label: 'About HIMS UAT ' + version,
+      role: 'about'
+    },
+    {
+      label: 'Options',
+      submenu: [
+        {
+          label: 'Open Dev Tools',
+          click() {
+            mainWindow.openDevTools();
+          },
+        },
+      ],
+    },
+    {
+      label: 'Check for Updates',
+      accelerator: 'Command+U',
+      click() { autoUpdater.checkForUpdates(); }
+    },
+    {
+      label: 'Quit',
+      accelerator: 'Command+Q',
+      click() { app.quit(); }
+    },
+  ]
+})
+
+// Create simple menu for easy devtools access, and for demo
+const menuTemplateDev = [
+  {
+    label: 'Options',
+    submenu: [
+      {
+        label: 'Open Dev Tools',
+        click() {
+          mainWindow.openDevTools();
+        },
+      },
+    ],
+  },
+];
+
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 900,
-        height: 600,
+        height: 720,
         show: false,
         title: "HIMS UAT"
     });
-    mainWindow.setIcon(path.join(__dirname, "../build/HIMS-Icon.png"));
+    mainWindow.setIcon(path.join(__dirname, "../build/hims-uat.png"));
 
     splash = new BrowserWindow({
         width: 900,
-        height: 600,
+        height: 720,
         title: "HIMS UAT",
     });
     splash.loadURL(splashPath);
 
     login = new BrowserWindow({
         width: 900,
-        height: 600,
+        height: 720,
         show: false,
         title: "HIMS UAT",
     });
 
+	if (isDev) {
+		// Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
+		Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplateDev));
+		// If we are developers we might as well open the devtools by default.
+		mainWindow.webContents.openDevTools();
+	}else{
+		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+	}
+	
     setTimeout(() => {
-        login.loadFile('build/index.html');
+        if (isDev) login.loadURL('http://localhost:3000')
+        else  login.loadFile('build/index.html');
+
     }, 2000);
 
     login.once("ready-to-show", () => {
@@ -67,7 +133,6 @@ autoUpdater.on('checking-for-update', () => {
 });
 autoUpdater.on('update-available', (info) => {
     updaterLog('Update available.');
-    window.alert('Update available.')
 });
 autoUpdater.on('update-not-available', (info) => {
     updaterLog('Update not available.');
