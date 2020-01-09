@@ -1,7 +1,7 @@
 {
   "name": "hims-dev",
   "productName": "hims-dev",
-  "version": "0.2.0",
+  "version": "0.2.0-alpha",
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -14,10 +14,10 @@
       "public/**/*"
     ],
     "mac": {
-      "icon": "public/hims-dev.png"
+      "icon": "public/HIMS-Icon.png"
     },
     "win": {
-      "icon": "public/hims-dev.png"
+      "icon": "public/HIMS-Icon.png"
     },
 	"publish": [
       {
