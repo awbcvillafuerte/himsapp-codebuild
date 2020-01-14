@@ -14,10 +14,10 @@
       "public/**/*"
     ],
     "mac": {
-      "icon": "public/hims-dev.png"
+      "icon": "public/HIMS-Icon.png"
     },
     "win": {
-      "icon": "public/hims-dev.png"
+      "icon": "public/HIMS-Icon.png"
     },
 	"publish": [
       {
