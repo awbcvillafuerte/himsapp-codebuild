@@ -17,19 +17,59 @@ function updaterLog(text) {
   console.log(text);
 }
 
+// make my own menu
+let template = []
+
+const name = app.getName();
+const version = app.getVersion();
+template.unshift({
+  label: 'hims-dev ' + version,
+  submenu: [
+    {
+      label: 'About HIMS ' + version,
+      role: 'about'
+    },
+    {
+      label: 'Check for Updates',
+      accelerator: 'Command+U',
+      click() { autoUpdater.checkForUpdates(); }
+    },
+    {
+      label: 'Exit and Update',
+      accelerator: 'Command+Q',
+      click() { app.quit(); }
+    },
+  ]
+})
+
+// Create simple menu for easy devtools access, and for demo
+const menuTemplateDev = [
+  {
+    label: 'Options',
+    submenu: [
+      {
+        label: 'Open Dev Tools',
+        click() {
+          mainWindow.openDevTools();
+        },
+      },
+    ],
+  },
+];
+
 function createWindow() {
-    mainWindow = new BrowserWindow({
+       mainWindow = new BrowserWindow({
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS DEV"
+        title: "HIMS for VNI DEV"
     });
-    mainWindow.setIcon(path.join(__dirname, "../build/HIMS-Icon.png"));
+    mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 720,
-        title: "HIMS DEV",
+        title: "HIMS for VNI DEV",
     });
     splash.loadURL(splashPath);
 
@@ -37,9 +77,18 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS DEV",
+        title: "HIMS for VNI DEV",
     });
-
+	
+	if (isDev) {
+		// Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
+		Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplateDev));
+		// If we are developers we might as well open the devtools by default.
+		mainWindow.webContents.openDevTools();
+	}else{
+		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+	}
+	
     setTimeout(() => {
         if (isDev) login.loadURL('http://localhost:3000')
         else  login.loadFile('build/index.html');
