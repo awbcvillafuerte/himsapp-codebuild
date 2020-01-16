@@ -1,6 +1,4 @@
-const electron = require("electron");
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
 const isDev = require('electron-is-dev')
@@ -19,29 +17,17 @@ function updaterLog(text) {
   console.log(text);
 }
 
-
 // make my own menu
 let template = []
 
 const name = app.getName();
 const version = app.getVersion();
 template.unshift({
-  label: 'HIMS UAT ' + version,
+  label: 'hims-uat' + version,
   submenu: [
     {
-      label: 'About HIMS UAT ' + version,
+      label: 'About HIMS ' + version,
       role: 'about'
-    },
-    {
-      label: 'Options',
-      submenu: [
-        {
-          label: 'Open Dev Tools',
-          click() {
-            mainWindow.openDevTools();
-          },
-        },
-      ],
     },
     {
       label: 'Check for Updates',
@@ -49,7 +35,7 @@ template.unshift({
       click() { autoUpdater.checkForUpdates(); }
     },
     {
-      label: 'Quit',
+      label: 'Exit and Update',
       accelerator: 'Command+Q',
       click() { app.quit(); }
     },
@@ -71,20 +57,19 @@ const menuTemplateDev = [
   },
 ];
 
-
 function createWindow() {
-    mainWindow = new BrowserWindow({
+       mainWindow = new BrowserWindow({
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS UAT"
+        title: "HIMS for VNI UAT"
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-uat.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 720,
-        title: "HIMS UAT",
+        title: "HIMS for VNI UAT",
     });
     splash.loadURL(splashPath);
 
@@ -92,9 +77,9 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS UAT",
+        title: "HIMS for VNI UAT",
     });
-
+	
 	if (isDev) {
 		// Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
 		Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplateDev));
