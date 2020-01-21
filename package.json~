@@ -25,7 +25,8 @@
         "owner": "veridata-hims",
         "repo": "hims-dev"
       }
-    ]
+    ],
+   "generateUpdatesFilesForAllChannels": true
   },
   "homepage": "./",
   "engines": {
