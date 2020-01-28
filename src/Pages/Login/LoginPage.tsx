@@ -190,6 +190,8 @@ const LoginPage = () => {
           return;
         } else {
           localStorage.setItem('token',requestData.data.token);
+          localStorage.setItem('partnerUrl', process.env.REACT_APP_HIMS_API_PARTNER_URL + '/');
+          localStorage.setItem('clientUrl', process.env.REACT_APP_HIMS_API_CLIENT_URL + '/');
           window.location.replace(claimsPageURL);
         }
       })
