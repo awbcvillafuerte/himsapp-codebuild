@@ -122,10 +122,12 @@ const LoginPage = () => {
           window.location.reload();
           return;
         } else {
+          let role = data.role ? data.role : "";
           localStorage.setItem('user_id',data._id);
           localStorage.setItem('employee_id',data.employee_id);
           localStorage.setItem('first_name',data.first_name);
           localStorage.setItem('last_name',data.last_name);
+          localStorage.setItem('role',role);
           if (data.main_module === 'Underwriting') {
             window.location.replace(underwritingUrl);
           } else if (data.main_module === 'Customer Care') {
