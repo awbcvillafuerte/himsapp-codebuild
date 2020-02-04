@@ -1,8 +1,8 @@
-const electron = require("electron");
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
+const isDev = require('electron-is-dev')
+
 let mainWindow;
 let isWin = process.platform === "win32";
 let splashPath;
@@ -17,19 +17,59 @@ function updaterLog(text) {
   console.log(text);
 }
 
+// make my own menu
+let template = []
+
+const name = app.getName();
+const version = app.getVersion();
+template.unshift({
+  label: 'hims-dev ' + version,
+  submenu: [
+    {
+      label: 'About HIMS ' + version,
+      role: 'about'
+    },
+    {
+      label: 'Check for Updates',
+      accelerator: 'Command+U',
+      click() { autoUpdater.checkForUpdates(); }
+    },
+    {
+      label: 'Exit and Update',
+      accelerator: 'Command+Q',
+      click() { app.quit(); }
+    },
+  ]
+})
+
+// Create simple menu for easy devtools access, and for demo
+const menuTemplateDev = [
+  {
+    label: 'Options',
+    submenu: [
+      {
+        label: 'Open Dev Tools',
+        click() {
+          mainWindow.webContents.openDevTools();
+        },
+      },
+    ],
+  },
+];
+
 function createWindow() {
-    mainWindow = new BrowserWindow({
+       mainWindow = new BrowserWindow({
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS UAT"
+        title: "HIMS for VNI DEV"
     });
-    mainWindow.setIcon(path.join(__dirname, "../build/HIMS-Icon.png"));
+    mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 720,
-        title: "HIMS UAT",
+        title: "HIMS for VNI DEV",
     });
     splash.loadURL(splashPath);
 
@@ -37,11 +77,16 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS UAT",
+        title: "HIMS for VNI DEV",
     });
-
+	
+	if (!isDev) {
+		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+	}
+	
     setTimeout(() => {
         login.loadFile('build/index.html');
+
     }, 2000);
 
     login.once("ready-to-show", () => {

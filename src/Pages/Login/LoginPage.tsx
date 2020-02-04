@@ -45,18 +45,20 @@ const LoginPage = () => {
   const onLogin = async () => {
     if (loginData.username.length === 0) {
       alert('Username is required.');
+      window.location.reload();
       return;
     }
 
     if (loginData.password.length === 0) {
       alert('Password is required.');
+      window.location.reload();
       return;
     }
     await callLoginPost();
   };
 
   const callLoginPost = async () => {
-    const backendLoginUrl = process.env.REACT_APP_BASE_URL+'oidc/token';
+    const backendLoginUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'oidc/token';
       
     await fetch(backendLoginUrl, {
       method: 'POST',
@@ -69,7 +71,7 @@ const LoginPage = () => {
     })
       .then(response => response.json())
       .then(async data => {
-        console.log('data',data)
+        console.log('data ',data);
         if (data['access_token']){
           localStorage.setItem('api_token',data['access_token']);
         }
@@ -81,8 +83,14 @@ const LoginPage = () => {
             && data.error_description !== ""
             && data.error_description.toLowerCase().includes("user is a claims account")){
             await claimsLoginPost();
+          } else if(data.error_description !== undefined && data.error_description !== null
+            && data.error_description !== ""
+            && data.error_description.toLowerCase().includes("user not found.")){
+              alert(`Invalid Username or Password`);
+              window.location.reload();
           }else{
-            alert(`Error: ${data.error_description}`);
+            alert(`${data.error_description}`);
+            window.location.reload();
             return;
           }
         } else {
@@ -92,11 +100,12 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
 
   const callUserMeGet = (requestData: any) => {
-    const backendUserUrl = process.env.REACT_APP_BASE_URL+'users/me';
+    const backendUserUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'users/me';
       
     fetch(backendUserUrl, {
       method: 'GET',
@@ -110,11 +119,15 @@ const LoginPage = () => {
         console.log(data)
         if (data.error_description) {
           alert(`Error: ${data.error_description}`);
+          window.location.reload();
           return;
         } else {
+          let role = data.role ? data.role : "";
+          localStorage.setItem('user_id',data._id);
           localStorage.setItem('employee_id',data.employee_id);
           localStorage.setItem('first_name',data.first_name);
           localStorage.setItem('last_name',data.last_name);
+          localStorage.setItem('role',role);
           if (data.main_module === 'Underwriting') {
             window.location.replace(underwritingUrl);
           } else if (data.main_module === 'Customer Care') {
@@ -129,11 +142,12 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
   const claimsLoginPost = async () => {
 
-    await fetch(process.env.REACT_APP_CLAIMS_URL+"/auth/login", {
+    await fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/auth/login", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -148,6 +162,7 @@ const LoginPage = () => {
         }else{
           if(data.message){
             alert(`Error: ${data.message}`);
+            window.location.reload();
           }
           return;
         }
@@ -155,12 +170,13 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
 
   const claimsUserMe = (requestData: any) => {
 
-    fetch(process.env.REACT_APP_CLAIMS_URL+"/me", {
+    fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/me", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -172,6 +188,7 @@ const LoginPage = () => {
         console.log(data)
         if (data === undefined || data["status"] !== 200) {
           alert(`Error: ${data.message}`);
+          window.location.reload();
           return;
         } else {
           localStorage.setItem('token',requestData.data.token);
@@ -181,6 +198,7 @@ const LoginPage = () => {
       .catch(error => {
         console.error(error);
         alert(error);
+        window.location.reload();
       });
   };
 
