@@ -1,12 +1,12 @@
 {
-  "name": "hims-dev",
-  "productName": "hims-dev",
-  "version": "0.2.5-alpha",
-  "description": "HIMS Development Version",
+  "name": "hims-desktop",
+  "productName": "hims-desktop",
+  "version": "0.1.17",
+  "description": "Consolidated app",
   "author": "Veridata",
   "main": "public/electron.js",
   "build": {
-    "appId": "ph.com.veridata.hims-dev",
+    "appId": "com.veridata.neo",
     "files": [
       "build/*",
       "build/**/*",
@@ -14,19 +14,11 @@
       "public/**/*"
     ],
     "mac": {
-      "icon": "public/hims-dev.png"
+      "icon": "public/HIMS-Icon.png"
     },
     "win": {
-      "icon": "public/hims-dev.png"
-    },
-	"publish": [
-      {
-        "provider": "github",
-        "owner": "veridata-hims",
-        "repo": "hims-dev",
-	"channel": "alpha"
-      }
-    ]
+      "icon": "public/HIMS-Icon.png"
+    }
   },
   "homepage": "./",
   "engines": {
@@ -43,8 +35,7 @@
     "build": "yarn react-build && yarn electron-build -w",
     "buildmac": "yarn react-build && yarn electron-build -m",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "publish": "yarn react-build && electron-builder --win -p always",
-	"publish-only": "electron-builder --win -p always"
+    "publish": "yarn react-build && electron-builder --win -p always"
   },
   "private": true,
   "jest": {
@@ -83,7 +74,7 @@
     "electron-updater": "^4.2.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-scripts": "3.2.0",
+    "react-scripts": "3.1.1",
     "typescript": "3.6.2"
   },
   "devDependencies": {
@@ -106,6 +97,16 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "build": {
+    "appId": "ph.com.veridata.hims",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "veridata-hims",
+        "repo": "hims-desktop"
+      }
     ]
   }
 }
