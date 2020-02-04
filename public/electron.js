@@ -50,7 +50,7 @@ const menuTemplateDev = [
       {
         label: 'Open Dev Tools',
         click() {
-          mainWindow.openDevTools();
+          mainWindow.webContents.openDevTools();
         },
       },
     ],
@@ -80,18 +80,12 @@ function createWindow() {
         title: "HIMS for VNI DEV",
     });
 	
-	if (isDev) {
-		// Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
-		Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplateDev));
-		// If we are developers we might as well open the devtools by default.
-		mainWindow.webContents.openDevTools();
-	}else{
+	if (!isDev) {
 		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 	}
 	
     setTimeout(() => {
-        if (isDev) login.loadURL('http://localhost:3000')
-        else  login.loadFile('build/index.html');
+        login.loadFile('build/index.html');
 
     }, 2000);
 
