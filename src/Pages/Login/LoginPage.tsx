@@ -1,13 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import InputBase from '@material-ui/core/InputBase';
-
 import './style.scss';
+import LoginStorageService from './LoginStorageService';
 
 interface LoginDataType {
-  grant_type: string;
   username: string;
   password: string;
 }
@@ -18,8 +17,14 @@ const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 
+let mainModule = '';
+let cptFetchDone = false;
+let icd10FetchDone = false;
+
 //Claims URL
 const claimsPageURL = "claims/index.html";
+
+const loginStorageService = new LoginStorageService();
 
 const encodeFormData = (data: any) => {
   return Object.keys(data)
@@ -29,10 +34,265 @@ const encodeFormData = (data: any) => {
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<LoginDataType>({
-    grant_type: 'password',
     username: '',
     password: '',
   });
+
+  let cptFetched = 0;
+  let cptList: any = [];
+
+  let icdFetched = 0;
+  let icd10List: any = [];
+
+  useEffect(() => {
+    // loginStorageService.deleteEntry('icd10', 'date_updated').then((res) => {
+    // })
+    // loginStorageService.updateEntry('cpt', 'date_updated', 'POWTA MAKAGAGO').then((r) => {
+    //   console.log(r);
+    // }).catch(err => console.log(err));
+    // loginStorageService.updateEntry('icd10', 'date_updated', '2020-01-01T00:00:00.000Z').then((res) => {
+    //   console.log(res);
+    // })
+    //  loginStorageService.getSingleEntryByKeyReturnValue('icd10_list', '5da6d5d037883af6b68bda7d').then((res) => {
+    //   console.log(res);
+    // })
+    // fetchIcd10Update();
+  }, [])
+
+  const redirect = () => {
+    console.log(mainModule);
+    if (mainModule === 'Underwriting') {
+      localStorage.setItem('sidebar','dashboard');
+      window.location.replace(underwritingUrl);
+    } else if (mainModule === 'Customer Care') {
+      window.location.replace(customerCareUrl);
+    } else if (mainModule === 'Membership') {
+      localStorage.setItem('sidebar','dashboard');
+      window.location.replace(membershipUrl);
+    } else {
+      window.location.replace(systemAdminUrl);
+    }
+  }
+
+  // Fetch Icd10 systematically
+  const fetchIcd10 = async () => {
+    let filter = {
+      limit: 20000,
+      skip: icdFetched
+    }
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes?filter=${JSON.stringify(filter)}`;
+    let options = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
+
+    await fetch(url, options)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.length > 0) {
+          icdFetched = icdFetched + data.length;
+          icd10List.push(...data);
+          fetchIcd10();
+        } else {
+          let encodedItems: Array<any> = [];
+
+          icd10List.map((icd10Item: any) => {
+            let obj = {key: '', value: {}};
+
+            obj['key'] = icd10Item._id;
+            obj['value'] = icd10Item;
+
+            encodedItems.push(obj);
+          });
+          
+          loginStorageService.saveEntry(encodedItems, 'icd10_list').then((res) => {
+            icd10FetchDone = true;
+            if (cptFetchDone) {
+              redirect();
+            }
+          }).catch((err) => console.log(err));
+        }
+      })
+      .catch((err) => console.log(err))
+  }
+
+  // Fetch Icd10 updates
+  const fetchIcd10Update = async () => {
+    let query = await loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated');
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}/icd10-codes/latest/${query.result}`;
+    let options = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
+
+    await fetch(url, options)
+      .then((res) => res.json())
+      .then((data) => {
+        let newItems: Array<any> = [];
+
+        data.forEach((i: any) => {
+          let item = {key: '', value: {}};
+
+          item.key = i._id;
+          item.value = i;
+
+          newItems.push(item);
+
+          loginStorageService.saveEntry(newItems, 'icd10_list').then((res) => {
+            console.log(res);
+          }).catch((err) => console.log(err));
+        })
+      })
+      .catch((err) => console.log(err));
+
+       icd10FetchDone = true;
+        if (cptFetchDone) {
+          redirect();
+        } 
+  }
+
+  // Fetch Cpt systematically
+  const fetchCpt = async () => {
+    let filter = {
+      limit: 1000,
+      skip: cptFetched
+    }
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts?filter=${JSON.stringify(filter)}`;
+    let options = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
+
+    await fetch(url, options)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.length > 0) {
+          cptFetched = cptFetched + data.length;
+          cptList.push(...data);
+          fetchCpt();
+        } else {
+          let encodedItems: Array<any> = [];
+
+          cptList.map((icd10Item: any) => {
+            let obj = {key: '', value: {}};
+
+            obj['key'] = icd10Item._id;
+            obj['value'] = icd10Item;
+
+            encodedItems.push(obj);
+          });
+          
+          loginStorageService.saveEntry(encodedItems, 'cpt_list').then((res) => {
+            cptFetchDone = true;
+            if (icd10FetchDone) {
+              redirect();
+            }
+          }).catch((err) => console.log(err));
+        }
+      })
+      .catch((err) => console.log(err))
+  }
+  
+  // Fetch Cpt updates
+  const fetchCptUpdate = async () => {
+    let query = await loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated');
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}/cpts/latest/${query.result}`;
+    let options = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
+
+    await fetch(url, options)
+      .then((res) => res.json())
+      .then((data) => {
+        let newItems: Array<any> = [];
+
+        data.forEach((i: any) => {
+          let item = {key: '', value: {}};
+
+          item.key = i._id;
+          item.value = i;
+
+          newItems.push(item);
+
+          loginStorageService.saveEntry(newItems, 'cpt_list').then((res) => {
+            console.log(res);
+          }).catch((err) => console.log(err));
+        })
+      })
+      .catch((err) => console.log(err));
+
+      cptFetchDone = true;
+      if (icd10FetchDone) {
+        redirect();
+      }
+  }
+
+  // Process saving to indexedDB
+  const saveToIndexedDB = async (data: any) => {
+
+    loginStorageService.initStorage('himsDb');
+
+    let userDataToSave = Object.entries(data.login).map(entry => {
+      return {key: entry[0], value: entry[1]}
+    });
+
+    let icd10ToSave = Object.entries(data.icd10).map(entry => {
+      return {key: entry[0], value: entry[1]}
+    });
+
+    let cptToSave = Object.entries(data.cpt).map(entry => {
+      return {key: entry[0], value: entry[1]}
+    });
+
+    loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
+      console.log(res);
+    }).catch((err) => console.log(err));
+    
+    loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
+      if(du.result === data.icd10.date_updated) {
+        loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
+          console.log(res);
+          if (res === 0) {
+            fetchIcd10();
+          } else {
+            redirect();
+          }
+        })
+      } else {
+        fetchIcd10Update();
+        loginStorageService.updateEntry('icd10', 'date_updated', data.icd10.date_updated).then((r) => {
+        }).catch(err => console.log(err));
+      }
+    }).catch(() => {
+      loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
+        console.log(res);
+        fetchIcd10(); 
+      }).catch((err) => console.log(err));
+    });
+
+    loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated').then((du) => {
+      if(du.result === data.cpt.date_updated) {
+        
+        loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
+          if (res === 0) {
+            fetchCpt();
+          } else {
+            redirect();
+          }
+        })
+      } else {
+        fetchCptUpdate();
+        loginStorageService.updateEntry('cpt', 'date_updated', data.cpt.date_updated).then((r) => {
+          console.log(r);
+        }).catch(err => console.log(err));
+      }
+    }).catch(() => {
+      loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
+        fetchCpt(); 
+      }).catch((err) => console.log(err));
+    });
+  }
 
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
@@ -41,6 +301,55 @@ const LoginPage = () => {
     const data = { ...loginData, [name]: event.target.value };
     setLoginData(data);
   };
+
+  const login = async () => {
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
+    let options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(loginData)
+    }
+
+    setFetchingState(true);
+
+    await fetch(url, options)
+      .then((resp: any)=> resp.json())
+      .then(async (data: any) => {
+        if (!data.error) {
+          localStorage.setItem('api_token',data.login['access_token']);
+          localStorage.setItem('pm_token',data.login['access_token']);
+          localStorage.setItem('user_id',data.login.user_id);
+          localStorage.setItem('employee_id',data.login.employee_id);
+          localStorage.setItem('first_name',data.login.first_name);
+          localStorage.setItem('last_name',data.login.last_name);
+          if (data.login.main_module === 'Underwriting') {
+            localStorage.setItem('sidebar','dashboard');
+            // window.location.replace(underwritingUrl);
+          } else if (data.login.main_module === 'Customer Care') {
+            // window.location.replace(customerCareUrl);
+          } else if (data.login.main_module === 'Membership') {
+            localStorage.setItem('sidebar','dashboard');
+            // window.location.replace(membershipUrl);
+          } else {
+            // window.location.replace(systemAdminUrl);
+          }
+          
+          mainModule = data.login.main_module;
+
+          data.login.pm_token = data.login['access_token'];
+          await saveToIndexedDB(data);
+        } else {
+          setFetchingState(false);
+          alert(data.error.message)
+        }
+
+      })
+      .catch((err: any) => {
+        alert(err.message)
+      })
+  }
 
   const onLogin = async () => {
     if (loginData.username.length === 0) {
@@ -54,12 +363,12 @@ const LoginPage = () => {
       window.location.reload();
       return;
     }
-    await callLoginPost();
+    await login();
   };
 
   const callLoginPost = async () => {
     const backendLoginUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'oidc/token';
-      
+
     await fetch(backendLoginUrl, {
       method: 'POST',
       headers: {
@@ -122,17 +431,17 @@ const LoginPage = () => {
           window.location.reload();
           return;
         } else {
-          let role = data.role ? data.role : "";
           localStorage.setItem('user_id',data._id);
           localStorage.setItem('employee_id',data.employee_id);
           localStorage.setItem('first_name',data.first_name);
           localStorage.setItem('last_name',data.last_name);
-          localStorage.setItem('role',role);
           if (data.main_module === 'Underwriting') {
+            localStorage.setItem('sidebar','dashboard');
             window.location.replace(underwritingUrl);
           } else if (data.main_module === 'Customer Care') {
             window.location.replace(customerCareUrl);
           } else if (data.main_module === 'Membership') {
+            localStorage.setItem('sidebar','dashboard');
             window.location.replace(membershipUrl);
           } else {
             window.location.replace(systemAdminUrl);
@@ -210,6 +519,8 @@ const LoginPage = () => {
     alert('onContact() clicked');
   };
 
+  const [isFetching, setFetchingState] = useState(false);
+
   return (
     <Grid container className="login-main">
       <img
@@ -259,8 +570,8 @@ const LoginPage = () => {
             inputRef={passwordRef}
           />
         </div>
-        <Button className="login-button" onClick={onLogin}>
-          LOG IN
+        <Button disabled={isFetching ? true : false} className="login-button" onClick={onLogin}>
+          {isFetching ? "Initializing..." : "LOG IN"}
         </Button>
         <div style={{ paddingTop: '3rem' }}>
           Problems logging in? Please &nbsp;
@@ -275,3 +586,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
