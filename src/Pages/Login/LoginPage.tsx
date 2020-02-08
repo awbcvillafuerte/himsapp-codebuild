@@ -342,12 +342,14 @@ const LoginPage = () => {
           await saveToIndexedDB(data);
         } else {
           setFetchingState(false);
-          alert(data.error.message)
+          alert(data.error.message);
+          window.location.reload();
         }
 
       })
       .catch((err: any) => {
-        alert(err.message)
+        alert(err.message);
+        window.location.reload();
       })
   }
 
