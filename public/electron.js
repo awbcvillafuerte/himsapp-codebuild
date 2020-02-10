@@ -23,7 +23,7 @@ let template = []
 const name = app.getName();
 const version = app.getVersion();
 template.unshift({
-  label: 'hims-uat' + version,
+  label: 'hims-desktop ' + version,
   submenu: [
     {
       label: 'About HIMS ' + version,
@@ -62,14 +62,14 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS for VNI UAT"
+        title: "HIMS Desktop for UAT"
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-uat.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 720,
-        title: "HIMS for VNI UAT",
+        title: "HIMS Desktop for UAT",
     });
     splash.loadURL(splashPath);
 
@@ -77,7 +77,7 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS for VNI UAT",
+        title: "HIMS Desktop for UAT",
     });
 	
 	if (!isDev) {
