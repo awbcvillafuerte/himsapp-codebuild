@@ -1,4 +1,6 @@
-const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
+const electron = require("electron");
+const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
 const isDev = require('electron-is-dev')
@@ -17,17 +19,29 @@ function updaterLog(text) {
   console.log(text);
 }
 
+
 // make my own menu
 let template = []
 
 const name = app.getName();
 const version = app.getVersion();
 template.unshift({
-  label: 'hims-desktop ' + version,
+  label: 'HIMS DEV ' + version,
   submenu: [
     {
       label: 'About HIMS ' + version,
       role: 'about'
+    },
+    {
+      label: 'Options',
+      submenu: [
+        {
+          label: 'Open Dev Tools',
+          click() {
+            mainWindow.openDevTools();
+          },
+        },
+      ],
     },
     {
       label: 'Check for Updates',
@@ -35,7 +49,7 @@ template.unshift({
       click() { autoUpdater.checkForUpdates(); }
     },
     {
-      label: 'Exit and Update',
+      label: 'Quit',
       accelerator: 'Command+Q',
       click() { app.quit(); }
     },
@@ -50,26 +64,27 @@ const menuTemplateDev = [
       {
         label: 'Open Dev Tools',
         click() {
-          mainWindow.webContents.openDevTools();
+          mainWindow.openDevTools();
         },
       },
     ],
   },
 ];
 
+
 function createWindow() {
-       mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS Desktop for UAT"
+        title: "HIMS DEV"
     });
-    mainWindow.setIcon(path.join(__dirname, "../build/hims-uat.png"));
+    mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
 
     splash = new BrowserWindow({
         width: 900,
         height: 720,
-        title: "HIMS Desktop for UAT",
+        title: "HIMS DEV",
     });
     splash.loadURL(splashPath);
 
@@ -77,15 +92,21 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS Desktop for UAT",
+        title: "HIMS DEV",
     });
-	
-	if (!isDev) {
-    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+
+	if (isDev) {
+		// Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
+		Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplateDev));
+		// If we are developers we might as well open the devtools by default.
+		mainWindow.webContents.openDevTools();
+	}else{
+		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 	}
 	
     setTimeout(() => {
-        login.loadFile('build/index.html');
+        if (isDev) login.loadURL('http://localhost:3000')
+        else  login.loadFile('build/index.html');
 
     }, 2000);
 
