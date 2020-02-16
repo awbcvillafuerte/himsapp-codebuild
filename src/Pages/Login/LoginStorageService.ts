@@ -71,6 +71,15 @@ export default class LoginStorageService extends indexedDBHelper {
             return this.getStoreCount(this.DB_OBJECT, storeName);
         })
     }
+
+    clearUser = (dbname: string) => {
+        return this.openDb(dbname).then((db: IndexedDBHelperResponse) => {
+            this.DB_OBJECT = db.result; 
+
+            return  this.clearStore(this.DB_OBJECT, 'user_data');
+        })
+    }
+
 }
 
 
