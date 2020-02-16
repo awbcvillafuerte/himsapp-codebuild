@@ -45,18 +45,9 @@ const LoginPage = () => {
   let icd10List: any = [];
 
   useEffect(() => {
-    // loginStorageService.deleteEntry('icd10', 'date_updated').then((res) => {
-    // })
-    // loginStorageService.updateEntry('cpt', 'date_updated', 'POWTA MAKAGAGO').then((r) => {
-    //   console.log(r);
-    // }).catch(err => console.log(err));
-    // loginStorageService.updateEntry('icd10', 'date_updated', '2020-01-01T00:00:00.000Z').then((res) => {
-    //   console.log(res);
-    // })
-    //  loginStorageService.getSingleEntryByKeyReturnValue('icd10_list', '5da6d5d037883af6b68bda7d').then((res) => {
-    //   console.log(res);
-    // })
-    // fetchIcd10Update();
+    loginStorageService.clearUser('himsDb').then((res) => {
+      console.log(res);
+    }).catch((err) => console.log(err));
   }, [])
 
   const redirect = () => {
