@@ -45,6 +45,8 @@ const LoginPage = () => {
   let icd10List: any = [];
 
   useEffect(() => {
+    loginStorageService.initStorage('himsDb');
+
     loginStorageService.clearUser('himsDb').then((res) => {
       console.log(res);
     }).catch((err) => console.log(err));
@@ -221,8 +223,6 @@ const LoginPage = () => {
 
   // Process saving to indexedDB
   const saveToIndexedDB = async (data: any) => {
-
-    loginStorageService.initStorage('himsDb');
 
     let userDataToSave = Object.entries(data.login).map(entry => {
       return {key: entry[0], value: entry[1]}
