@@ -22,7 +22,7 @@ export default class IndexedDbHelper {
     }
 
     openDb = (namespace: string) => {
-        let request = window.indexedDB.open(namespace);
+        let request = window.indexedDB.open(namespace, 3);
 
         return new Promise<IndexedDBHelperResponse> ((resolve, reject) => {
 
@@ -44,8 +44,9 @@ export default class IndexedDbHelper {
             }
 
             request.onupgradeneeded = (event: any) => {
+                
                 let result = event.target.result;
-
+                
                 response.cbType = event.type;
                 response.result = result;
                 resolve(response);
@@ -243,4 +244,5 @@ export default class IndexedDbHelper {
         })
     }
 }
+
 
