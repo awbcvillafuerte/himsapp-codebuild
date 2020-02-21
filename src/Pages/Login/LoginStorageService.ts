@@ -9,12 +9,22 @@ export default class LoginStorageService extends indexedDBHelper {
         this.openDb(dbname).then((res: IndexedDBHelperResponse) => {
             this.DB_OBJECT = res.result;
 
+            const stores = [
+                'user_data',
+                'icd10',
+                'cpt',
+                'icd10_list',
+                'cpt_list',
+                'tmp',
+                'config'
+            ]
+
             if (res.cbType === 'upgradeneeded') {
-                this.createStoreOnDb(this.DB_OBJECT, 'user_data', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'icd10', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'cpt', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'icd10_list', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'cpt_list', 'key');
+                stores.forEach(store => {
+                    if (![...this.DB_OBJECT.objectStoreNames].includes(store)) {
+                        this.createStoreOnDb(this.DB_OBJECT, store, 'key').then((res)=>console.log(res)).catch(err => err);
+                    }
+                })
             }
 
         }).catch((err) => console.log(err));
@@ -81,5 +91,6 @@ export default class LoginStorageService extends indexedDBHelper {
     }
 
 }
+
 
 
