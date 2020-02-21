@@ -23,8 +23,7 @@
       {
         "provider": "github",
         "owner": "veridata-hims",
-        "repo": "hims-dev",
-	"channel": "alpha"
+        "repo": "hims-dev"
       }
     ]
   },
