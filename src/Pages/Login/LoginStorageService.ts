@@ -1,5 +1,6 @@
 import indexedDBHelper, { IndexedDBHelperResponse } from './IndexedDbHelper';
 
+const currentDbVersion = 2;
 
 export default class LoginStorageService extends indexedDBHelper {
     DB_OBJECT: any;
@@ -9,12 +10,67 @@ export default class LoginStorageService extends indexedDBHelper {
         this.openDb(dbname).then((res: IndexedDBHelperResponse) => {
             this.DB_OBJECT = res.result;
 
+            const stores = [
+                {
+                    name: 'user_data',
+                    keyPath: 'key' 
+                },
+                {
+                    name: 'icd10',
+                    keyPath: 'key' 
+                },
+                {
+                    name: 'cpt',
+                    keyPath: 'key' 
+                },
+                {
+                    name: 'icd10_list',
+                    keyPath: '_id'
+                },
+                {
+                    name: 'cpt_list',
+                    keyPath: '_id'
+                },
+                {
+                    name: 'tmp',
+                    keyPath: 'key'
+                },
+                {
+                    name: 'config',
+                    keyPath: 'key'
+                }
+            ]
+
             if (res.cbType === 'upgradeneeded') {
-                this.createStoreOnDb(this.DB_OBJECT, 'user_data', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'icd10', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'cpt', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'icd10_list', 'key');
-                this.createStoreOnDb(this.DB_OBJECT, 'cpt_list', 'key');
+                stores.forEach(store => {
+                    if (![...this.DB_OBJECT.objectStoreNames].includes(store)) {
+                        if (store.name === 'cpt_list') {
+                            let cptIndex = [
+                                {
+                                    name: 'label',
+                                    keyPath: 'label',
+                                    unique: false
+                                }
+                            ]
+                            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, cptIndex);
+                        } else if (store.name === 'icd10_list') {
+                            let cptIndex = [
+                                {
+                                    name: 'full_code',
+                                    keyPath: 'full_code',
+                                    unique: false
+                                },{
+                                    name: 'full_description',
+                                    keyPath: 'full_description',
+                                    unique: false
+                                }
+                            ]
+                            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, cptIndex);
+                        } else {
+                            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath).then((res)=>console.log(res)).catch(err => err);
+                        }
+                    }
+                })
             }
 
         }).catch((err) => console.log(err));
@@ -81,5 +137,8 @@ export default class LoginStorageService extends indexedDBHelper {
     }
 
 }
+
+
+
 
 

@@ -46,7 +46,18 @@ const LoginPage = () => {
   let icd10List: any = [];
 
   useEffect(() => {
+    let urls = {
+      PARTNER_URL: process.env.REACT_APP_HIMS_API_PARTNER_URL,
+      CLIENT_URL: process.env.REACT_APP_HIMS_API_CLIENT_URL
+    }
+
+    let configToSave = Object.entries(urls).map(entry => {
+      return {key: entry[0], value: entry[1]}
+    });
+
     loginStorageService.initStorage('himsDb');
+
+    loginStorageService.saveEntry(configToSave, 'config').then((res) => console.log(res)).catch(err => console.log(err))
 
     loginStorageService.clearUser('himsDb').then((res) => {
       console.log(res);
@@ -91,18 +102,7 @@ const LoginPage = () => {
           icd10List.push(...data);
           fetchIcd10();
         } else {
-          let encodedItems: Array<any> = [];
-
-          icd10List.map((icd10Item: any) => {
-            let obj = {key: '', value: {}};
-
-            obj['key'] = icd10Item._id;
-            obj['value'] = icd10Item;
-
-            encodedItems.push(obj);
-          });
-          
-          loginStorageService.saveEntry(encodedItems, 'icd10_list').then((res) => {
+          loginStorageService.saveEntry(icd10List, 'icd10_list').then((res) => {
             icd10FetchDone = true;
             if (cptFetchDone) {
               redirect();
@@ -168,18 +168,7 @@ const LoginPage = () => {
           cptList.push(...data);
           fetchCpt();
         } else {
-          let encodedItems: Array<any> = [];
-
-          cptList.map((icd10Item: any) => {
-            let obj = {key: '', value: {}};
-
-            obj['key'] = icd10Item._id;
-            obj['value'] = icd10Item;
-
-            encodedItems.push(obj);
-          });
-          
-          loginStorageService.saveEntry(encodedItems, 'cpt_list').then((res) => {
+          loginStorageService.saveEntry(cptList, 'cpt_list').then(() => {
             cptFetchDone = true;
             if (icd10FetchDone) {
               redirect();
@@ -337,13 +326,13 @@ const LoginPage = () => {
           await saveToIndexedDB(data);
         } else {
           setFetchingState(false);
-          alert(data.error.message);
+          alert(data.error.message)
           window.location.reload();
         }
 
       })
       .catch((err: any) => {
-        alert(err.message);
+        alert(err.message)
         window.location.reload();
       })
   }
@@ -498,8 +487,6 @@ const LoginPage = () => {
           return;
         } else {
           localStorage.setItem('token',requestData.data.token);
-          localStorage.setItem('partnerUrl', process.env.REACT_APP_HIMS_API_PARTNER_URL + '/');
-          localStorage.setItem('clientUrl', process.env.REACT_APP_HIMS_API_CLIENT_URL + '/');
           window.location.replace(claimsPageURL);
         }
       })
@@ -585,4 +572,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
 
