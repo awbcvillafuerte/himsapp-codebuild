@@ -46,7 +46,18 @@ const LoginPage = () => {
   let icd10List: any = [];
 
   useEffect(() => {
+    let urls = {
+      PARTNER_URL: process.env.REACT_APP_HIMS_API_PARTNER_URL,
+      CLIENT_URL: process.env.REACT_APP_HIMS_API_CLIENT_URL
+    }
+
+    let configToSave = Object.entries(urls).map(entry => {
+      return {key: entry[0], value: entry[1]}
+    });
+
     loginStorageService.initStorage('himsDb');
+
+    loginStorageService.saveEntry(configToSave, 'config').then((res) => console.log(res)).catch(err => console.log(err))
 
     loginStorageService.clearUser('himsDb').then((res) => {
       console.log(res);
@@ -337,13 +348,13 @@ const LoginPage = () => {
           await saveToIndexedDB(data);
         } else {
           setFetchingState(false);
-          alert(data.error.message);
+          alert(data.error.message)
           window.location.reload();
         }
 
       })
       .catch((err: any) => {
-        alert(err.message);
+        alert(err.message)
         window.location.reload();
       })
   }
@@ -498,8 +509,6 @@ const LoginPage = () => {
           return;
         } else {
           localStorage.setItem('token',requestData.data.token);
-          localStorage.setItem('partnerUrl', process.env.REACT_APP_HIMS_API_PARTNER_URL + '/');
-          localStorage.setItem('clientUrl', process.env.REACT_APP_HIMS_API_CLIENT_URL + '/');
           window.location.replace(claimsPageURL);
         }
       })
@@ -585,4 +594,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
