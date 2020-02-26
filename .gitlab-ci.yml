@@ -1,0 +1,9 @@
+before_script:
+  - cd /home/bitnami
+  - /home/bitnami/autopull_hims_app_dev.sh
+  - 
+
+run-test:
+  script:
+    - cd /home/bitnami/hims-app-dev
+    - yarn run build
