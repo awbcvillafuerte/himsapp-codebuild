@@ -54,14 +54,20 @@ export default class IndexedDbHelper {
         });
     }
 
-    createStoreOnDb = (db: IDBDatabase, name: string, keyPath: string) => {
-        let store = db.createObjectStore(name, {keyPath, autoIncrement: false});
+    createStoreOnDb = (db: IDBDatabase, storeName: string, keyPath: string, indexes?: any[]) => {
+        let store = db.createObjectStore(storeName, {keyPath, autoIncrement: false});
 
         return new Promise<IndexedDBHelperResponse> ((resolve, reject) => {
             let response: IndexedDBHelperResponse = {
                 cbType: '',
                 result: {}
             };
+
+            if (indexes && indexes.length > 0) {
+                indexes.forEach((index: any) => {
+                    store.createIndex(index.name, index.keyPath, { unique: index.unique });
+                })
+            }
 
             store.transaction.onerror = () => {
                 reject("error creating store on db.")
@@ -232,6 +238,55 @@ export default class IndexedDbHelper {
         })
     }
 
+    filterBy = (
+        db: IDBDatabase,
+        storeName: string,
+        keyPath: string,
+        value: string,
+        mode?: string) => {
+        return new Promise<any> ((resolve, reject) => {
+            let transaction = db.transaction(storeName, 'readwrite');
+            let objectStore = transaction.objectStore(storeName);
+            let index = objectStore.index(keyPath);
+
+            if (value.length !== 0) {
+                let request = index.openCursor();
+                let results: any[] = [];
+
+                request.onerror = () => {reject("error filter")}
+
+                request.onsuccess = (ev: any)=> {
+                    let cursor = ev.target.result;
+                    if (cursor) {
+                        switch (mode) {
+                            case 'startsWith':
+                                if (cursor.value[keyPath].toLowerCase().startsWith(value.toLowerCase())) {
+                                    results.push(cursor.value);
+                                }
+                                break;
+                            case 'match':
+                                if (cursor.value[keyPath].toLowerCase().match(value.toLowerCase())) {
+                                    results.push(cursor.value);
+                                }
+                                break;
+                            default:
+                                if (cursor.value[keyPath].toLowerCase().startsWith(value.toLowerCase())) {
+                                    results.push(cursor.value);
+                                }
+                                break;
+                        }
+                        
+                        cursor.continue();
+                    } else {
+                        resolve(results);
+                    }
+                }
+            } else {
+                resolve([]);
+            }
+        })
+    }
+
     clearStore = (db: IDBDatabase, storeName: string) => {
         return new Promise<any> ((resolve, reject) => {
             let transaction = db.transaction(storeName, 'readwrite');
@@ -244,5 +299,7 @@ export default class IndexedDbHelper {
         })
     }
 }
+
+
 
 

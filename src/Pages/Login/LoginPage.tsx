@@ -102,18 +102,7 @@ const LoginPage = () => {
           icd10List.push(...data);
           fetchIcd10();
         } else {
-          let encodedItems: Array<any> = [];
-
-          icd10List.map((icd10Item: any) => {
-            let obj = {key: '', value: {}};
-
-            obj['key'] = icd10Item._id;
-            obj['value'] = icd10Item;
-
-            encodedItems.push(obj);
-          });
-          
-          loginStorageService.saveEntry(encodedItems, 'icd10_list').then((res) => {
+          loginStorageService.saveEntry(icd10List, 'icd10_list').then((res) => {
             icd10FetchDone = true;
             if (cptFetchDone) {
               redirect();
@@ -179,18 +168,7 @@ const LoginPage = () => {
           cptList.push(...data);
           fetchCpt();
         } else {
-          let encodedItems: Array<any> = [];
-
-          cptList.map((icd10Item: any) => {
-            let obj = {key: '', value: {}};
-
-            obj['key'] = icd10Item._id;
-            obj['value'] = icd10Item;
-
-            encodedItems.push(obj);
-          });
-          
-          loginStorageService.saveEntry(encodedItems, 'cpt_list').then((res) => {
+          loginStorageService.saveEntry(cptList, 'cpt_list').then(() => {
             cptFetchDone = true;
             if (icd10FetchDone) {
               redirect();
@@ -594,5 +572,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
 
