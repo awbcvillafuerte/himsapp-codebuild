@@ -18,27 +18,26 @@ fetch_uat:
 
 build_dev:
   stage: build
-  needs: fetch_dev
+  needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev after fetch_dev"
 
 build_uat:
-  stage: build
-  needs: fetch_uat
+  stage: build  
+  needs: ["fetch_uat"]
   script:
     - echo "This job builds hims-desktop after fetch_uat"
 
-
 deploy_dev:
   stage: deploy
-  needs: build_dev
+  needs: ["build_dev"]
   script:
     - echo "Deploy the hims-dev"
     - echo "Needs hims-dev to have passed build stage"
 
 deploy_uat:
   stage: deploy
-  needs: build_uat
+  needs: ["build_uat"]
   script:
     - echo "Deploy the UAT"
     - echo "Needs UAT to have passed build stage"
