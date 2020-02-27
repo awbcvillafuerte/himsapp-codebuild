@@ -59,19 +59,21 @@ export default class IndexedDbHelper {
     createStoreOnDb = (db: IDBDatabase, storeName: string, keyPath: string, indexes?: any[]) => {
         let store = db.createObjectStore(storeName, {keyPath, autoIncrement: false});
 
-        if (indexes && indexes.length > 0) {
-            indexes.forEach((index: any) => {
-                store.createIndex(index.name, index.keyPath, { unique: index.unique });
-            })
-        }
-
-        store.transaction.onerror = () => {
-            console.log("error creating store object.");
-        }
-
-        store.transaction.oncomplete = (event: any) => {                
-            console.log("store object successfully initialized.");
-        }
+        return new Promise ((resolve, reject) => {
+            if (indexes && indexes.length > 0) {
+                indexes.forEach((index: any) => {
+                    store.createIndex(index.name, index.keyPath, { unique: index.unique });
+                })
+            }
+    
+            store.transaction.onerror = () => {
+                reject("error creating store object.");
+            }
+    
+            store.transaction.oncomplete = (event: any) => {                
+                resolve("store object successfully initialized.");
+            }
+        })
     }
 
     deleteObjectStore = (db: IDBDatabase, storeName: string) => {
@@ -294,6 +296,7 @@ export default class IndexedDbHelper {
         })
     }
 }
+
 
 
 
