@@ -58,10 +58,6 @@ const LoginPage = () => {
     loginStorageService.initStorage('himsDb');
 
     loginStorageService.saveEntry(configToSave, 'config').then((res) => console.log(res)).catch(err => console.log(err))
-
-    loginStorageService.clearUser('himsDb').then((res) => {
-      console.log(res);
-    }).catch((err) => console.log(err));
   }, [])
 
   const redirect = () => {
@@ -572,6 +568,7 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
 
 
