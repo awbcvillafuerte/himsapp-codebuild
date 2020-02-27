@@ -31,6 +31,11 @@ const stores = [
     }
 ]
 
+let urls = {
+    PARTNER_URL: process.env.REACT_APP_HIMS_API_PARTNER_URL,
+    CLIENT_URL: process.env.REACT_APP_HIMS_API_CLIENT_URL
+}
+
 export default class LoginStorageService extends indexedDBHelper {
     DB_OBJECT: any;
     STORE_OBJECT: any;
@@ -86,16 +91,18 @@ export default class LoginStorageService extends indexedDBHelper {
             ]
             this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, icd10Index);
         } else {
-            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath);
+            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath).then(() => {
+                let configToSave = Object.entries(urls).map(entry => {
+                    return {key: entry[0], value: entry[1]}
+                });
+                
+                this.saveEntry(configToSave, 'config').then((res) => console.log(res)).catch(err => console.log(err));
+            })
         }
     }
 
     saveEntry = (entries: any, storeName: string) => {
-        return this.openDb('himsDb').then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result;
-
-            return this.saveToStore(this.DB_OBJECT, storeName, entries);
-        })
+        return this.saveToStore(this.DB_OBJECT, storeName, entries);
     }
 
     getSingleEntryByKeyReturnValue = (storeName: string, keyPath: string) => {
@@ -123,6 +130,7 @@ export default class LoginStorageService extends indexedDBHelper {
     }
 
 }
+
 
 
 
