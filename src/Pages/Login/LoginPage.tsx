@@ -73,7 +73,7 @@ const LoginPage = () => {
     } else if (mainModule === 'Customer Care') {
       let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
       const logingroup = query && query.result ? query.result : null;
-      if(logingroup && logingroup.name === 'Customer Service Specialist'){
+      if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
         window.location.replace(cssCustomerCareUrl);
       }
       else{
