@@ -12,6 +12,7 @@ interface LoginDataType {
 }
 
 // Module URL
+const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
 const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
@@ -64,13 +65,20 @@ const LoginPage = () => {
     }).catch((err) => console.log(err));
   }, [])
 
-  const redirect = () => {
+  const redirect = async () => {
     console.log(mainModule);
     if (mainModule === 'Underwriting') {
       localStorage.setItem('sidebar','dashboard');
       window.location.replace(underwritingUrl);
     } else if (mainModule === 'Customer Care') {
-      window.location.replace(customerCareUrl);
+      let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
+      const logingroup = query && query.result ? query.result : null;
+      if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+        window.location.replace(cssCustomerCareUrl);
+      }
+      else{
+        window.location.replace(customerCareUrl);
+      }
     } else if (mainModule === 'Membership') {
       localStorage.setItem('sidebar','dashboard');
       window.location.replace(membershipUrl);
