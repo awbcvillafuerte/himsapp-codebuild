@@ -12,6 +12,7 @@ interface LoginDataType {
 }
 
 // Module URL
+const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
 const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
@@ -46,31 +47,23 @@ const LoginPage = () => {
   let icd10List: any = [];
 
   useEffect(() => {
-    let urls = {
-      PARTNER_URL: process.env.REACT_APP_HIMS_API_PARTNER_URL,
-      CLIENT_URL: process.env.REACT_APP_HIMS_API_CLIENT_URL
-    }
-
-    let configToSave = Object.entries(urls).map(entry => {
-      return {key: entry[0], value: entry[1]}
-    });
-
     loginStorageService.initStorage('himsDb');
-
-    loginStorageService.saveEntry(configToSave, 'config').then((res) => console.log(res)).catch(err => console.log(err))
-
-    loginStorageService.clearUser('himsDb').then((res) => {
-      console.log(res);
-    }).catch((err) => console.log(err));
   }, [])
 
-  const redirect = () => {
+  const redirect = async () => {
     console.log(mainModule);
     if (mainModule === 'Underwriting') {
       localStorage.setItem('sidebar','dashboard');
       window.location.replace(underwritingUrl);
     } else if (mainModule === 'Customer Care') {
-      window.location.replace(customerCareUrl);
+      let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
+      const logingroup = query && query.result ? query.result : null;
+      if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+        window.location.replace(cssCustomerCareUrl);
+      }
+      else{
+        window.location.replace(customerCareUrl);
+      }
     } else if (mainModule === 'Membership') {
       localStorage.setItem('sidebar','dashboard');
       window.location.replace(membershipUrl);
@@ -572,6 +565,8 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
 
 
 
