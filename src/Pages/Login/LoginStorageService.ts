@@ -1,6 +1,40 @@
 import indexedDBHelper, { IndexedDBHelperResponse } from './IndexedDbHelper';
 
-const currentDbVersion = 2;
+const stores = [
+    {
+        name: 'user_data',
+        keyPath: 'key' 
+    },
+    {
+        name: 'icd10',
+        keyPath: 'key' 
+    },
+    {
+        name: 'cpt',
+        keyPath: 'key' 
+    },
+    {
+        name: 'icd10_list',
+        keyPath: '_id'
+    },
+    {
+        name: 'cpt_list',
+        keyPath: '_id'
+    },
+    {
+        name: 'tmp',
+        keyPath: 'key'
+    },
+    {
+        name: 'config',
+        keyPath: 'key'
+    }
+]
+
+let urls = {
+    PARTNER_URL: process.env.REACT_APP_HIMS_API_PARTNER_URL,
+    CLIENT_URL: process.env.REACT_APP_HIMS_API_CLIENT_URL
+}
 
 export default class LoginStorageService extends indexedDBHelper {
     DB_OBJECT: any;
@@ -9,134 +43,95 @@ export default class LoginStorageService extends indexedDBHelper {
     initStorage = (dbname: string) => {
         this.openDb(dbname).then((res: IndexedDBHelperResponse) => {
             this.DB_OBJECT = res.result;
+            let db_object_stores = [...this.DB_OBJECT.objectStoreNames];
 
-            const stores = [
-                {
-                    name: 'user_data',
-                    keyPath: 'key' 
-                },
-                {
-                    name: 'icd10',
-                    keyPath: 'key' 
-                },
-                {
-                    name: 'cpt',
-                    keyPath: 'key' 
-                },
-                {
-                    name: 'icd10_list',
-                    keyPath: '_id'
-                },
-                {
-                    name: 'cpt_list',
-                    keyPath: '_id'
-                },
-                {
-                    name: 'tmp',
-                    keyPath: 'key'
-                },
-                {
-                    name: 'config',
-                    keyPath: 'key'
-                }
-            ]
-
-            if (res.cbType === 'upgradeneeded') {
+            if (res.cbType === 'upgradeneeded') {  
                 stores.forEach(store => {
-                    if (![...this.DB_OBJECT.objectStoreNames].includes(store)) {
-                        if (store.name === 'cpt_list') {
-                            let cptIndex = [
-                                {
-                                    name: 'label',
-                                    keyPath: 'label',
-                                    unique: false
-                                }
-                            ]
-                            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, cptIndex);
-                        } else if (store.name === 'icd10_list') {
-                            let cptIndex = [
-                                {
-                                    name: 'full_code',
-                                    keyPath: 'full_code',
-                                    unique: false
-                                },{
-                                    name: 'full_description',
-                                    keyPath: 'full_description',
-                                    unique: false
-                                }
-                            ]
-                            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, cptIndex);
-                        } else {
-                            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath).then((res)=>console.log(res)).catch(err => err);
-                        }
+                    if (db_object_stores.includes(store.name)) {
+                        this.deleteObjectStore(this.DB_OBJECT, store.name);
+                        this.initStores(store);
+                    } else {
+                        this.initStores(store);
                     }
                 })
+            }
+
+            if (res.cbType === 'success') {
+                if (db_object_stores.includes('user_data')) {
+                    this.clearUser('himsDb').then((resp) => {
+                        console.log(resp);
+                    });
+                }
             }
 
         }).catch((err) => console.log(err));
     }
 
-    saveEntry = (entries: any, storeName: string) => {
-        return this.openDb('himsDb').then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result;
+    initStores = (store: any) => {
+        if (store.name === 'cpt_list') {
+            let cptIndex = [
+                {
+                    name: 'label',
+                    keyPath: 'label',
+                    unique: false
+                }
+            ]
+            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, cptIndex);
+        } else if (store.name === 'icd10_list') {
+            let icd10Index = [
+                {
+                    name: 'full_code',
+                    keyPath: 'full_code',
+                    unique: false
+                },{
+                    name: 'full_description',
+                    keyPath: 'full_description',
+                    unique: false
+                }
+            ]
+            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, icd10Index);
+        } else {
+            this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath).then(() => {
+                let configToSave = Object.entries(urls).map(entry => {
+                    return {key: entry[0], value: entry[1]}
+                });
+                
+                this.saveEntry(configToSave, 'config').then((res) => console.log(res)).catch(err => console.log(err));
+            })
+        }
+    }
 
-            return this.saveToStore(this.DB_OBJECT, storeName, entries);
-        })
+    saveEntry = (entries: any, storeName: string) => {
+        return this.saveToStore(this.DB_OBJECT, storeName, entries);
     }
 
     getSingleEntryByKeyReturnValue = (storeName: string, keyPath: string) => {
-        return this.openDb('himsDb').then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result;
-
-            return this.getByKeyReturnValue(this.DB_OBJECT, storeName, keyPath);
-        });
+        return this.getByKeyReturnValue(this.DB_OBJECT, storeName, keyPath);
     }
 
     getAllEntry = (storeName: string) => {
-        return this.openDb('himsDb').then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result;
-            
-            return this.getAll(this.DB_OBJECT, storeName);
-        });
+        return this.getAll(this.DB_OBJECT, storeName);
     }
 
     updateEntry = (storeName: string, keyPath: string, newValue: string) => {
-        return this.openDb('himsDb').then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result; 
-
-            return this.updateEntryByKey(this.DB_OBJECT, storeName, keyPath, newValue);
-        })
+        return this.updateEntryByKey(this.DB_OBJECT, storeName, keyPath, newValue);
     }
 
     deleteEntry = (storeName: string, keyPath: string) => {
-        return new Promise<any> ((resolve, reject) => {
-            this.openDb('himsDb').then((db: IndexedDBHelperResponse) => {
-                this.DB_OBJECT = db.result; 
-    
-                this.deleteEntryByKey(this.DB_OBJECT, storeName, keyPath).then((res) => {
-                    resolve(res);
-                }).catch((err) => reject(err));
-            })
-        })
+        return this.deleteEntryByKey(this.DB_OBJECT, storeName, keyPath);
     }
 
     validateStoreCount = (dbname: string, storeName: string) => {
-        return this.openDb(dbname).then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result; 
-
-            return this.getStoreCount(this.DB_OBJECT, storeName);
-        })
+        return this.getStoreCount(this.DB_OBJECT, storeName);
     }
 
     clearUser = (dbname: string) => {
-        return this.openDb(dbname).then((db: IndexedDBHelperResponse) => {
-            this.DB_OBJECT = db.result; 
-
-            return  this.clearStore(this.DB_OBJECT, 'user_data');
-        })
+        return  this.clearStore(this.DB_OBJECT, 'user_data');
     }
 
 }
+
+
 
 
 
