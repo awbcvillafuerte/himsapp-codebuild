@@ -3,6 +3,8 @@ export interface IndexedDBHelperResponse {
     result: any
 }
 
+const db_version = 4;
+
 export default class IndexedDbHelper {
 
     deleteDb = (namespace: string) => {
@@ -22,7 +24,7 @@ export default class IndexedDbHelper {
     }
 
     openDb = (namespace: string) => {
-        let request = window.indexedDB.open(namespace, 3);
+        let request = window.indexedDB.open(namespace, db_version);
 
         return new Promise<IndexedDBHelperResponse> ((resolve, reject) => {
 
@@ -57,30 +59,25 @@ export default class IndexedDbHelper {
     createStoreOnDb = (db: IDBDatabase, storeName: string, keyPath: string, indexes?: any[]) => {
         let store = db.createObjectStore(storeName, {keyPath, autoIncrement: false});
 
-        return new Promise<IndexedDBHelperResponse> ((resolve, reject) => {
-            let response: IndexedDBHelperResponse = {
-                cbType: '',
-                result: {}
-            };
-
+        return new Promise ((resolve, reject) => {
             if (indexes && indexes.length > 0) {
                 indexes.forEach((index: any) => {
                     store.createIndex(index.name, index.keyPath, { unique: index.unique });
                 })
             }
-
+    
             store.transaction.onerror = () => {
-                reject("error creating store on db.")
+                reject("error creating store object.");
             }
-
-            store.transaction.oncomplete = (event: any) => {
-                let result = event.target.result;
-                
-                response.cbType = event.type;
-                response.result = result;
-                resolve(response);
+    
+            store.transaction.oncomplete = (event: any) => {                
+                resolve("store object successfully initialized.");
             }
         })
+    }
+
+    deleteObjectStore = (db: IDBDatabase, storeName: string) => {
+        db.deleteObjectStore(storeName);
     }
 
     saveToStore = (db: IDBDatabase, storeName: string, entries: any) => {
@@ -299,6 +296,8 @@ export default class IndexedDbHelper {
         })
     }
 }
+
+
 
 
 
