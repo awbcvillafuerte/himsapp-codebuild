@@ -12,6 +12,8 @@ fetch_dev:
     - echo "This job fetches hims_app dev branch. "
     - echo "Runs first"
     - printenv CI_PROJECT_DIR
+    - printenv CURRENT_VERSION
+    - printenv GH_TOKEN
 
 fetch_uat:
   stage: fetch
