@@ -344,7 +344,8 @@ const LoginPage = () => {
     }
     await login();
   };
-
+  
+  // eslint-disable-next-line
   const callLoginPost = async () => {
     const backendLoginUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'oidc/token';
 
