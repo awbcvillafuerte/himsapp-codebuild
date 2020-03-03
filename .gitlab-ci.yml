@@ -12,7 +12,7 @@ fetch_dev:
     - echo "This job fetches hims_app dev branch. "
     - echo "Runs first"
     - sh ~/autopull_hims-app-dev.sh
-  only
+  only:
     - dev
 
 build_dev:
@@ -24,7 +24,7 @@ build_dev:
     - echo "This job builds hims-dev after fetch_dev"
     - cd ~/hims-app-dev
     - yarn run build
-  only
+  only:
     - dev
 
 
