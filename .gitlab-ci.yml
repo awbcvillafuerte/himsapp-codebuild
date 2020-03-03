@@ -12,8 +12,6 @@ fetch_dev:
     - echo "This job fetches hims_app dev branch. "
     - echo "Runs first"
     - sh ~/autopull_hims-app-dev.sh
-  only:
-    - dev
 
 build_dev:
   stage: build
@@ -24,8 +22,7 @@ build_dev:
     - echo "This job builds hims-dev after fetch_dev"
     - cd ~/hims-app-dev
     - yarn run build
-  only:
-    - dev
+
 
 
 deploy_dev:
@@ -36,8 +33,6 @@ deploy_dev:
   script:
     - echo "Deploy the hims-dev"
     - echo "Needs hims-dev to have passed build stage"
-  only:
-    -dev
 
 
 
