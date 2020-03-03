@@ -1,0 +1,33 @@
+The intended goal for the CI-CD would be to automate the build process and deployment of hims-dev and hims-desktop
+
+
+
+hims-dev ci
+1. run autopull_hims-app-dev.sh
+2. cd to hims-app-dev
+3. run 
+   yarn run build
+hims-dev cd
+4. if no errors on number 3 then run 
+   publish.sh
+5. run build-to-s3.sh
+
+
+
+hims-desktop ci
+1. run autopull_hims-app-dev.sh
+2. cd to hims-app-dev
+3. run 
+   yarn run build
+hims-desktop cd
+4. if no errors on number 3 then run 
+   publish.sh
+5. run build-to-s3.sh
+
+
+ToDo's
+
+incorporate the cypress test-runner during the CI processes. 
+
+
+   
