@@ -27,7 +27,7 @@ hims-desktop cd
 
 ToDo's
 
-incorporate the cypress test-runner during the CI processes. 
-
+- incorporate the cypress test-runner during the CI processes. 
+- incorporate a GitLab variable that will set the version number from GitLab , save it to environment via exports, and the package.json will read it from environment
 
    
