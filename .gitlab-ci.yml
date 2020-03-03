@@ -1,8 +1,3 @@
-job:
-  tags:
-    - dev
-    - uat
-    
 stages:
   - fetch
   - build
@@ -11,30 +6,40 @@ stages:
 
 fetch_dev:
   stage: fetch
+  tags:
+    - dev
   script:
     - echo "This job fetches hims_app dev branch. "
     - echo "Runs first"
 
 fetch_uat:
   stage: fetch
+  tags:
+    - uat
   script:
     - echo "This job fetches hims_app UAT branch."
     - echo "It will start at about the same time as fetch_dev."
 
 build_dev:
   stage: build
+  tags:
+    - dev
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev after fetch_dev"
 
 build_uat:
-  stage: build  
+  stage: build
+  tags:
+    - uat
   needs: ["fetch_uat"]
   script:
     - echo "This job builds hims-desktop after fetch_uat"
 
 deploy_dev:
   stage: deploy
+  tags:
+    - dev
   needs: ["build_dev"]
   script:
     - echo "Deploy the hims-dev"
@@ -42,6 +47,8 @@ deploy_dev:
 
 deploy_uat:
   stage: deploy
+  tags:
+    - uat
   needs: ["build_uat"]
   script:
     - echo "Deploy the UAT"
