@@ -27,7 +27,8 @@ build_dev:
   script:
     - echo "This job builds hims-dev after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev
-    - yarn run build
+    - printenv CURRENT_VERSION
+    - yarn run build:dev
 
 
 
@@ -39,10 +40,11 @@ deploy_dev:
     - dev
   needs: ["build_dev"]
   script:
+    - echo "Needs hims-dev to have passed build stage"
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Deploy the hims-dev"
-    - echo "Needs hims-dev to have passed build stage"
-    - echo "publish.sh"
+    - printenv CURRENT_VERSION
+    - echo "yarn run publish-only"
 
 
 
