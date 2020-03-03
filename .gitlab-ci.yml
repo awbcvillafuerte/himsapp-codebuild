@@ -8,14 +8,19 @@ fetch_dev:
   stage: fetch
   tags:
     - dev
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_CLONE_PATH: ~/hims-app-dev
   script:
     - echo "This job fetches hims_app dev branch. "
-    - ~/copy_clone_to_dev.sh
+    - echo "should run ~/copy_clone_to_dev.sh"
     - cd ~/hims-app-dev
     - yarn install
 
 build_dev:
   stage: build
+  variables:
+    GIT_STRATEGY: none
   tags:
     - dev
   needs: ["fetch_dev"]
@@ -28,6 +33,8 @@ build_dev:
 
 deploy_dev:
   stage: deploy
+  variables:
+    GIT_STRATEGY: none
   tags:
     - dev
   needs: ["build_dev"]
