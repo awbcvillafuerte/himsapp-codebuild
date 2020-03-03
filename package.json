@@ -1,7 +1,7 @@
 {
   "name": "hims-desktop",
   "productName": "hims-desktop",
-  "version": "0.2.21-beta",
+  "version": "0.2.22-beta",
   "description": "HIMS Desktop for UAT",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -23,7 +23,8 @@
       {
         "provider": "github",
         "owner": "veridata-hims",
-        "repo": "hims-desktop"
+        "repo": "hims-desktop",
+	"channel": "alpha"
       }
     ]
   },
