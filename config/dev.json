@@ -1,0 +1,25 @@
+{
+	"appId": "ph.com.veridata.hims-dev",
+	"productName": "hims-dev",
+	"copyright": "Copyright © 2020 Veridata Networks, Inc.",
+	"version": "${CURRENT_VERSION}",
+    "files": [
+      "build/*",
+      "build/**/*",
+      "public/*",
+      "public/**/*"
+    ],
+	"mac": {
+      "icon": "public/hims-dev.png"
+    },
+    "win": {
+      "icon": "public/hims-dev.png"
+    },
+	"publish": [
+	  {
+		"provider": "github",
+		"owner": "veridata-hims",
+		"repo": "hims-dev"
+	  }
+	]
+}
