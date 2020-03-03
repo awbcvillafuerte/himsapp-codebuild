@@ -10,7 +10,7 @@ fetch_dev:
     - dev
   variables:
     GIT_STRATEGY: fetch
-    GIT_CLONE_PATH: ~/hims-app-dev
+    GIT_CLONE_PATH: ~/builds/hims-app-dev
   script:
     - echo "This job fetches hims_app dev branch. "
     - echo "should run ~/copy_clone_to_dev.sh"
