@@ -10,8 +10,9 @@ fetch_dev:
     - dev
   script:
     - echo "This job fetches hims_app dev branch. "
-    - echo "Runs first"
-    - sh ~/autopull_hims-app-dev.sh
+    - ~/copy_clone_to_dev.sh
+    - cd ~/hims-app-dev
+    - yarn install
 
 build_dev:
   stage: build
