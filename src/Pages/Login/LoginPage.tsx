@@ -301,6 +301,8 @@ const LoginPage = () => {
           localStorage.setItem('employee_id',data.login.employee_id);
           localStorage.setItem('first_name',data.login.first_name);
           localStorage.setItem('last_name',data.login.last_name);
+          localStorage.setItem('clientUrl', `${process.env.REACT_APP_HIMS_API_CLIENT_URL}`);
+          localStorage.setItem('partnerUrl', `${process.env.REACT_APP_HIMS_API_PARTNER_URL}`);
           if (data.login.main_module === 'Underwriting') {
             localStorage.setItem('sidebar','dashboard');
             // window.location.replace(underwritingUrl);
