@@ -252,7 +252,7 @@ const LoginPage = () => {
         });
       }
     }).catch(() => {
-      console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
+      // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       loginStorageService.clearList('icd10_list').then(() => {
         fetchIcd10();
       })
@@ -264,11 +264,11 @@ const LoginPage = () => {
       let newJuday = data.cpt.juday ? new Date(data.cpt.juday) : null;
       let existingJuday = new Date(juday.result);
 
-      console.log("new", newJuday);
-      console.log("old", existingJuday);
+      // console.log("new", newJuday);
+      // console.log("old", existingJuday);
 
       if (newJuday && (newJuday > existingJuday)) {
-        console.log("my juday")
+        // console.log("my juday")
         loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
           console.log(res);
         }).catch((err) => console.log(err));
@@ -300,7 +300,7 @@ const LoginPage = () => {
       }
 
     }).catch(() => {
-      console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
+      // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       
       loginStorageService.clearList('cpt_list').then(() => {
         fetchCpt();
