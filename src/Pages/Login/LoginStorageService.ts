@@ -129,7 +129,12 @@ export default class LoginStorageService extends indexedDBHelper {
         return  this.clearStore(this.DB_OBJECT, 'user_data');
     }
 
+    clearList = (storeName: any) => {
+        return  this.clearStore(this.DB_OBJECT, storeName);
+    }
+
 }
+
 
 
 
