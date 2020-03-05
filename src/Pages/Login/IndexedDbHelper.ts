@@ -295,6 +295,18 @@ export default class IndexedDbHelper {
             request.onsuccess = ()=> {resolve("store cleared")}
         })
     }
+
+    clearList = (db: IDBDatabase, storeName: string) => {
+        return new Promise<any> ((resolve, reject) => {
+            let transaction = db.transaction(storeName, 'readwrite');
+            let objectStore = transaction.objectStore(storeName);
+
+            let request = objectStore.clear();
+            
+            request.onerror = () => {reject("error clearing store")}
+            request.onsuccess = ()=> {resolve("store cleared")}
+        })
+    }
 }
 
 
