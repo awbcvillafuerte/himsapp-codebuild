@@ -222,9 +222,6 @@ const LoginPage = () => {
       // console.log("new", newJuday);
       // console.log("old", existingJuday);
       if(newJuday && (newJuday > existingJuday)) {
-        loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
-          console.log(res);
-        }).catch((err) => console.log(err));
         loginStorageService.clearList('icd10_list').then(() => {
           fetchIcd10();
         })
@@ -236,7 +233,12 @@ const LoginPage = () => {
               if (res === 0) {
                 fetchIcd10();
               } else {
-                redirect();
+                icd10FetchDone = true;
+                loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
+                  if (res > 0) {
+                    redirect();
+                  }
+                }) 
               }
             })
           } else {
@@ -269,9 +271,6 @@ const LoginPage = () => {
 
       if (newJuday && (newJuday > existingJuday)) {
         // console.log("my juday")
-        loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
-          console.log(res);
-        }).catch((err) => console.log(err));
         loginStorageService.clearList('cpt_list').then(() => {
           fetchCpt();
         })
@@ -283,7 +282,12 @@ const LoginPage = () => {
               if (res === 0) {
                 fetchCpt();
               } else {
-                redirect();
+                cptFetchDone = true;
+                loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
+                  if (res > 0) {
+                    redirect();
+                  }
+                }) 
               }
             })
           } else {
