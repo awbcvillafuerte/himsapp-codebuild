@@ -22,6 +22,8 @@ const claimsUrl = 'claims';
 let mainModule = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
+let icd10ToSave: any = [];
+let cptToSave: any = [];
 
 //Claims URL
 const claimsPageURL = "claims/index.html";
@@ -98,7 +100,9 @@ const LoginPage = () => {
           loginStorageService.saveEntry(icd10List, 'icd10_list').then((res) => {
             icd10FetchDone = true;
             if (cptFetchDone) {
-              redirect();
+              loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
+                redirect();
+              }).catch((err) => console.log(err));
             }
           }).catch((err) => console.log(err));
         }
@@ -118,27 +122,18 @@ const LoginPage = () => {
     await fetch(url, options)
       .then((res) => res.json())
       .then((data) => {
-        let newItems: Array<any> = [];
-
-        data.forEach((i: any) => {
-          let item = {key: '', value: {}};
-
-          item.key = i._id;
-          item.value = i;
-
-          newItems.push(item);
-
-          loginStorageService.saveEntry(newItems, 'icd10_list').then((res) => {
-            console.log(res);
+        loginStorageService.saveEntry(data, 'icd10_list').then((res) => {
+          loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
+            icd10FetchDone = true;
+            if (cptFetchDone) {
+              redirect();
+            } 
           }).catch((err) => console.log(err));
-        })
+        }).catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
 
-       icd10FetchDone = true;
-        if (cptFetchDone) {
-          redirect();
-        } 
+       
   }
 
   // Fetch Cpt systematically
@@ -156,6 +151,9 @@ const LoginPage = () => {
     await fetch(url, options)
       .then((res) => res.json())
       .then((data) => {
+        loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
+          console.log(res)
+        }).catch((err) => console.log(err));
         if (data.length > 0) {
           cptFetched = cptFetched + data.length;
           cptList.push(...data);
@@ -184,27 +182,16 @@ const LoginPage = () => {
     await fetch(url, options)
       .then((res) => res.json())
       .then((data) => {
-        let newItems: Array<any> = [];
-
-        data.forEach((i: any) => {
-          let item = {key: '', value: {}};
-
-          item.key = i._id;
-          item.value = i;
-
-          newItems.push(item);
-
-          loginStorageService.saveEntry(newItems, 'cpt_list').then((res) => {
-            console.log(res);
+        loginStorageService.saveEntry(data, 'cpt_list').then((res) => {
+          loginStorageService.saveEntry(cptToSave, 'cpt_list').then((res) => {
+            cptFetchDone = true;
+            if (icd10FetchDone) {
+              redirect();
+            } 
           }).catch((err) => console.log(err));
-        })
+        }).catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-
-      cptFetchDone = true;
-      if (icd10FetchDone) {
-        redirect();
-      }
   }
 
   // Process saving to indexedDB
@@ -214,61 +201,116 @@ const LoginPage = () => {
       return {key: entry[0], value: entry[1]}
     });
 
-    let icd10ToSave = Object.entries(data.icd10).map(entry => {
+    icd10ToSave = Object.entries(data.icd10).map(entry => {
       return {key: entry[0], value: entry[1]}
     });
 
-    let cptToSave = Object.entries(data.cpt).map(entry => {
+    cptToSave = Object.entries(data.cpt).map(entry => {
       return {key: entry[0], value: entry[1]}
     });
 
     loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
       console.log(res);
     }).catch((err) => console.log(err));
-    
-    loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
-      if(du.result === data.icd10.date_updated) {
-        loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
-          console.log(res);
-          if (res === 0) {
-            fetchIcd10();
-          } else {
-            redirect();
-          }
-        })
-      } else {
-        fetchIcd10Update();
-        loginStorageService.updateEntry('icd10', 'date_updated', data.icd10.date_updated).then((r) => {
-        }).catch(err => console.log(err));
-      }
-    }).catch(() => {
-      loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
-        console.log(res);
-        fetchIcd10(); 
-      }).catch((err) => console.log(err));
-    });
 
-    loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated').then((du) => {
-      if(du.result === data.cpt.date_updated) {
-        
-        loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
-          if (res === 0) {
-            fetchCpt();
-          } else {
-            redirect();
-          }
+    loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'juday').then((juday: any) => {
+      
+      let newJuday = data.icd10.juday ? new Date(data.icd10.juday) : null;
+      
+      let existingJuday = new Date(juday.result);
+
+      // console.log("new", newJuday);
+      // console.log("old", existingJuday);
+      if(newJuday && (newJuday > existingJuday)) {
+        loginStorageService.clearList('icd10_list').then(() => {
+          fetchIcd10();
         })
-      } else {
-        fetchCptUpdate();
-        loginStorageService.updateEntry('cpt', 'date_updated', data.cpt.date_updated).then((r) => {
-          console.log(r);
-        }).catch(err => console.log(err));
+      }else {
+        loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
+          if(du.result === data.icd10.date_updated) {
+            loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
+              console.log(res);
+              if (res === 0) {
+                fetchIcd10();
+              } else {
+                icd10FetchDone = true;
+                loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
+                  if (res > 0) {
+                    redirect();
+                  }
+                }) 
+              }
+            })
+          } else {
+            fetchIcd10Update();
+            loginStorageService.updateEntry('icd10', 'date_updated', data.icd10.date_updated).then((r) => {
+            }).catch(err => console.log(err));
+          }
+        }).catch(() => {
+          loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
+            console.log(res);
+            fetchIcd10(); 
+          }).catch((err) => console.log(err));
+        });
       }
     }).catch(() => {
-      loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
-        fetchCpt(); 
-      }).catch((err) => console.log(err));
-    });
+      // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
+      loginStorageService.clearList('icd10_list').then(() => {
+        fetchIcd10();
+      })
+    })
+    
+    
+    loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'juday').then((juday: any) => {
+      
+      let newJuday = data.cpt.juday ? new Date(data.cpt.juday) : null;
+      let existingJuday = new Date(juday.result);
+
+      // console.log("new", newJuday);
+      // console.log("old", existingJuday);
+
+      if (newJuday && (newJuday > existingJuday)) {
+        // console.log("my juday")
+        loginStorageService.clearList('cpt_list').then(() => {
+          fetchCpt();
+        })
+      } else {
+        loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated').then((du) => {
+          if(du.result === data.cpt.date_updated) {
+            
+            loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
+              if (res === 0) {
+                fetchCpt();
+              } else {
+                cptFetchDone = true;
+                loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
+                  if (res > 0) {
+                    redirect();
+                  }
+                }) 
+              }
+            })
+          } else {
+            fetchCptUpdate();
+            loginStorageService.updateEntry('cpt', 'date_updated', data.cpt.date_updated).then((r) => {
+              console.log(r);
+            }).catch(err => console.log(err));
+          }
+        }).catch(() => {
+          loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
+            fetchCpt(); 
+          }).catch((err) => console.log(err));
+        });
+      }
+
+    }).catch(() => {
+      // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
+      
+      loginStorageService.clearList('cpt_list').then(() => {
+        fetchCpt();
+      })
+    })
+    
   }
 
   const usernameRef = useRef(null);
@@ -565,6 +607,7 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
 
 
