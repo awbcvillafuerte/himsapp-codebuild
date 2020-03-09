@@ -17,7 +17,6 @@ const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
-const claimsUrl = 'claims';
 
 let mainModule = '';
 let cptFetchDone = false;
@@ -71,7 +70,7 @@ const LoginPage = () => {
       window.location.replace(membershipUrl);
     } else if (mainModule === 'Claims') {
       localStorage.setItem('sidebar','dashboard');
-      window.location.replace(claimsUrl);
+      window.location.replace(claimsPageURL);
     } else {
       window.location.replace(systemAdminUrl);
     }
