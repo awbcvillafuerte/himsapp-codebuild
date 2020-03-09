@@ -25,7 +25,7 @@ let icd10ToSave: any = [];
 let cptToSave: any = [];
 
 //Claims URL
-// const claimsPageURL = "claims/index.html";
+const claimsPageURL = "claims/index.html";
 
 const loginStorageService = new LoginStorageService();
 
