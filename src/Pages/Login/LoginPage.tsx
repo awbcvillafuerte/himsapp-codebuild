@@ -26,15 +26,15 @@ let icd10ToSave: any = [];
 let cptToSave: any = [];
 
 //Claims URL
-const claimsPageURL = "claims/index.html";
+// const claimsPageURL = "claims/index.html";
 
 const loginStorageService = new LoginStorageService();
 
-const encodeFormData = (data: any) => {
-  return Object.keys(data)
-    .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-    .join('&');
-};
+// const encodeFormData = (data: any) => {
+//   return Object.keys(data)
+//     .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+//     .join('&');
+// };
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<LoginDataType>({
@@ -387,150 +387,150 @@ const LoginPage = () => {
     await login();
   };
 
-  const callLoginPost = async () => {
-    const backendLoginUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'oidc/token';
+  // const callLoginPost = async () => {
+  //   const backendLoginUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'oidc/token';
 
-    await fetch(backendLoginUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-        Authorization: 'Basic dmVyaWRhdGE6dmVyaWRhdGFfc2VjcmV0',
-      },
-      body: encodeFormData(loginData),
-    })
-      .then(response => response.json())
-      .then(async data => {
-        console.log('data ',data);
-        if (data['access_token']){
-          localStorage.setItem('api_token',data['access_token']);
-        }
-        if (data['pmclient']&&data['pmclient']['access_token']){
-          localStorage.setItem('pm_token',data['pmclient']['access_token']);
-        }
-        if (data.error_description) {
-          if(data.error_description !== undefined && data.error_description !== null
-            && data.error_description !== ""
-            && data.error_description.toLowerCase().includes("user is a claims account")){
-            await claimsLoginPost();
-          } else if(data.error_description !== undefined && data.error_description !== null
-            && data.error_description !== ""
-            && data.error_description.toLowerCase().includes("user not found.")){
-              alert(`Invalid Username or Password`);
-              window.location.reload();
-          }else{
-            alert(`${data.error_description}`);
-            window.location.reload();
-            return;
-          }
-        } else {
-          await callUserMeGet(data);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        alert(error);
-        window.location.reload();
-      });
-  };
+  //   await fetch(backendLoginUrl, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //       Accept: 'application/json',
+  //       Authorization: 'Basic dmVyaWRhdGE6dmVyaWRhdGFfc2VjcmV0',
+  //     },
+  //     body: encodeFormData(loginData),
+  //   })
+  //     .then(response => response.json())
+  //     .then(async data => {
+  //       console.log('data ',data);
+  //       if (data['access_token']){
+  //         localStorage.setItem('api_token',data['access_token']);
+  //       }
+  //       if (data['pmclient']&&data['pmclient']['access_token']){
+  //         localStorage.setItem('pm_token',data['pmclient']['access_token']);
+  //       }
+  //       if (data.error_description) {
+  //         if(data.error_description !== undefined && data.error_description !== null
+  //           && data.error_description !== ""
+  //           && data.error_description.toLowerCase().includes("user is a claims account")){
+  //           await claimsLoginPost();
+  //         } else if(data.error_description !== undefined && data.error_description !== null
+  //           && data.error_description !== ""
+  //           && data.error_description.toLowerCase().includes("user not found.")){
+  //             alert(`Invalid Username or Password`);
+  //             window.location.reload();
+  //         }else{
+  //           alert(`${data.error_description}`);
+  //           window.location.reload();
+  //           return;
+  //         }
+  //       } else {
+  //         await callUserMeGet(data);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //       alert(error);
+  //       window.location.reload();
+  //     });
+  // };
 
-  const callUserMeGet = (requestData: any) => {
-    const backendUserUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'users/me';
+  // const callUserMeGet = (requestData: any) => {
+  //   const backendUserUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'users/me';
       
-    fetch(backendUserUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: 'Bearer '+ requestData['access_token'],
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        if (data.error_description) {
-          alert(`Error: ${data.error_description}`);
-          window.location.reload();
-          return;
-        } else {
-          localStorage.setItem('user_id',data._id);
-          localStorage.setItem('employee_id',data.employee_id);
-          localStorage.setItem('first_name',data.first_name);
-          localStorage.setItem('last_name',data.last_name);
-          if (data.main_module === 'Underwriting') {
-            localStorage.setItem('sidebar','dashboard');
-            window.location.replace(underwritingUrl);
-          } else if (data.main_module === 'Customer Care') {
-            window.location.replace(customerCareUrl);
-          } else if (data.main_module === 'Membership') {
-            localStorage.setItem('sidebar','dashboard');
-            window.location.replace(membershipUrl);
-          } else {
-            window.location.replace(systemAdminUrl);
-          }
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        alert(error);
-        window.location.reload();
-      });
-  };
-  const claimsLoginPost = async () => {
+  //   fetch(backendUserUrl, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //       Authorization: 'Bearer '+ requestData['access_token'],
+  //     },
+  //   })
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       console.log(data)
+  //       if (data.error_description) {
+  //         alert(`Error: ${data.error_description}`);
+  //         window.location.reload();
+  //         return;
+  //       } else {
+  //         localStorage.setItem('user_id',data._id);
+  //         localStorage.setItem('employee_id',data.employee_id);
+  //         localStorage.setItem('first_name',data.first_name);
+  //         localStorage.setItem('last_name',data.last_name);
+  //         if (data.main_module === 'Underwriting') {
+  //           localStorage.setItem('sidebar','dashboard');
+  //           window.location.replace(underwritingUrl);
+  //         } else if (data.main_module === 'Customer Care') {
+  //           window.location.replace(customerCareUrl);
+  //         } else if (data.main_module === 'Membership') {
+  //           localStorage.setItem('sidebar','dashboard');
+  //           window.location.replace(membershipUrl);
+  //         } else {
+  //           window.location.replace(systemAdminUrl);
+  //         }
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //       alert(error);
+  //       window.location.reload();
+  //     });
+  // };
+  // const claimsLoginPost = async () => {
 
-    await fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/auth/login", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: encodeFormData(loginData),
-    })
-      .then(response => response.json())
-      .then(async data => {
-        if(data !== undefined && data["status"] === 200 && data.data !== undefined
-          && data.data.token && data.data.token !== undefined &&  data.data.token !== null){
-          await claimsUserMe(data);
-        }else{
-          if(data.message){
-            alert(`Error: ${data.message}`);
-            window.location.reload();
-          }
-          return;
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        alert(error);
-        window.location.reload();
-      });
-  };
+  //   await fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/auth/login", {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //     },
+  //     body: encodeFormData(loginData),
+  //   })
+  //     .then(response => response.json())
+  //     .then(async data => {
+  //       if(data !== undefined && data["status"] === 200 && data.data !== undefined
+  //         && data.data.token && data.data.token !== undefined &&  data.data.token !== null){
+  //         await claimsUserMe(data);
+  //       }else{
+  //         if(data.message){
+  //           alert(`Error: ${data.message}`);
+  //           window.location.reload();
+  //         }
+  //         return;
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //       alert(error);
+  //       window.location.reload();
+  //     });
+  // };
 
-  const claimsUserMe = (requestData: any) => {
+  // const claimsUserMe = (requestData: any) => {
 
-    fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/me", {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: 'Bearer '+ requestData.data.token,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        if (data === undefined || data["status"] !== 200) {
-          alert(`Error: ${data.message}`);
-          window.location.reload();
-          return;
-        } else {
-          localStorage.setItem('token',requestData.data.token);
-          window.location.replace(claimsPageURL);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        alert(error);
-        window.location.reload();
-      });
-  };
+  //   fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/me", {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //       Authorization: 'Bearer '+ requestData.data.token,
+  //     },
+  //   })
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       console.log(data)
+  //       if (data === undefined || data["status"] !== 200) {
+  //         alert(`Error: ${data.message}`);
+  //         window.location.reload();
+  //         return;
+  //       } else {
+  //         localStorage.setItem('token',requestData.data.token);
+  //         window.location.replace(claimsPageURL);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //       alert(error);
+  //       window.location.reload();
+  //     });
+  // };
 
   const onForgotPassword = () => {
     alert('onForgotPassword() clicked');
