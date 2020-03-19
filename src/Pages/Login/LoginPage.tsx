@@ -182,7 +182,7 @@ const LoginPage = () => {
       .then((res) => res.json())
       .then((data) => {
         loginStorageService.saveEntry(data, 'cpt_list').then((res) => {
-          loginStorageService.saveEntry(cptToSave, 'cpt_list').then((res) => {
+          loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
             cptFetchDone = true;
             if (icd10FetchDone) {
               redirect();
