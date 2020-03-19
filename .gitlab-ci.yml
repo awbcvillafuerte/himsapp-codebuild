@@ -15,6 +15,7 @@ fetch_dev:
     - echo "This job fetches hims_app dev branch. "
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Ensure all node modules are updated and available"
+    - cp config/dev.env .env
     - yarn install
 
 build_dev:
