@@ -17,6 +17,11 @@ fetch_dev:
     - echo "Ensure all node modules are updated and available"
     - cp config/dev.env .env
     - yarn install
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
 
 build_dev:
   stage: build
