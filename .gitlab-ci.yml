@@ -45,7 +45,7 @@ deploy_dev:
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Deploy the hims-dev"
     - printenv CURRENT_VERSION
-    - echo "yarn run publish-only"
+    - yarn run publish-only
 
 
 
