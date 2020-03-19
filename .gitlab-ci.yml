@@ -19,7 +19,7 @@ fetch_uat:
     - yarn install
   only:
     refs:
-      - dev
+      - uat
     changes:
       - package.json
 
@@ -37,7 +37,7 @@ build_uat:
     - yarn build
   only:
     refs:
-      - dev
+      - uat
     changes:
       - package.json
 
@@ -56,7 +56,7 @@ deploy_uat:
     - echo "yarn run publish-only"
   only:
     refs:
-      - dev
+      - uat
     changes:
       - package.json
 
