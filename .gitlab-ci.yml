@@ -56,5 +56,10 @@ deploy_dev:
     - echo "Deploy the hims-dev"
     - printenv CURRENT_VERSION
     - yarn run publish-only
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
 
 
