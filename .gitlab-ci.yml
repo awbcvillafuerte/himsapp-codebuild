@@ -47,5 +47,3 @@ deploy_dev:
     - printenv CURRENT_VERSION
     - yarn run publish-only
 
-
-
