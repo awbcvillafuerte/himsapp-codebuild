@@ -15,6 +15,7 @@ fetch_dev:
     - echo "This job fetches hims_app dev branch. "
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Ensure all node modules are updated and available"
+    - cp config/dev.env .env
     - yarn install
 
 build_dev:
@@ -28,7 +29,7 @@ build_dev:
     - echo "This job builds hims-dev after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev
     - printenv CURRENT_VERSION
-    - yarn run build:dev
+    - yarn build
 
 
 
@@ -44,6 +45,6 @@ deploy_dev:
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Deploy the hims-dev"
     - printenv CURRENT_VERSION
-    - echo "yarn run publish-only"
+    - yarn run publish-only
 
 
