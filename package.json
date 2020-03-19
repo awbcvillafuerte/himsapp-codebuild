@@ -23,7 +23,8 @@
       {
         "provider": "github",
         "owner": "veridata-hims",
-        "repo": "hims-dev"
+        "repo": "hims-dev",
+        "releaseType": "prerelease"
       }
     ]
   },
