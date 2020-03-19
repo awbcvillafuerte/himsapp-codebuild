@@ -17,6 +17,11 @@ fetch_uat:
     - echo "Ensure all node modules are updated and available"
     - cp config/uat.env .env
     - yarn install
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
 
 build_uat:
   stage: build
@@ -49,6 +54,11 @@ deploy_uat:
     - echo "Deploy the hims-uat"
     - printenv CURRENT_VERSION
     - echo "yarn run publish-only"
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
 
 
 
