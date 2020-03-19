@@ -1,0 +1,49 @@
+stages:
+  - fetch
+  - build
+  - deploy
+
+
+fetch_dev:
+  stage: fetch
+  tags:
+    - dev
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_CLONE_PATH: /home/bitnami/builds/hims-app-dev
+  script:
+    - echo "This job fetches hims_app dev branch. "
+    - cd /home/bitnami/builds/hims-app-dev
+    - echo "Ensure all node modules are updated and available"
+    - yarn install
+
+build_dev:
+  stage: build
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - dev
+  needs: ["fetch_dev"]
+  script:
+    - echo "This job builds hims-dev after fetch_dev"
+    - cd /home/bitnami/builds/hims-app-dev
+    - printenv CURRENT_VERSION
+    - yarn run build:dev
+
+
+
+deploy_dev:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - dev
+  needs: ["build_dev"]
+  script:
+    - echo "Needs hims-dev to have passed build stage"
+    - cd /home/bitnami/builds/hims-app-dev
+    - echo "Deploy the hims-dev"
+    - printenv CURRENT_VERSION
+    - echo "yarn run publish-only"
+
+
