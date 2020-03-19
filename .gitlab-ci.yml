@@ -1,0 +1,54 @@
+stages:
+  - fetch
+  - build
+  - deploy
+
+
+fetch_uat:
+  stage: fetch
+  tags:
+    - uat
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_CLONE_PATH: /home/bitnami/builds/hims-app-uat
+  script:
+    - echo "This job fetches hims_app uat branch. "
+    - cd /home/bitnami/builds/hims-app-uat
+    - echo "Ensure all node modules are updated and available"
+    - cp config/uat.env .env
+    - yarn install
+
+build_uat:
+  stage: build
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - uat
+  needs: ["fetch_uat"]
+  script:
+    - echo "This job builds hims-uat after fetch_uat"
+    - cd /home/bitnami/builds/hims-app-uat
+    - printenv CURRENT_VERSION
+    - yarn build
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
+
+deploy_uat:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - uat
+  needs: ["build_uat"]
+  script:
+    - echo "Needs hims-uat to have passed build stage"
+    - cd /home/bitnami/builds/hims-app-uat
+    - echo "Deploy the hims-uat"
+    - printenv CURRENT_VERSION
+    - echo "yarn run publish-only"
+
+
+
