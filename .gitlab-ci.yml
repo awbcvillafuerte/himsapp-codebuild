@@ -35,6 +35,11 @@ build_dev:
     - cd /home/bitnami/builds/hims-app-dev
     - printenv CURRENT_VERSION
     - yarn build
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
 
 
 
