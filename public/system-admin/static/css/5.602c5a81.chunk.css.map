@@ -1,0 +1,1 @@
+{"version":3,"sources":["ReactTable.scss"],"names":[],"mappings":"AAAA,sBAKoB,sCAAwC","file":"5.602c5a81.chunk.css","sourcesContent":["table {\n    tbody {\n        tr {\n            td {\n                & > div {\n                    background-color: transparent !important;\n                }\n            }\n        }\n    }   \n}"]}
