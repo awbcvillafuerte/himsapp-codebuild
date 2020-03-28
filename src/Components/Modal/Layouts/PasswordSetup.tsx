@@ -182,7 +182,7 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                     <div className={classes.instruction}>
                         <p>Please set a new password for your account:</p>
                         <span>
-                            — Mismatched 
+                            {/* — Mismatched  */}
                             — Must be 8 characters <br />
                             — Must have number and letter <br />
                             — Must have 1 upper case <br />

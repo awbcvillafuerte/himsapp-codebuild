@@ -314,6 +314,11 @@ const LoginPage = () => {
   };
 
   const login = async () => {
+     //set localstorage variable for modules
+      localStorage.setItem('CLIENT_URL',process.env.REACT_APP_HIMS_API_CLIENT_URL!);
+      localStorage.setItem('PARTNER_URL',process.env.REACT_APP_HIMS_API_PARTNER_URL!);
+      localStorage.setItem('PMAKER_BASE_URL',process.env.REACT_APP_PMAKER_BASE_URL!);
+
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
     let options = {
       method: 'POST',
