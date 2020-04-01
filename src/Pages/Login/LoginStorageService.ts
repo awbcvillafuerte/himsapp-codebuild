@@ -74,6 +74,11 @@ export default class LoginStorageService extends indexedDBHelper {
                     name: 'label',
                     keyPath: 'label',
                     unique: false
+                },
+                {
+                    name: 'category',
+                    keyPath: 'category',
+                    unique: false
                 }
             ]
             this.createStoreOnDb(this.DB_OBJECT, store.name, store.keyPath, cptIndex);

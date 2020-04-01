@@ -23,7 +23,7 @@ const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
-const claimsUrl = 'claims/index.html';
+const claimsUrl = 'claims';
 
 let mainModule = '';
 let cptFetchDone = false;
@@ -31,6 +31,8 @@ let icd10FetchDone = false;
 let icd10ToSave: any = [];
 let cptToSave: any = [];
 let tmpData: any = {};
+//Claims URL
+const claimsPageURL = "claims/index.html";
 
 const loginStorageService = new LoginStorageService();
 
@@ -107,7 +109,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      })
   }
 
   // Fetch Icd10 updates
@@ -131,7 +141,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      });
 
        
   }
@@ -167,7 +185,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      })
   }
   
   // Fetch Cpt updates
@@ -191,7 +217,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      });
   }
 
   // Process saving to indexedDB
