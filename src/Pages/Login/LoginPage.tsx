@@ -107,7 +107,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      })
   }
 
   // Fetch Icd10 updates
@@ -131,7 +139,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      });
 
        
   }
@@ -167,7 +183,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      })
   }
   
   // Fetch Cpt updates
@@ -191,7 +215,15 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      });
   }
 
   // Process saving to indexedDB

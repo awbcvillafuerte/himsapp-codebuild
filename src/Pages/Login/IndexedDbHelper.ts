@@ -3,7 +3,7 @@ export interface IndexedDBHelperResponse {
     result: any
 }
 
-const db_version = 4;
+const db_version = 5;
 
 export default class IndexedDbHelper {
 
