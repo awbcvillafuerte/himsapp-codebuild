@@ -106,18 +106,19 @@ const LoginPage = () => {
 
   const fetchIcd10 = async (data: any) => {
     const count: any = data.icd10.count;
+    const limit = 5000;
 
     if (count) {
 
-      let callCount = Math.ceil(count / 20000);
+      let callCount = Math.ceil(count / limit);
       let arrayPromise: any[] = [];
 
       for (var i = 0; i < callCount; i++) {
         let fetchConf = {
           method: 'GET',
           url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes?filter=${JSON.stringify({
-            limit: 20000,
-            skip: (i * 20000)
+            limit: limit,
+            skip: (i * limit)
           })}`
         }
 
@@ -196,18 +197,19 @@ const LoginPage = () => {
 
   const fetchCpt = async (data: any) => {
     const count: any = data.cpt.count;
+    const limit = 1000;
 
     if (count) {
 
-      let callCount = Math.ceil(count / 1000);
+      let callCount = Math.ceil(count / limit);
       let arrayPromise: any[] = [];
 
       for (var i = 0; i < callCount; i++) {
         let fetchConf = {
           method: 'GET',
           url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts?filter=${JSON.stringify({
-            limit: 1000,
-            skip: (i * 1000)
+            limit: limit,
+            skip: (i * limit)
           })}`
         }
 
@@ -591,6 +593,7 @@ const LoginPage = () => {
 
   const onContact = async () => {
     alert('onContact() clicked');
+    loginStorageService.updateEntry('cpt', 'juday', '2020-03-11T00:00:00.000Z')
   };
 
   const handleModalClose = () => {
