@@ -37,6 +37,9 @@ let icd10ToSave: any = [];
 let cptToSave: any = [];
 let tmpData: any = {};
 
+let cptBatchSize: any = 1000;
+let icd10BatchSize: any = 5000;
+
 const loginStorageService = new LoginStorageService();
 
 const useStyles = makeStyles(() => ({
@@ -106,7 +109,7 @@ const LoginPage = () => {
 
   const fetchIcd10 = async (data: any) => {
     const count: any = data.icd10.count;
-    const limit = 5000;
+    const limit = icd10BatchSize;
 
     if (count) {
 
@@ -197,7 +200,7 @@ const LoginPage = () => {
 
   const fetchCpt = async (data: any) => {
     const count: any = data.cpt.count;
-    const limit = 1000;
+    const limit = cptBatchSize;
 
     if (count) {
 
@@ -445,6 +448,8 @@ const LoginPage = () => {
           }
           
           mainModule = data.login.main_module;
+          cptBatchSize = data.cpt.batch_size;
+          icd10BatchSize = data.icd10.batch_size;
 
           data.login.pm_token = data.login['access_token'];
 
