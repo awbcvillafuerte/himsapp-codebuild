@@ -29,6 +29,8 @@ const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 const claimsUrl = 'claims/index.html';
+const BillingUrl = 'billing/index.html';
+const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
 
 let mainModule = '';
@@ -78,39 +80,101 @@ const LoginPage = () => {
     password: '',
   });
 
+  const [urls, setUrls] = useState<any[]>([]);
+
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
+
+    getModules();
+
   }, [])
 
+  const getModules = async () => {
+    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {method: 'GET'})
+      .catch((err: any) => {
+        console.log(err)
+      })
+
+    if (urls) {
+      let jsondata = await urls.json();
+
+      setUrls(jsondata)
+    }
+  }
+
   const redirect = async () => {
-    console.log(mainModule);
-    if (mainModule === 'Underwriting') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(underwritingUrl);
-    } else if (mainModule === 'Customer Care') {
-      let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
-      const logingroup = query && query.result ? query.result : null;
-      if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
-        window.location.replace(cssCustomerCareUrl);
+    if (urls && urls.length > 0) {
+      let found = urls.find(el => el.name === mainModule)
+      if (found) {
+        urls.map(async (url: any) => {
+          if (url.name === mainModule) {
+            if (mainModule === 'Customer Care') {
+              let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
+              const logingroup = query && query.result ? query.result : null;
+              if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+                window.location.replace(cssCustomerCareUrl)
+              } else {
+                window.location.replace(url.dashboard_url)
+              }
+            } else {
+              localStorage.setItem('sidebar','dashboard')
+              window.location.replace(url.dashboard_url)
+            }
+          } 
+        })
+      } else {
+        setFetchingState(false);
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: 'No configured redirect url',
+          buttonText: 'Okay'
+        })
       }
-      else{
-        window.location.replace(customerCareUrl);
-      }
-    } else if (mainModule === 'Membership') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(membershipUrl);
-    } else if (mainModule === 'Claims') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(claimsUrl);
-    } else if (mainModule === 'User Management') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(systemAdminUrl);
-    } else if (mainModule === 'Franchising') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(franchisingUrl);
     } else {
-      alert("No configured redirect url");
+      // Fallback
+      if (mainModule === 'Underwriting') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(underwritingUrl);
+      } else if (mainModule === 'Customer Care') {
+        let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
+        const logingroup = query && query.result ? query.result : null;
+        if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+          window.location.replace(cssCustomerCareUrl);
+        }
+        else{
+          window.location.replace(customerCareUrl);
+        }
+      } else if (mainModule === 'Membership') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(membershipUrl);
+      } else if (mainModule === 'Claims') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(claimsUrl);
+      } else if (mainModule === 'User Management') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(systemAdminUrl);
+      } else if (mainModule === 'Franchising') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(franchisingUrl);
+      } else if (mainModule === 'Billing and Collections') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(BillingUrl);
+      } else if (mainModule === 'Partner Network') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(PnUrl);
+      } else {
+        setFetchingState(false);
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: 'No configured redirect url',
+          buttonText: 'Okay'
+        })
+      }
     }
   }
 
@@ -349,6 +413,15 @@ const LoginPage = () => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       loginStorageService.clearList('icd10_list').then(() => {
         fetchIcd10(data);
+      }).catch(() => {
+        loginStorageService.deleteDb('himsDb');
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: <span>Something went wrong in indexedDB. Please try again</span>,
+          buttonText: 'Okay'
+        })
       })
     })
     
@@ -401,6 +474,15 @@ const LoginPage = () => {
       
       loginStorageService.clearList('cpt_list').then(() => {
         fetchCpt(data);
+      }).catch(() => {
+        loginStorageService.deleteDb('himsDb');
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: <span>Something went wrong in indexedDB. Please try again</span>,
+          buttonText: 'Okay'
+        })
       })
     })
     
