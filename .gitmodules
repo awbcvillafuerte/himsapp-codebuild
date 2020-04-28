@@ -1,0 +1,3 @@
+[submodule "public/franchising"]
+	path = public/franchising
+	url = git@gitlab.com:hims-build-artifacts/franchising-module.git
