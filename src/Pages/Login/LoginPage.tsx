@@ -29,6 +29,7 @@ const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
 const claimsUrl = 'claims/index.html';
+const franchisingUrl = 'franchising/index.html#/franchising/';
 
 let mainModule = '';
 let cptFetchDone = false;
@@ -102,8 +103,14 @@ const LoginPage = () => {
     } else if (mainModule === 'Claims') {
       localStorage.setItem('sidebar','dashboard');
       window.location.replace(claimsUrl);
-    } else {
+    } else if (mainModule === 'User Management') {
+      localStorage.setItem('sidebar','dashboard');
       window.location.replace(systemAdminUrl);
+    } else if (mainModule === 'Franchising') {
+      localStorage.setItem('sidebar','dashboard');
+      window.location.replace(franchisingUrl);
+    } else {
+      alert("No configured redirect url");
     }
   }
 
@@ -598,7 +605,6 @@ const LoginPage = () => {
 
   const onContact = async () => {
     alert('onContact() clicked');
-    loginStorageService.updateEntry('cpt', 'juday', '2020-03-11T00:00:00.000Z')
   };
 
   const handleModalClose = () => {
@@ -783,7 +789,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
 
 
 
