@@ -110,12 +110,16 @@ const LoginPage = () => {
         urls.map(async (url: any) => {
           if (url.name === mainModule) {
             if (mainModule === 'Customer Care') {
-              let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
+              console.log("pasok sa banga")
+              let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
+                .catch(err => console.log(err))
               const logingroup = query && query.result ? query.result : null;
               if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
                 window.location.replace(cssCustomerCareUrl)
+                
               } else {
                 window.location.replace(url.dashboard_url)
+               
               }
             } else {
               localStorage.setItem('sidebar','dashboard')
@@ -139,7 +143,8 @@ const LoginPage = () => {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule === 'Customer Care') {
-        let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
+        let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
+          .catch(err => console.log(err))
         const logingroup = query && query.result ? query.result : null;
         if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
           window.location.replace(cssCustomerCareUrl);
@@ -871,6 +876,7 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
 
 
