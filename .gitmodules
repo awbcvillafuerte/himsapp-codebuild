@@ -1,0 +1,12 @@
+[submodule "public/customer-care"]
+	path = public/customer-care
+	url = git@gitlab.com:hims-build-artifacts/customer-care.git
+[submodule "public/membership"]
+	path = public/membership
+	url = git@gitlab.com:hims-build-artifacts/membership.git
+[submodule "public/underwriting"]
+	path = public/underwriting
+	url = git@gitlab.com:hims-build-artifacts/underwriting.git
+[submodule "public/system-admin"]
+	path = public/system-admin
+	url = git@gitlab.com:hims-build-artifacts/system-admin.git
