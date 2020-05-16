@@ -55,7 +55,7 @@ deploy_uat:
     - cd /home/bitnami/builds/hims-app-uat
     - echo "Deploy the hims-uat"
     - printenv CURRENT_VERSION
-    - echo "yarn run publish"
+    - yarn run publish
   only:
     refs:
       - uat
