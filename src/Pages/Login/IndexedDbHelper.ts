@@ -3,7 +3,7 @@ export interface IndexedDBHelperResponse {
     result: any
 }
 
-const db_version = 4;
+const db_version = 5;
 
 export default class IndexedDbHelper {
 
@@ -303,11 +303,13 @@ export default class IndexedDbHelper {
 
             let request = objectStore.clear();
             
-            request.onerror = () => {reject("error clearing store")}
+            request.onerror = () => {reject(request.error)}
             request.onsuccess = ()=> {resolve("store cleared")}
         })
     }
 }
+
+
 
 
 

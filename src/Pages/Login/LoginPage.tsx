@@ -1,10 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import InputBase from '@material-ui/core/InputBase';
+import {
+  OutlinedInput,
+  Link,
+  Grid,
+  Button
+} from '@material-ui/core';
 import './style.scss';
 import LoginStorageService from './LoginStorageService';
+import {
+  PasswordSetupModal,
+  MessageDialog,
+  LoadingIndicator,
+  ForgotPassword
+ } from '../../Components'
+ import moment from 'moment';
+ import { makeStyles } from '@material-ui/core/styles';
+ import ErrorIcon from '@material-ui/icons/Error';
 
 interface LoginDataType {
   username: string;
@@ -17,24 +28,51 @@ const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
-const claimsUrl = 'claims';
+const claimsUrl = 'claims/index.html';
+const BillingUrl = 'billing/index.html';
+const PnUrl = 'partner_network/index.html';
+const franchisingUrl = 'franchising/index.html#/franchising/';
 
 let mainModule = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
 let icd10ToSave: any = [];
 let cptToSave: any = [];
+let tmpData: any = {};
 
-//Claims URL
-// const claimsPageURL = "claims/index.html";
+let cptBatchSize: any = 1000;
+let icd10BatchSize: any = 5000;
 
 const loginStorageService = new LoginStorageService();
 
-// const encodeFormData = (data: any) => {
-//   return Object.keys(data)
-//     .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-//     .join('&');
-// };
+const useStyles = makeStyles(() => ({
+  fields: {
+      '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+          borderColor: '#3AB77D'
+      }
+  },
+  inputField: {
+    height: '50px',
+    marginTop: '10px',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '8px'
+  },
+  iconError: {
+    color: '#E53935',
+    fontSize: '18px'
+  },
+  errorMessageContainer: {
+    marginTop: '10px',
+    display: 'flex'
+  },
+  errText: {
+    color: '#E53935',
+    fontSize: '12px'
+  },
+  errorString: {
+    marginLeft: '8px'
+  }
+}))
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<LoginDataType>({
@@ -42,78 +80,169 @@ const LoginPage = () => {
     password: '',
   });
 
-  let cptFetched = 0;
-  let cptList: any = [];
+  const [urls, setUrls] = useState<any[]>([]);
 
-  let icdFetched = 0;
-  let icd10List: any = [];
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
+
+    getModules();
+
   }, [])
 
-  const redirect = async () => {
-    console.log(mainModule);
-    if (mainModule === 'Underwriting') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(underwritingUrl);
-    } else if (mainModule === 'Customer Care') {
-      let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group');
-      const logingroup = query && query.result ? query.result : null;
-      if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
-        window.location.replace(cssCustomerCareUrl);
-      }
-      else{
-        window.location.replace(customerCareUrl);
-      }
-    } else if (mainModule === 'Membership') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(membershipUrl);
-    } else if (mainModule === 'Claims') {
-      localStorage.setItem('sidebar','dashboard');
-      window.location.replace(claimsUrl);
-    } else {
-      window.location.replace(systemAdminUrl);
+  const getModules = async () => {
+    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {method: 'GET'})
+      .catch((err: any) => {
+        console.log(err)
+      })
+
+    if (urls) {
+      let jsondata = await urls.json();
+
+      setUrls(jsondata)
     }
   }
 
-  // Fetch Icd10 systematically
-  const fetchIcd10 = async () => {
-    let filter = {
-      limit: 20000,
-      skip: icdFetched
-    }
-    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes?filter=${JSON.stringify(filter)}`;
-    let options = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    }
-
-    await fetch(url, options)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.length > 0) {
-          icdFetched = icdFetched + data.length;
-          icd10List.push(...data);
-          fetchIcd10();
-        } else {
-          loginStorageService.saveEntry(icd10List, 'icd10_list').then((res) => {
-            icd10FetchDone = true;
-            if (cptFetchDone) {
-              loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
-                redirect();
-              }).catch((err) => console.log(err));
+  const redirect = async () => {
+    if (urls && urls.length > 0) {
+      let found = urls.find(el => el.name === mainModule)
+      if (found) {
+        urls.map(async (url: any) => {
+          if (url.name === mainModule) {
+            if (mainModule === 'Customer Care') {
+              console.log("pasok sa banga")
+              let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
+                .catch(err => console.log(err))
+              const logingroup = query && query.result ? query.result : null;
+              if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+                window.location.replace(cssCustomerCareUrl)
+                
+              } else {
+                window.location.replace(url.dashboard_url)
+               
+              }
+            } else {
+              localStorage.setItem('sidebar','dashboard')
+              window.location.replace(url.dashboard_url)
             }
-          }).catch((err) => console.log(err));
+          } 
+        })
+      } else {
+        setFetchingState(false);
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: 'No configured redirect url',
+          buttonText: 'Okay'
+        })
+      }
+    } else {
+      // Fallback
+      if (mainModule === 'Underwriting') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(underwritingUrl);
+      } else if (mainModule === 'Customer Care') {
+        let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
+          .catch(err => console.log(err))
+        const logingroup = query && query.result ? query.result : null;
+        if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+          window.location.replace(cssCustomerCareUrl);
         }
-      })
-      .catch((err) => console.log(err))
+        else{
+          window.location.replace(customerCareUrl);
+        }
+      } else if (mainModule === 'Membership') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(membershipUrl);
+      } else if (mainModule === 'Claims') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(claimsUrl);
+      } else if (mainModule === 'User Management') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(systemAdminUrl);
+      } else if (mainModule === 'Franchising') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(franchisingUrl);
+      } else if (mainModule === 'Billing and Collections') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(BillingUrl);
+      } else if (mainModule === 'Partner Network') {
+        localStorage.setItem('sidebar','dashboard');
+        window.location.replace(PnUrl);
+      } else {
+        setFetchingState(false);
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: 'No configured redirect url',
+          buttonText: 'Okay'
+        })
+      }
+    }
+  }
+
+  const fetchIcd10 = async (data: any) => {
+    const count: any = data.icd10.count;
+    const limit = icd10BatchSize;
+
+    if (count) {
+
+      let callCount = Math.ceil(count / limit);
+      let arrayPromise: any[] = [];
+
+      for (var i = 0; i < callCount; i++) {
+        let fetchConf = {
+          method: 'GET',
+          url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes?filter=${JSON.stringify({
+            limit: limit,
+            skip: (i * limit)
+          })}`
+        }
+
+        arrayPromise.push(fetchConf);
+      }
+
+      let icd10_collection: any[] = [];
+
+      let icd10List: any = await Promise.all(arrayPromise.map((promise: any) =>
+        fetch(promise.url, {method: promise.method})
+        )).catch((err: any) => {
+          setModalProps({
+            ...modalProps,
+            open: true,
+            title: 'Error',
+            message: err.message,
+            buttonText: 'Okay'
+          })
+        })
+
+      if (icd10List) {
+        for (var x = 0; x < icd10List.length; x++) {
+          let jsonre = await icd10List[x].json();
+          icd10_collection.push(...jsonre);
+        }
+      }
+
+      let saveEntry = await loginStorageService.saveEntry(icd10_collection, 'icd10_list')
+        .catch(err => console.log(err));
+      
+      if (saveEntry) {
+        icd10FetchDone = true;
+        let saveUpdatedIcd10Config = await loginStorageService.saveEntry(icd10ToSave, 'icd10')
+          .catch(err => console.log(err));
+        if (cptFetchDone && saveUpdatedIcd10Config) {
+          redirect();
+        }
+      }
+    }
   }
 
   // Fetch Icd10 updates
   const fetchIcd10Update = async () => {
     let query = await loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated');
-    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}/icd10-codes/latest/${query.result}`;
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes/latest/${query.result}`;
     let options = {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
@@ -131,49 +260,80 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      });
 
        
   }
 
-  // Fetch Cpt systematically
-  const fetchCpt = async () => {
-    let filter = {
-      limit: 1000,
-      skip: cptFetched
-    }
-    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts?filter=${JSON.stringify(filter)}`;
-    let options = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    }
+  const fetchCpt = async (data: any) => {
+    const count: any = data.cpt.count;
+    const limit = cptBatchSize;
 
-    await fetch(url, options)
-      .then((res) => res.json())
-      .then((data) => {
-        loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
-          console.log(res)
-        }).catch((err) => console.log(err));
-        if (data.length > 0) {
-          cptFetched = cptFetched + data.length;
-          cptList.push(...data);
-          fetchCpt();
-        } else {
-          loginStorageService.saveEntry(cptList, 'cpt_list').then(() => {
-            cptFetchDone = true;
-            if (icd10FetchDone) {
-              redirect();
-            }
-          }).catch((err) => console.log(err));
+    if (count) {
+
+      let callCount = Math.ceil(count / limit);
+      let arrayPromise: any[] = [];
+
+      for (var i = 0; i < callCount; i++) {
+        let fetchConf = {
+          method: 'GET',
+          url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts?filter=${JSON.stringify({
+            limit: limit,
+            skip: (i * limit)
+          })}`
         }
-      })
-      .catch((err) => console.log(err))
+
+        arrayPromise.push(fetchConf);
+      }
+
+      let cpt_collection: any[] = [];
+
+      let cptList: any = await Promise.all(arrayPromise.map((promise: any) =>
+        fetch(promise.url, {method: promise.method})
+        )).catch((err: any) => {
+          setModalProps({
+            ...modalProps,
+            open: true,
+            title: 'Error',
+            message: err.message,
+            buttonText: 'Okay'
+          })
+        })
+
+      if (cptList) {
+        for (var x = 0; x < cptList.length; x++) {
+          let jsonre = await cptList[x].json();
+          cpt_collection.push(...jsonre);
+        }
+      }
+
+      let saveEntry = await loginStorageService.saveEntry(cpt_collection, 'cpt_list')
+        .catch(err => console.log(err));
+      
+      if (saveEntry) {
+        cptFetchDone = true;
+        let saveUpdatedCptConfig = await loginStorageService.saveEntry(cptToSave, 'cpt')
+          .catch(err => console.log(err));
+        if (icd10FetchDone && saveUpdatedCptConfig) {
+          redirect();
+        }
+      }
+    }
   }
   
   // Fetch Cpt updates
   const fetchCptUpdate = async () => {
     let query = await loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated');
-    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}/cpts/latest/${query.result}`;
+    let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts/latest/${query.result}`;
     let options = {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
@@ -183,7 +343,7 @@ const LoginPage = () => {
       .then((res) => res.json())
       .then((data) => {
         loginStorageService.saveEntry(data, 'cpt_list').then((res) => {
-          loginStorageService.saveEntry(cptToSave, 'cpt_list').then((res) => {
+          loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
             cptFetchDone = true;
             if (icd10FetchDone) {
               redirect();
@@ -191,15 +351,20 @@ const LoginPage = () => {
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setFetchingState(false);
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      });
   }
 
   // Process saving to indexedDB
   const saveToIndexedDB = async (data: any) => {
-
-    let userDataToSave = Object.entries(data.login).map(entry => {
-      return {key: entry[0], value: entry[1]}
-    });
 
     icd10ToSave = Object.entries(data.icd10).map(entry => {
       return {key: entry[0], value: entry[1]}
@@ -209,29 +374,25 @@ const LoginPage = () => {
       return {key: entry[0], value: entry[1]}
     });
 
-    loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
-      console.log(res);
-    }).catch((err) => console.log(err));
-
     loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'juday').then((juday: any) => {
       
-      let newJuday = data.icd10.juday ? new Date(data.icd10.juday) : null;
+      let newJuday = data.icd10.juday ? data.icd10.juday : null;
       
-      let existingJuday = new Date(juday.result);
+      let existingJuday = juday.result;
 
       // console.log("new", newJuday);
       // console.log("old", existingJuday);
-      if(newJuday && (newJuday > existingJuday)) {
+      if(newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
-          fetchIcd10();
+          fetchIcd10(data);
         })
       }else {
         loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
-          if(du.result === data.icd10.date_updated) {
+          if(!moment(data.icd10.date_updated).isAfter(du.result)) {
             loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
               console.log(res);
               if (res === 0) {
-                fetchIcd10();
+                fetchIcd10(data);
               } else {
                 icd10FetchDone = true;
                 loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
@@ -249,38 +410,48 @@ const LoginPage = () => {
         }).catch(() => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
             console.log(res);
-            fetchIcd10(); 
+            fetchIcd10(data); 
           }).catch((err) => console.log(err));
         });
       }
     }).catch(() => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       loginStorageService.clearList('icd10_list').then(() => {
-        fetchIcd10();
+        fetchIcd10(data);
+      }).catch(() => {
+        loginStorageService.deleteDb('himsDb');
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: <span>Something went wrong in indexedDB. Please try again</span>,
+          buttonText: 'Okay'
+        })
       })
     })
     
     
     loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'juday').then((juday: any) => {
       
-      let newJuday = data.cpt.juday ? new Date(data.cpt.juday) : null;
-      let existingJuday = new Date(juday.result);
+      let newJuday = data.cpt.juday ? data.cpt.juday : null;
+      let existingJuday = juday.result;
 
       // console.log("new", newJuday);
       // console.log("old", existingJuday);
 
-      if (newJuday && (newJuday > existingJuday)) {
+      if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         // console.log("my juday")
         loginStorageService.clearList('cpt_list').then(() => {
-          fetchCpt();
+          fetchCpt(data);
         })
       } else {
+        
         loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated').then((du) => {
-          if(du.result === data.cpt.date_updated) {
+          if(!moment(data.cpt.date_updated).isAfter(du.result)) {
             
             loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
               if (res === 0) {
-                fetchCpt();
+                fetchCpt(data);
               } else {
                 cptFetchDone = true;
                 loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
@@ -298,7 +469,7 @@ const LoginPage = () => {
           }
         }).catch(() => {
           loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
-            fetchCpt(); 
+            fetchCpt(data); 
           }).catch((err) => console.log(err));
         });
       }
@@ -307,7 +478,16 @@ const LoginPage = () => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       
       loginStorageService.clearList('cpt_list').then(() => {
-        fetchCpt();
+        fetchCpt(data);
+      }).catch(() => {
+        loginStorageService.deleteDb('himsDb');
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: <span>Something went wrong in indexedDB. Please try again</span>,
+          buttonText: 'Okay'
+        })
       })
     })
     
@@ -322,6 +502,11 @@ const LoginPage = () => {
   };
 
   const login = async () => {
+     //set localstorage variable for modules
+      localStorage.setItem('CLIENT_URL',process.env.REACT_APP_HIMS_API_CLIENT_URL!);
+      localStorage.setItem('PARTNER_URL',process.env.REACT_APP_HIMS_API_PARTNER_URL!);
+      localStorage.setItem('PMAKER_BASE_URL',process.env.REACT_APP_PMAKER_BASE_URL!);
+
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
     let options = {
       method: 'POST',
@@ -337,6 +522,7 @@ const LoginPage = () => {
       .then((resp: any)=> resp.json())
       .then(async (data: any) => {
         if (!data.error) {
+          tmpData = data;
           localStorage.setItem('api_token',data.login['access_token']);
           localStorage.setItem('pm_token',data.login['access_token']);
           localStorage.setItem('user_id',data.login.user_id);
@@ -356,19 +542,85 @@ const LoginPage = () => {
           }
           
           mainModule = data.login.main_module;
+          cptBatchSize = data.cpt.batch_size;
+          icd10BatchSize = data.icd10.batch_size;
 
           data.login.pm_token = data.login['access_token'];
-          await saveToIndexedDB(data);
+
+          let userDataToSave = Object.entries(data.login).map(entry => {
+            return {key: entry[0], value: entry[1]}
+          });
+
+          loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
+            console.log(res);
+          }).catch((err) => console.log(err));
+          
+          if (data.needs_password_update) {
+            setpwSetupModal(true)
+          } else {
+            await saveToIndexedDB(data);
+          }
         } else {
-          setFetchingState(false);
-          alert(data.error.message)
-          window.location.reload();
+          if (data.error.message.includes('UM06')) {
+            setError(true);
+            setErrorMessage(data.error.message.replace(/Code UM06/, ''))
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'Error',
+              message: data.error.message,
+              buttonText: 'Okay',
+              onClose: () => {setModalProps({...modalProps, open: false})}
+            })
+          } else if (data.error.message.includes('UM04')) {
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'This Account Is Locked',
+              message: <span>Please contact your <strong>Department Head</strong> to unlock your account.</span>,
+              buttonText: 'Okay'
+            })
+          } else if (data.error.message.includes('UM53')) {
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'You have exceeded your login attempts',
+              message: <span>Your account is temporarily suspended. Please contact support for assistance.</span>,
+              buttonText: 'Okay'
+            })
+          } else if (data.error.message.includes('UM05')) {
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'This Account Is Deactivated',
+              message: <span>Please contact your <strong>Department Head</strong> to activate your account.</span>,
+              buttonText: 'Okay'
+            })
+          } else {
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'Error',
+              message: data.error.message,
+              buttonText: 'Okay'
+            })
+          }
         }
 
       })
       .catch((err: any) => {
-        alert(err.message)
-        window.location.reload();
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
       })
   }
 
@@ -387,226 +639,246 @@ const LoginPage = () => {
     await login();
   };
 
-  // const callLoginPost = async () => {
-  //   const backendLoginUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'oidc/token';
-
-  //   await fetch(backendLoginUrl, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //       Accept: 'application/json',
-  //       Authorization: 'Basic dmVyaWRhdGE6dmVyaWRhdGFfc2VjcmV0',
-  //     },
-  //     body: encodeFormData(loginData),
-  //   })
-  //     .then(response => response.json())
-  //     .then(async data => {
-  //       console.log('data ',data);
-  //       if (data['access_token']){
-  //         localStorage.setItem('api_token',data['access_token']);
-  //       }
-  //       if (data['pmclient']&&data['pmclient']['access_token']){
-  //         localStorage.setItem('pm_token',data['pmclient']['access_token']);
-  //       }
-  //       if (data.error_description) {
-  //         if(data.error_description !== undefined && data.error_description !== null
-  //           && data.error_description !== ""
-  //           && data.error_description.toLowerCase().includes("user is a claims account")){
-  //           await claimsLoginPost();
-  //         } else if(data.error_description !== undefined && data.error_description !== null
-  //           && data.error_description !== ""
-  //           && data.error_description.toLowerCase().includes("user not found.")){
-  //             alert(`Invalid Username or Password`);
-  //             window.location.reload();
-  //         }else{
-  //           alert(`${data.error_description}`);
-  //           window.location.reload();
-  //           return;
-  //         }
-  //       } else {
-  //         await callUserMeGet(data);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //       alert(error);
-  //       window.location.reload();
-  //     });
-  // };
-
-  // const callUserMeGet = (requestData: any) => {
-  //   const backendUserUrl = process.env.REACT_APP_HIMS_API_CLIENT_URL+'users/me';
-      
-  //   fetch(backendUserUrl, {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //       Authorization: 'Bearer '+ requestData['access_token'],
-  //     },
-  //   })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       console.log(data)
-  //       if (data.error_description) {
-  //         alert(`Error: ${data.error_description}`);
-  //         window.location.reload();
-  //         return;
-  //       } else {
-  //         localStorage.setItem('user_id',data._id);
-  //         localStorage.setItem('employee_id',data.employee_id);
-  //         localStorage.setItem('first_name',data.first_name);
-  //         localStorage.setItem('last_name',data.last_name);
-  //         if (data.main_module === 'Underwriting') {
-  //           localStorage.setItem('sidebar','dashboard');
-  //           window.location.replace(underwritingUrl);
-  //         } else if (data.main_module === 'Customer Care') {
-  //           window.location.replace(customerCareUrl);
-  //         } else if (data.main_module === 'Membership') {
-  //           localStorage.setItem('sidebar','dashboard');
-  //           window.location.replace(membershipUrl);
-  //         } else {
-  //           window.location.replace(systemAdminUrl);
-  //         }
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //       alert(error);
-  //       window.location.reload();
-  //     });
-  // };
-  // const claimsLoginPost = async () => {
-
-  //   await fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/auth/login", {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //     },
-  //     body: encodeFormData(loginData),
-  //   })
-  //     .then(response => response.json())
-  //     .then(async data => {
-  //       if(data !== undefined && data["status"] === 200 && data.data !== undefined
-  //         && data.data.token && data.data.token !== undefined &&  data.data.token !== null){
-  //         await claimsUserMe(data);
-  //       }else{
-  //         if(data.message){
-  //           alert(`Error: ${data.message}`);
-  //           window.location.reload();
-  //         }
-  //         return;
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //       alert(error);
-  //       window.location.reload();
-  //     });
-  // };
-
-  // const claimsUserMe = (requestData: any) => {
-
-  //   fetch(process.env.REACT_APP_HIMS_API_PARTNER_URL+"/me", {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //       Authorization: 'Bearer '+ requestData.data.token,
-  //     },
-  //   })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       console.log(data)
-  //       if (data === undefined || data["status"] !== 200) {
-  //         alert(`Error: ${data.message}`);
-  //         window.location.reload();
-  //         return;
-  //       } else {
-  //         localStorage.setItem('token',requestData.data.token);
-  //         window.location.replace(claimsPageURL);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //       alert(error);
-  //       window.location.reload();
-  //     });
-  // };
-
   const onForgotPassword = () => {
-    alert('onForgotPassword() clicked');
+    setForgotPassword(true);
   };
 
-  const onContact = () => {
+  const onForgotPasswordSubmit = async (username: string) => {
+    setForgotPassword(false);
+    setChanging(true);
+
+    const request: RequestInit = {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json'
+       }
+    }
+
+    let requestSetup = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}password/forgot/${username}`, request).catch(err => {
+      // BEGIN HANDLING OF FAILED HTTP REQUEST
+      setModalProps({
+        ...modalProps,
+        open: true,
+        title: 'Error',
+        message: err.message,
+        buttonText: 'Okay'
+      })
+    })
+
+    if (requestSetup) {
+      let respjson = await requestSetup.json();
+      if (respjson && !respjson.error) {
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Update Password Success',
+          message: 'New password has been set.',
+          buttonText: 'Continue',
+        })
+        
+        // await saveToIndexedDB(tmpData);
+      } else {
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: respjson.error.message,
+          buttonText: 'Okay'
+        })
+      }
+    }
+    setChanging(false)
+  }
+
+  const onContact = async () => {
     alert('onContact() clicked');
   };
 
+  const handleModalClose = () => {
+    window.location.reload()
+  }
+
+  const onSetupPasswordSubmit = async (value: any) => {
+    setpwSetupModal(false);
+    setChanging(true)
+
+    let token = tmpData.login.access_token;
+    const request: RequestInit = {
+      method: 'PATCH',
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+       },
+      body: JSON.stringify(value)
+    }
+
+    let requestSetup = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}user/password`, request).catch(err => {
+      // BEGIN HANDLING OF FAILED HTTP REQUEST
+      setModalProps({
+        ...modalProps,
+        open: true,
+        title: 'Error',
+        message: err.message,
+        buttonText: 'Okay'
+      })
+    })
+
+    if (requestSetup) {
+      let respjson = await requestSetup.json();
+      if (respjson && !respjson.error) {
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Success',
+          message: 'Password setup success',
+          buttonText: 'Okay'
+        })
+        
+        // await saveToIndexedDB(tmpData);
+      } else {
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: respjson.error.message,
+          buttonText: 'Okay'
+        })
+      }
+    }
+
+    setChanging(false)
+  }
+
+  const [pwSetupModal, setpwSetupModal] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [isError, setError] = React.useState(false);
   const [isFetching, setFetchingState] = useState(false);
+  const [isChanging, setChanging] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [modalProps, setModalProps] = useState<any>({
+    open: false,
+    title: '',
+    message: '',
+    buttonText: '',
+    onClose: handleModalClose
+  });
+
+  const classes = useStyles();
 
   return (
-    <Grid container className="login-main">
-      <img
-        alt="shape1"
-        className="login-shape-1"
-        src={require('./images/shape-1.png')}
-      />
-      <img
-        alt="shape2"
-        className="login-shape-2"
-        src={require('./images/shape-2.png')}
-      />
-      <Grid item xs={6}></Grid>
-      <Grid item xs={6} className="login-block">
+    <>
+      { isChanging && <LoadingIndicator /> }
+      <Grid container className="login-main">
         <img
-          alt="logo"
-          className="login-logo"
-          src={require('./icons/logo/logo@2x.png')}
+          alt="shape1"
+          className="login-shape-1"
+          src={require('./images/shape-1.png')}
         />
-        <div className="login-project-name">Intellicare HIMS</div>
-        <div className="login-input-area">
-          <span className="login-text">Username</span>
-          <InputBase
-            className="login-text-field"
-            fullWidth
-            value={loginData.username}
-            onChange={handleTextFieldOnChange('username')}
-            inputRef={usernameRef}
+        <img
+          alt="shape2"
+          className="login-shape-2"
+          src={require('./images/shape-2.png')}
+        />
+        <Grid item xs={6}></Grid>
+        <Grid item xs={6} className="login-block">
+          <img
+            alt="logo"
+            className="login-logo"
+            src={require('./icons/logo/logo@2x.png')}
           />
-        </div>
-        <div className="login-input-area">
-          <Grid container className="login-text">
-            <Grid item xs={6}>
-              Password
+          <div className="login-project-name">Intellicare HIMS</div>
+          <div className={`login-input-area ${classes.fields}`}>
+            <span className="login-text">Username</span>
+            <OutlinedInput
+              error={isError}
+              className={classes.inputField}
+              autoFocus
+              fullWidth
+              value={loginData.username}
+              onChange={handleTextFieldOnChange('username')}
+              inputRef={usernameRef}
+              labelWidth={0}
+            />
+          </div>
+          <div className={`login-input-area ${classes.fields}`}>
+            <Grid container className="login-text">
+              <Grid item xs={6}>
+                Password
+              </Grid>
+              <Grid item xs={6} style={{ textAlign: 'right' }}>
+                <Link className="login-link" onClick={onForgotPassword}>
+                  Forgot Password
+                </Link>
+              </Grid>
             </Grid>
-            <Grid item xs={6} style={{ textAlign: 'right' }}>
-              <Link className="login-link" onClick={onForgotPassword}>
-                Forgot Password
-              </Link>
-            </Grid>
-          </Grid>
-          <InputBase
-            className="login-text-field"
-            fullWidth
-            type="password"
-            onChange={handleTextFieldOnChange('password')}
-            inputRef={passwordRef}
-          />
-        </div>
-        <Button disabled={isFetching ? true : false} className="login-button" onClick={onLogin}>
-          {isFetching ? "Initializing..." : "LOG IN"}
-        </Button>
-        <div style={{ paddingTop: '3rem' }}>
-          Problems logging in? Please &nbsp;
-          <Link className="login-link" onClick={onContact}>
-            contact your IT Team
-          </Link>
-          &nbsp; for assistance.
-        </div>
+            <OutlinedInput
+              error={isError}
+              className={classes.inputField}
+              fullWidth
+              type="password"
+              onChange={handleTextFieldOnChange('password')}
+              inputRef={passwordRef}
+              labelWidth={0}
+            />
+            {
+              isError ?
+              <div className={classes.errorMessageContainer}>
+                <div>
+                  <ErrorIcon className={classes.iconError} />
+                </div>
+                <div className={classes.errorString}>
+                  <span className={classes.errText}>
+                  {
+                    errorMessage
+                  }
+                  </span>
+                </div>
+              </div> : ''
+            }
+          </div>
+          <Button disabled={isFetching ? true : false} className="login-button" onClick={onLogin}>
+            {isFetching ? "Initializing..." : "LOG IN"}
+          </Button>
+          <div style={{ paddingTop: '3rem' }}>
+            Problems logging in? Please &nbsp;
+            <Link className="login-link" onClick={onContact}>
+              contact your IT Team
+            </Link>
+            &nbsp; for assistance.
+          </div>
+        </Grid>
+
+        {/* Modals */}
+        <MessageDialog
+          isModalOpen = {modalProps.open}
+          onClose = {modalProps.onClose}
+          title = {modalProps.title}
+          message = {modalProps.message}
+          buttonText = {modalProps.buttonText !== '' ? modalProps.buttonText : 'Okay'}  
+        />
+
+        <PasswordSetupModal
+          onSubmit={onSetupPasswordSubmit}
+          open = {pwSetupModal}
+          onClose = {() => {
+            setpwSetupModal(false)
+            setFetchingState(false)
+          }} />
+
+        <ForgotPassword
+          onSubmit={onForgotPasswordSubmit}
+          open = {forgotPassword}
+          onClose = {() => setForgotPassword(false)} />
+
       </Grid>
-    </Grid>
+    </>
   );
 };
 
 export default LoginPage;
+
+
+
 
 
 
