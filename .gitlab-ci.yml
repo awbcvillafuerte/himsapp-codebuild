@@ -15,6 +15,8 @@ fetch_uat:
     - echo "This job fetches hims_app uat branch. "
     - cd /home/bitnami/builds/hims-app-uat
     - echo "Ensure all node modules are updated and available"
+    - echo "pulling submodules"
+    - ssh-agent ~/.scripts/submod_update.sh uat
     - cp config/uat.env .env
     - yarn install
   only:
@@ -53,7 +55,7 @@ deploy_uat:
     - cd /home/bitnami/builds/hims-app-uat
     - echo "Deploy the hims-uat"
     - printenv CURRENT_VERSION
-    - echo "yarn run publish-only"
+    - echo "yarn run publish"
   only:
     refs:
       - uat
