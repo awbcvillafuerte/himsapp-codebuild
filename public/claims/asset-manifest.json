@@ -1,18 +1,26 @@
 {
   "files": {
-    "main.css": "/claims/static/css/main.e48cf391.chunk.css",
-    "main.js": "/claims/static/js/main.9331a1d6.chunk.js",
-    "main.js.map": "/claims/static/js/main.9331a1d6.chunk.js.map",
-    "runtime~main.js": "/claims/static/js/runtime~main.7bdcb263.js",
-    "runtime~main.js.map": "/claims/static/js/runtime~main.7bdcb263.js.map",
-    "static/css/2.b5da6ccd.chunk.css": "/claims/static/css/2.b5da6ccd.chunk.css",
-    "static/js/2.40ba6bca.chunk.js": "/claims/static/js/2.40ba6bca.chunk.js",
-    "static/js/2.40ba6bca.chunk.js.map": "/claims/static/js/2.40ba6bca.chunk.js.map",
+    "main.css": "/claims/static/css/main.6fec98d0.chunk.css",
+    "main.js": "/claims/static/js/main.c278b0ac.chunk.js",
+    "main.js.map": "/claims/static/js/main.c278b0ac.chunk.js.map",
+    "runtime-main.js": "/claims/static/js/runtime-main.f1e00f89.js",
+    "runtime-main.js.map": "/claims/static/js/runtime-main.f1e00f89.js.map",
+    "static/css/2.d72298eb.chunk.css": "/claims/static/css/2.d72298eb.chunk.css",
+    "static/js/2.65409df7.chunk.js": "/claims/static/js/2.65409df7.chunk.js",
+    "static/js/2.65409df7.chunk.js.map": "/claims/static/js/2.65409df7.chunk.js.map",
     "index.html": "/claims/index.html",
-    "precache-manifest.d7eaddb5966f9fa36651caa1b8575377.js": "/claims/precache-manifest.d7eaddb5966f9fa36651caa1b8575377.js",
+    "precache-manifest.8950f7a2b2262c09924e45e7a73c33e7.js": "/claims/precache-manifest.8950f7a2b2262c09924e45e7a73c33e7.js",
     "service-worker.js": "/claims/service-worker.js",
-    "static/css/2.b5da6ccd.chunk.css.map": "/claims/static/css/2.b5da6ccd.chunk.css.map",
-    "static/css/main.e48cf391.chunk.css.map": "/claims/static/css/main.e48cf391.chunk.css.map",
+    "static/css/2.d72298eb.chunk.css.map": "/claims/static/css/2.d72298eb.chunk.css.map",
+    "static/css/main.6fec98d0.chunk.css.map": "/claims/static/css/main.6fec98d0.chunk.css.map",
+    "static/js/2.65409df7.chunk.js.LICENSE.txt": "/claims/static/js/2.65409df7.chunk.js.LICENSE.txt",
     "static/media/index.css": "/claims/static/media/roboto-latin-900italic.ebf6d164.woff2"
-  }
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f1e00f89.js",
+    "static/css/2.d72298eb.chunk.css",
+    "static/js/2.65409df7.chunk.js",
+    "static/css/main.6fec98d0.chunk.css",
+    "static/js/main.c278b0ac.chunk.js"
+  ]
 }
