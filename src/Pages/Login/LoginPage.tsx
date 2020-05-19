@@ -16,6 +16,7 @@ import {
  import moment from 'moment';
  import { makeStyles } from '@material-ui/core/styles';
  import ErrorIcon from '@material-ui/icons/Error';
+ import { withRouter } from 'react-router-dom';
 
 interface LoginDataType {
   username: string;
@@ -74,7 +75,7 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-const LoginPage = () => {
+const LoginPage = (props: any) => {
   const [loginData, setLoginData] = useState<LoginDataType>({
     username: '',
     password: '',
@@ -109,12 +110,13 @@ const LoginPage = () => {
       if (found) {
         urls.map(async (url: any) => {
           if (url.name === mainModule) {
-            if (mainModule === 'Customer Care') {
+            if (mainModule.toLowerCase() === 'customer care') {
               console.log("pasok sa banga")
               let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
                 .catch(err => console.log(err))
-              const logingroup = query && query.result ? query.result : null;
-              if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+              let logingroup = query && query.result ? query.result : null;
+              let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
+              if(loginGroupName.toLowerCase() === 'css group'){
                 window.location.replace(cssCustomerCareUrl)
                 
               } else {
@@ -129,45 +131,40 @@ const LoginPage = () => {
         })
       } else {
         setFetchingState(false);
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Error',
-          message: 'No configured redirect url',
-          buttonText: 'Okay'
-        })
+        props.history.push('profile')
       }
     } else {
       // Fallback
-      if (mainModule === 'Underwriting') {
+      if (mainModule.toLowerCase() === 'underwriting') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(underwritingUrl);
-      } else if (mainModule === 'Customer Care') {
+      } else if (mainModule.toLowerCase() === 'customer care') {
         let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
           .catch(err => console.log(err))
-        const logingroup = query && query.result ? query.result : null;
-        if(logingroup && logingroup.name === 'Customer Service Specialist GROUP'){
+        let logingroup = query && query.result ? query.result : null;
+        let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
+          if(loginGroupName.toLowerCase() === 'css group'){
           window.location.replace(cssCustomerCareUrl);
         }
         else{
           window.location.replace(customerCareUrl);
         }
-      } else if (mainModule === 'Membership') {
+      } else if (mainModule.toLowerCase() === 'membership') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(membershipUrl);
-      } else if (mainModule === 'Claims') {
+      } else if (mainModule.toLowerCase() === 'claims') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(claimsUrl);
-      } else if (mainModule === 'User Management') {
+      } else if (mainModule.toLowerCase() === 'user management') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(systemAdminUrl);
-      } else if (mainModule === 'Franchising') {
+      } else if (mainModule.toLowerCase() === 'franchising') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(franchisingUrl);
-      } else if (mainModule === 'Billing and Collections') {
+      } else if (mainModule.toLowerCase() === 'billing and collections') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(BillingUrl);
-      } else if (mainModule === 'Partner Network') {
+      } else if (mainModule.toLowerCase() === 'partner network') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(PnUrl);
       } else {
@@ -529,12 +526,12 @@ const LoginPage = () => {
           localStorage.setItem('employee_id',data.login.employee_id);
           localStorage.setItem('first_name',data.login.first_name);
           localStorage.setItem('last_name',data.login.last_name);
-          if (data.login.main_module === 'Underwriting') {
+          if (data.login.main_module.toLowerCase() === 'underwriting') {
             localStorage.setItem('sidebar','dashboard');
             // window.location.replace(underwritingUrl);
-          } else if (data.login.main_module === 'Customer Care') {
+          } else if (data.login.main_module.toLowerCase() === 'customer care') {
             // window.location.replace(customerCareUrl);
-          } else if (data.login.main_module === 'Membership') {
+          } else if (data.login.main_module.toLowerCase() === 'membership') {
             localStorage.setItem('sidebar','dashboard');
             // window.location.replace(membershipUrl);
           } else {
@@ -550,6 +547,15 @@ const LoginPage = () => {
           let userDataToSave = Object.entries(data.login).map(entry => {
             return {key: entry[0], value: entry[1]}
           });
+
+          let configSave = Object.entries(data.timeout).map(entry => {
+            return {key: entry[0], value: entry[1]}
+          })
+
+          loginStorageService.saveEntry(configSave, 'config').then((res) => {
+            console.log(res);
+          }).catch((err) => console.log(err));
+
 
           loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
             console.log(res);
@@ -875,7 +881,8 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default withRouter(LoginPage);
+
 
 
 
