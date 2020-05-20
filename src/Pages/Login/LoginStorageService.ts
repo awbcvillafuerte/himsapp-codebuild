@@ -64,13 +64,7 @@ export default class LoginStorageService extends indexedDBHelper {
                 }
             }
 
-        }).catch((err) => {
-            console.log(err)
-            console.log('Reconstructing indexedDB...')
-            this.deleteDb(dbname).then(() => {
-                this.initStorage(dbname)
-            })
-        });
+        }).catch((err) => console.log(err));
     }
 
     initStores = (store: any) => {
@@ -145,7 +139,6 @@ export default class LoginStorageService extends indexedDBHelper {
     }
 
 }
-
 
 
 
