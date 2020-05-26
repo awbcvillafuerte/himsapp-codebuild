@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "/claims/static/css/main.0658fc92.chunk.css",
+    "main.js": "/claims/static/js/main.b268789e.chunk.js",
+    "main.js.map": "/claims/static/js/main.b268789e.chunk.js.map",
+    "runtime-main.js": "/claims/static/js/runtime-main.1ce6e053.js",
+    "runtime-main.js.map": "/claims/static/js/runtime-main.1ce6e053.js.map",
+    "static/css/2.d72298eb.chunk.css": "/claims/static/css/2.d72298eb.chunk.css",
+    "static/js/2.f3315725.chunk.js": "/claims/static/js/2.f3315725.chunk.js",
+    "static/js/2.f3315725.chunk.js.map": "/claims/static/js/2.f3315725.chunk.js.map",
+    "index.html": "/claims/index.html",
+    "precache-manifest.20b0072cdab944e033bbf7a901959fd6.js": "/claims/precache-manifest.20b0072cdab944e033bbf7a901959fd6.js",
+    "service-worker.js": "/claims/service-worker.js",
+    "static/css/2.d72298eb.chunk.css.map": "/claims/static/css/2.d72298eb.chunk.css.map",
+    "static/css/main.0658fc92.chunk.css.map": "/claims/static/css/main.0658fc92.chunk.css.map",
+    "static/js/2.f3315725.chunk.js.LICENSE.txt": "/claims/static/js/2.f3315725.chunk.js.LICENSE.txt",
+    "static/media/MedicalInformation.module.scss": "/claims/static/media/NunitoSans-Regular.4c8f4470.ttf",
+    "static/media/affinitydental.jpg": "/claims/static/media/affinitydental.efa48d06.jpg",
+    "static/media/aventuslogo.jpg": "/claims/static/media/aventuslogo.05b3e707.jpg",
+    "static/media/placeHolderPicture.png": "/claims/static/media/placeHolderPicture.8b436f48.png",
+    "static/media/index.css": "/claims/static/media/roboto-latin-900italic.ebf6d164.woff2",
+    "static/media/star.png": "/claims/static/media/star.3028c301.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.1ce6e053.js",
+    "static/css/2.d72298eb.chunk.css",
+    "static/js/2.f3315725.chunk.js",
+    "static/css/main.0658fc92.chunk.css",
+    "static/js/main.b268789e.chunk.js"
+  ]
+}
