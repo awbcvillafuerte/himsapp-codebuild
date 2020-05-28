@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/claims/static/css/main.e93e2c8b.chunk.css",
+    "main.js": "/claims/static/js/main.530f7351.chunk.js",
+    "main.js.map": "/claims/static/js/main.530f7351.chunk.js.map",
+    "runtime~main.js": "/claims/static/js/runtime~main.7bdcb263.js",
+    "runtime~main.js.map": "/claims/static/js/runtime~main.7bdcb263.js.map",
+    "static/css/2.b5da6ccd.chunk.css": "/claims/static/css/2.b5da6ccd.chunk.css",
+    "static/js/2.483de23d.chunk.js": "/claims/static/js/2.483de23d.chunk.js",
+    "static/js/2.483de23d.chunk.js.map": "/claims/static/js/2.483de23d.chunk.js.map",
+    "index.html": "/claims/index.html",
+    "precache-manifest.bccaa67950b7da5d3687bb00131f427d.js": "/claims/precache-manifest.bccaa67950b7da5d3687bb00131f427d.js",
+    "service-worker.js": "/claims/service-worker.js",
+    "static/css/2.b5da6ccd.chunk.css.map": "/claims/static/css/2.b5da6ccd.chunk.css.map",
+    "static/css/main.e93e2c8b.chunk.css.map": "/claims/static/css/main.e93e2c8b.chunk.css.map",
+    "static/media/index.css": "/claims/static/media/roboto-latin-900italic.ebf6d164.woff2"
+  }
+}
