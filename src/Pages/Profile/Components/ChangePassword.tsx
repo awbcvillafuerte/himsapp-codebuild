@@ -34,7 +34,7 @@ interface textFieldProps {
     label: string,
     value: string,
     classes: any,
-    note?: string,
+    note?: any,
     id: string
     error: boolean,
     errorMsg: string,
@@ -44,11 +44,11 @@ interface textFieldProps {
 export const ChangePassword:
     React.FC<IProps> = (props: IProps): JSX.Element => {
 
-        // React.useEffect(() => {
-        //     SampleFetch().then((res: any) => res.json().then((data) => {
-        //         console.log(data)
-        //     }))
-        // }, [])
+        React.useEffect(() => {
+            StorageService('config', 'password').then((r) => {
+                setPwValidator(r.result)
+            })
+        }, [])
 
         const {
             visible,
@@ -61,6 +61,44 @@ export const ChangePassword:
             const { value } = e.target
 
             setPasswordValues({ ...passwordValues, [prop]: value })
+
+            const regex = new RegExp(pwValidator.regex)
+
+            if (prop === 'newPassword') {
+                if (!regex.test(value)) {
+                    setNerror({ message: 'Invalid Input', error: true })
+                } else {
+                    if (value === passwordValues.confirmPassword) {
+                        setNerror({ message: '', error: false })
+                        setCerror({ message: '', error: false })
+                    } else {
+                        setCerror({ message: 'Password doesn’t match', error: true })
+                        setNerror({ message: '', error: true })
+                    }
+                }
+            } else if (prop === 'confirmPassword') {
+                if (!regex.test(value)) {
+                    setCerror({ message: 'Invalid Input', error: true })
+                } else {
+                    if (!regex.test(value)) {
+                        setCerror({ message: 'Invalid Input', error: true })
+                    } else {
+                        if (value === passwordValues.newPassword) {
+                            setNerror({ message: '', error: false })
+                            setCerror({ message: '', error: false })
+                        } else {
+                            setCerror({ message: 'Password doesn’t match', error: true })
+                            setNerror({ message: '', error: true })
+                        }
+                    }
+                }
+            } else if (prop === 'oldPassword') {
+                if (value === '') {
+                    setOerror({ message: 'Invalid Input', error: true })
+                } else {
+                    setOerror({ message: '', error: false })
+                }
+            }
         }
 
         // Password values reset default
@@ -90,84 +128,68 @@ export const ChangePassword:
             // Declare password values
             const { oldPassword, newPassword, confirmPassword } = passwordValues
 
-
-            if (!validatePasswordValue(oldPassword)) setOerror({ message: 'Invalid input', error: true })
-            else setOerror({ message: '', error: false })
-
-            if (!validatePasswordValue(newPassword)) setNerror({ message: 'Invalid input', error: true })
-            else {
-                setNerror({ message: '', error: false })
+            let constructParams = {
+                old_password: oldPassword,
+                new_password: newPassword,
+                conf_password: confirmPassword
             }
 
-            if (!validatePasswordValue(confirmPassword)) setCerror({ message: 'Invalid input', error: true })
-            else {
-                if (confirmNewPassword(newPassword, confirmPassword)) {
-                    setNerror({ message: '', error: false })
-                    setCerror({ message: '', error: false })
-                } else {
-                    setNerror({ ...nError, error: true })
-                    setCerror({ message: 'Password doesn’t match', error: true })
-                }
+            if (oldPassword === '') {
+                setOerror({ message: 'Invalid Input', error: true })
+
+                return 
+            } else {
+                setOerror({ message: '', error: false })
             }
 
-            if (validatePasswordValue(oldPassword) && validatePasswordValue(newPassword)
-                && validatePasswordValue(confirmPassword) && confirmNewPassword(newPassword, confirmPassword)) {
-                let constructParams = {
-                    old_password: oldPassword,
-                    new_password: newPassword,
-                    conf_password: confirmPassword
-                }
+            props.setLoading(true)
+            StorageService('user_data', 'access_token').then(({result}: any) => {
+                fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}user/password`, {
+                    method: 'PUT',
+                    body: JSON.stringify(constructParams),
+                    headers: {
+                        'Authorization': `Bearer ${result}`,
+                        'Content-type': 'application/json'
+                    }
+                }).then(async (data: any) => {
+                    let jsondata = await data.json();
 
-                props.setLoading(true)
-                
-                StorageService('user_data', 'access_token').then(({result}: any) => {
-                    fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}user/password`, {
-                        method: 'PUT',
-                        body: JSON.stringify(constructParams),
-                        headers: {
-                            'Authorization': `Bearer ${result}`,
-                            'Content-type': 'application/json'
-                        }
-                    }).then(async (data: any) => {
-                        let jsondata = await data.json();
-
-                        if (!jsondata.error) {
-                            setModalDone({
-                                title: 'Change Password Success',
-                                message: 'You have successfully changed your password.',
-                                visible: true
-                            })
-                            setPasswordValues({
-                                oldPassword: '',
-                                newPassword: '',
-                                confirmPassword: ''
-                            })
-                            onClose();
-                        } else {
-                            setModalDone({
-                                title: 'Error',
-                                message: 'Something went wrong. Your password has not been changed.',
-                                visible: true
-                            })
-                        }
-
-                        props.setLoading(false)
-                        
-                        
-                    }).catch((err: any) => {
-                        if (err.message.includes('UM21')) {
-                            setOerror({ message: 'Incorrect Password', error: true })
-                        }
+                    if (!jsondata.error) {
+                        setModalDone({
+                            title: 'Change Password Success',
+                            message: 'You have successfully changed your password.',
+                            visible: true
+                        })
+                        setPasswordValues({
+                            oldPassword: '',
+                            newPassword: '',
+                            confirmPassword: ''
+                        })
+                        onClose();
+                    } else {
                         setModalDone({
                             title: 'Error',
                             message: 'Something went wrong. Your password has not been changed.',
                             visible: true
                         })
+                    }
 
-                        props.setLoading(false)
+                    props.setLoading(false)
+                    
+                    
+                }).catch((err: any) => {
+                    if (err.message.includes('UM21')) {
+                        setOerror({ message: 'Incorrect Password', error: true })
+                    }
+                    setModalDone({
+                        title: 'Error',
+                        message: 'Something went wrong. Your password has not been changed.',
+                        visible: true
                     })
+
+                    props.setLoading(false)
                 })
-            }
+            })
 
 
             // setNerror(newIsValid)
@@ -175,23 +197,23 @@ export const ChangePassword:
 
         }
 
-        const validatePasswordValue = (password: string) => {
-            const minLenght = 6
+        // const validatePasswordValue = (password: string) => {
+        //     const minLenght = 6
 
-            if (password.length < minLenght) {
-                return false
-            }
+        //     if (password.length < minLenght) {
+        //         return false
+        //     }
 
-            return true
-        }
+        //     return true
+        // }
 
-        const confirmNewPassword = (newP1: string, newP2: string) => {
-            if ((newP1 !== '' && newP2 !== '') && (newP1 !== newP2)) {
-                return false
-            }
+        // const confirmNewPassword = (newP1: string, newP2: string) => {
+        //     if ((newP1 !== '' && newP2 !== '') && (newP1 !== newP2)) {
+        //         return false
+        //     }
 
-            return true
-        }
+        //     return true
+        // }
 
         const [passwordValues, setPasswordValues] = React.useState({
             oldPassword: '',
@@ -224,6 +246,11 @@ export const ChangePassword:
                 visibile: false
             })
         }
+
+        const [pwValidator, setPwValidator] = React.useState<any>({
+            regex: '',
+            character: []
+        })
 
         return (
             <>
@@ -280,7 +307,24 @@ export const ChangePassword:
                                             error={nError.error}
                                             errorMsg={nError.message}
                                             label='Enter your new password'
-                                            note='At least 6 alphanumeric characters'
+                                            note={
+                                                <>
+                                                    <span style={{display: 'block', fontSize: 12, color: '#797F92', marginBottom: 5}}>Please update your password to continue.</span>
+                                                    <ul style={{display: 'block', fontSize: 12, color: '#797F92', paddingLeft: 15}}>
+                                                        <li>Must be <strong>{pwValidator.min_length} min to {pwValidator.max_length} max characters</strong></li>
+                                                        {
+                                                            pwValidator.character.map((e: any) => 
+                                                                e === 'number' ? 
+                                                                    <li>Must have <strong>letters and numbers</strong></li> :
+                                                                e === 'uppercase_letter' ?
+                                                                    <li>Must have <strong>at least 1 upper case</strong></li> :
+                                                                e === 'special_character' ?
+                                                                    <li>Must have <strong>at least 1 special</strong></li> : ''
+                                                            )
+                                                        }
+                                                    </ul>
+                                                </>
+                                            }
                                             value={passwordValues.newPassword}
                                             onChange={handleTextFieldChange}
                                             classes={classes} />
@@ -311,6 +355,10 @@ export const ChangePassword:
                                     </Grid>
                                     <Grid item xs={6}>
                                         <Button
+                                            disabled={
+                                                oError.error !== null && cError.error !== null && nError.error !== null &&
+                                                !oError.error && !cError.error && !nError.error ? false : true
+                                            }
                                             onClick={fetchChange}
                                             className={`${classes.button} ${classes.buttonChange}`}
                                             variant={'contained'}

@@ -548,20 +548,32 @@ const LoginPage = (props: any) => {
             return {key: entry[0], value: entry[1]}
           });
 
-          let configSave = Object.entries(data.timeout).map(entry => {
-            return {key: entry[0], value: entry[1]}
-          })
-
-          loginStorageService.saveEntry(configSave, 'config').then((res) => {
-            console.log(res);
-          }).catch((err) => console.log(err));
-
-
           loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
             console.log(res);
           }).catch((err) => console.log(err));
+
+          await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}system-settings/config`, {
+            method: 'GET',
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${data.login.access_token}`
+            }
+          }).then((res: any) => res.json()).then((data) => {
+            setPwSetupProps({
+              regex: data.password.regex,
+              character: data.password.character,
+              min: data.password.min_length
+            })
+            let configtosave = Object.entries(data).map(entry => {
+              return {key: entry[0], value: entry[1]}
+            });
+            loginStorageService.saveEntry(configtosave, 'config').then((res) => {
+              console.log(res);
+            }).catch((err) => console.log(err));
+            
+          }).catch(err => console.log(err))
           
-          if (data.needs_password_update) {
+          if (data.login.needs_password_update) {
             setpwSetupModal(true)
           } else {
             await saveToIndexedDB(data);
@@ -575,7 +587,19 @@ const LoginPage = (props: any) => {
               ...modalProps,
               open: true,
               title: 'Error',
-              message: data.error.message,
+              message: data.error.message.replace(/Code UM06/, ''),
+              buttonText: 'Okay',
+              onClose: () => {setModalProps({...modalProps, open: false})}
+            })
+          } else if (data.error.message.includes('UM03')) {
+            console.log(data.error.message)
+            setError(true);
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'Error',
+              message: data.error.message.replace(/Code UM03/, ''),
               buttonText: 'Okay',
               onClose: () => {setModalProps({...modalProps, open: false})}
             })
@@ -677,9 +701,9 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Update Password Success',
-          message: 'New password has been set.',
-          buttonText: 'Continue',
+          title: 'Forgot Password',
+          message: 'A reset password email will be sent to the email address of the account.',
+          buttonText: 'Okay',
         })
         
         // await saveToIndexedDB(tmpData);
@@ -735,8 +759,8 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Success',
-          message: 'Password setup success',
+          title: 'Update Password Success',
+          message: 'New password has been set.',
           buttonText: 'Okay'
         })
         
@@ -768,6 +792,12 @@ const LoginPage = (props: any) => {
     buttonText: '',
     onClose: handleModalClose
   });
+
+  const [pwSetupProps, setPwSetupProps] = React.useState<any>({
+    regex: '',
+    character: [],
+    min: 0
+  })
 
   const classes = useStyles();
 
@@ -866,6 +896,7 @@ const LoginPage = (props: any) => {
         <PasswordSetupModal
           onSubmit={onSetupPasswordSubmit}
           open = {pwSetupModal}
+          setup={pwSetupProps}
           onClose = {() => {
             setpwSetupModal(false)
             setFetchingState(false)
