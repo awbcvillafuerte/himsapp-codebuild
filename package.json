@@ -1,7 +1,7 @@
 {
   "name": "hims-dev",
   "productName": "hims-dev",
-  "version": "0.2.101-alpha",
+  "version": "0.2.102-alpha",
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -19,7 +19,7 @@
     "win": {
       "icon": "public/hims-dev.png"
     },
-    "publish": [
+	"publish": [
       {
         "provider": "github",
         "owner": "veridata-hims",
@@ -46,7 +46,7 @@
     "build:dev": "yarn react-build && electron-builder -c.extraMetadata.version=${CURRENT_VERSION} --win --config config/dev.json",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
     "publish": "yarn react-build && electron-builder --win -p always",
-    "publish-only": "electron-builder --win -p always"
+	"publish-only": "electron-builder --win -p always"
   },
   "private": true,
   "jest": {
@@ -76,27 +76,27 @@
     "@hims/core"
   ],
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.22",
-    "@fortawesome/free-regular-svg-icons": "^5.10.2",
-    "@fortawesome/free-solid-svg-icons": "^5.10.2",
-    "@fortawesome/react-fontawesome": "^0.1.4",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
     "cross-env": "^5.2.1",
     "electron-is-dev": "^1.1.0",
-    "electron-pdf-window": "^1.0.12",
     "electron-updater": "^4.2.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-router-dom": "^5.2.0",
     "react-scripts": "3.2.0",
-    "typescript": "3.6.2"
+    "typescript": "3.6.2",
+    "react-router-dom": "^5.2.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.22",
+    "@fortawesome/free-regular-svg-icons": "^5.10.2",
+    "@fortawesome/free-solid-svg-icons": "^5.10.2",
+    "@fortawesome/react-fontawesome": "^0.1.4"
+
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
-    "electron": "^8.1.1",
+    "electron": "^6.0.9",
     "electron-builder": "^21.2.0",
     "wait-on": "^3.3.0",
     "yarn": "^1.17.3"
