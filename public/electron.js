@@ -1,7 +1,11 @@
-const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
+const electron = require('electron');
+const { app, BrowserWindow, Menu, protocol, ipcMain } = electron;
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
 //const isDev = require('electron-is-dev');
+
+const Printer = require('./printer')
+const Dialog = require('./dialog')
 
 let isDev = true;
 let mainWindow;
@@ -132,4 +136,7 @@ autoUpdater.on('update-downloaded', (info) => {
 app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
-  
+ 
+Dialog(electron); 
+Printer(electron);
+ 
