@@ -630,6 +630,15 @@ const LoginPage = (props: any) => {
               message: <span>Please contact your <strong>Department Head</strong> to activate your account.</span>,
               buttonText: 'Okay'
             })
+          } else if (data.error.message.includes('UM61')) {
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'Account has not been activated yet',
+              message: <span>Your account is not active yet until <strong>{data.error.message.replace(/Code UM61/, '').trim()}</strong>.</span>,
+              buttonText: 'Okay'
+            })
           } else {
             setFetchingState(false);
             setModalProps({
