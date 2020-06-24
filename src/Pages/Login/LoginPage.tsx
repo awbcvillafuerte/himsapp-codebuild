@@ -586,7 +586,7 @@ const LoginPage = (props: any) => {
             setModalProps({
               ...modalProps,
               open: true,
-              title: 'Error',
+              title: 'Login Failed',
               message: data.error.message.replace(/Code UM06/, ''),
               buttonText: 'Okay',
               onClose: () => {setModalProps({...modalProps, open: false})}
@@ -598,7 +598,7 @@ const LoginPage = (props: any) => {
             setModalProps({
               ...modalProps,
               open: true,
-              title: 'Error',
+              title: 'Login Failed',
               message: data.error.message.replace(/Code UM03/, ''),
               buttonText: 'Okay',
               onClose: () => {setModalProps({...modalProps, open: false})}
