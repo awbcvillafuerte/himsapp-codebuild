@@ -663,7 +663,8 @@ const LoginPage = (props: any) => {
       })
   }
 
-  const onLogin = async () => {
+  const onLogin = async (e: any) => {
+    e.preventDefault()
     if (loginData.username.length === 0) {
       alert('Username is required.');
       window.location.reload();
@@ -811,7 +812,7 @@ const LoginPage = (props: any) => {
   const classes = useStyles();
 
   return (
-    <>
+    <form onSubmit={onLogin}>
       { isChanging && <LoadingIndicator /> }
       <Grid container className="login-main">
         <img
@@ -826,7 +827,7 @@ const LoginPage = (props: any) => {
         />
         <Grid item xs={6}></Grid>
         <Grid item xs={6} className="login-block">
-          <form onSubmit={onLogin}>
+          {/* <form onSubmit={onLogin}> */}
           <img
             alt="logo"
             className="login-logo"
@@ -892,7 +893,7 @@ const LoginPage = (props: any) => {
             </Link>
             &nbsp; for assistance.
           </div>
-          </form>
+          {/* </form> */}
         </Grid>
 
         {/* Modals */}
@@ -919,7 +920,7 @@ const LoginPage = (props: any) => {
           onClose = {() => setForgotPassword(false)} />
 
       </Grid>
-    </>
+    </form>
   );
 };
 
