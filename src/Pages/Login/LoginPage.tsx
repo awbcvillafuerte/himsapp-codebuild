@@ -636,7 +636,7 @@ const LoginPage = (props: any) => {
               ...modalProps,
               open: true,
               title: 'Account has not been activated yet',
-              message: <span>Your account is not active yet until <strong>{data.error.message.replace(/Code UM61/, '').trim()}</strong>.</span>,
+              message: <span>Your account will be activated on <strong>{data.error.message.replace(/Code UM61/, '').trim()}</strong>.</span>,
               buttonText: 'Okay'
             })
           } else {
@@ -925,6 +925,7 @@ const LoginPage = (props: any) => {
 };
 
 export default withRouter(LoginPage);
+
 
 
 
