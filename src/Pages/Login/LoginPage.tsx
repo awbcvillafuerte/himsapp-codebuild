@@ -826,6 +826,7 @@ const LoginPage = (props: any) => {
         />
         <Grid item xs={6}></Grid>
         <Grid item xs={6} className="login-block">
+          <form onSubmit={onLogin}>
           <img
             alt="logo"
             className="login-logo"
@@ -881,7 +882,7 @@ const LoginPage = (props: any) => {
               </div> : ''
             }
           </div>
-          <Button disabled={isFetching ? true : false} className="login-button" onClick={onLogin}>
+          <Button disabled={isFetching ? true : false} className="login-button" type="submit">
             {isFetching ? "Initializing..." : "LOG IN"}
           </Button>
           <div style={{ paddingTop: '3rem' }}>
@@ -891,6 +892,7 @@ const LoginPage = (props: any) => {
             </Link>
             &nbsp; for assistance.
           </div>
+          </form>
         </Grid>
 
         {/* Modals */}
