@@ -139,39 +139,58 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
         })
 
         if (name === 'new_password') {
-            if (!regex.test(value)) {
-                setErrorNew(true)
-                setNewPasswordErrorMsg('Invalid Input')
-            } else {
-                setErrorConf(false)
-                setNewPasswordErrorMsg('')
-                if (value === pwData.conf_password.value) {
+            if (value === pwData.conf_password.value) {
+                if (!regex.test(value)) {
+                    setErrorNew(true)
+                    setNewPasswordErrorMsg('Invalid Input')
+                } else {
+                    setErrorConf(false)
+                    setNewPasswordErrorMsg('')
+                    setErrorNew(false)
+                    setNewPasswordErrorMsg('')
+                }
+
+                if (!regex.test(value)) {
+                    setErrorConf(true)
+                    setConfPasswordErrorMsg('Invalid Input')
+                } else {
                     setErrorNew(false)
                     setNewPasswordErrorMsg('')
                     setErrorConf(false)
                     setConfPasswordErrorMsg('')
-                } else {
-                    setErrorNew(true)
-                    setConfPasswordErrorMsg('Password doesn’t match')
-                    setErrorConf(true)
                 }
+            } else {
+                setErrorNew(true)
+                setConfPasswordErrorMsg('Passwords do not match')
+                setNewPasswordErrorMsg('Passwords do not match')
+                setErrorConf(true)
             }
         } else {
-            if (!regex.test(value)) {
-                setErrorConf(true)
-                setConfPasswordErrorMsg('Invalid Input')
-            } else {
-                
-                if (value === pwData.new_password.value) {
+            if (value === pwData.new_password.value) {
+                if (!regex.test(value)) {
+                    setErrorConf(true)
+                    setConfPasswordErrorMsg('Invalid Input')
+                } else {
                     setErrorNew(false)
                     setNewPasswordErrorMsg('')
                     setErrorConf(false)
                     setConfPasswordErrorMsg('')
-                } else {
-                    setErrorNew(true)
-                    setConfPasswordErrorMsg('Password doesn’t match')
-                    setErrorConf(true)
                 }
+
+                if (!regex.test(value)) {
+                    setErrorNew(true)
+                    setNewPasswordErrorMsg('Invalid Input')
+                } else {
+                    setErrorConf(false)
+                    setNewPasswordErrorMsg('')
+                    setErrorNew(false)
+                    setNewPasswordErrorMsg('')
+                }
+            } else {
+                setErrorNew(true)
+                setConfPasswordErrorMsg('Passwords do not match')
+                setNewPasswordErrorMsg('Passwords do not match')
+                setErrorConf(true)
             }
         }
     }
