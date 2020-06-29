@@ -24,7 +24,10 @@ const useStyles = makeStyles({
         alignItems: 'center',
         justifyContent: 'center',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+            '& 	.MuiCircularProgress-colorPrimary': {
+                color: '#3AB77D'
+            }
     }
 });
 
@@ -34,7 +37,7 @@ const LoadingIndicator: React.FC<LoaderProps> = (): JSX.Element => {
     return (
         <div className={classes.root}>
             <div className={classes.container}>
-                <CircularProgress size={150}/>
+                <CircularProgress size={150} color='primary' />
             </div>
         </div>
     )

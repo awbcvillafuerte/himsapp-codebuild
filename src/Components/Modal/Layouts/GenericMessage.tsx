@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -13,6 +13,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 	},
 	dialogTitle: {
 		fontWeight: 800,
+		padding: '1.5em',
+		fontSize: 18
 	},
 	dialogContent: {
 		minWidth: 320,
@@ -56,7 +58,7 @@ export const MessageDialog: FC<MsgModalProps> = props => {
 			maxWidth="sm"
 			className={classes.dialog}
 		>
-			<DialogTitle id="form-dialog-title" className={classes.dialogTitle}>{props.title}</DialogTitle>
+			<Typography className={classes.dialogTitle}>{props.title}</Typography>
 			<DialogContent className={classes.dialogContent}>
 				<Grid container spacing={2} justify="space-between" alignItems="flex-start">
 					<Grid item xs={12}>
