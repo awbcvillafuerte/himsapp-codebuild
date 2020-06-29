@@ -169,13 +169,7 @@ const LoginPage = (props: any) => {
         window.location.replace(PnUrl);
       } else {
         setFetchingState(false);
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Error',
-          message: 'No configured redirect url',
-          buttonText: 'Okay'
-        })
+        props.history.push('profile')
       }
     }
   }
