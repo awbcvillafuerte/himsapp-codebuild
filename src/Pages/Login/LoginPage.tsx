@@ -169,13 +169,7 @@ const LoginPage = (props: any) => {
         window.location.replace(PnUrl);
       } else {
         setFetchingState(false);
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Error',
-          message: 'No configured redirect url',
-          buttonText: 'Okay'
-        })
+        props.history.push('profile')
       }
     }
   }
@@ -548,20 +542,32 @@ const LoginPage = (props: any) => {
             return {key: entry[0], value: entry[1]}
           });
 
-          let configSave = Object.entries(data.timeout).map(entry => {
-            return {key: entry[0], value: entry[1]}
-          })
-
-          loginStorageService.saveEntry(configSave, 'config').then((res) => {
-            console.log(res);
-          }).catch((err) => console.log(err));
-
-
           loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
             console.log(res);
           }).catch((err) => console.log(err));
+
+          await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}system-settings/config`, {
+            method: 'GET',
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${data.login.access_token}`
+            }
+          }).then((res: any) => res.json()).then((data) => {
+            setPwSetupProps({
+              regex: data.password.regex,
+              character: data.password.character,
+              min: data.password.min_length
+            })
+            let configtosave = Object.entries(data).map(entry => {
+              return {key: entry[0], value: entry[1]}
+            });
+            loginStorageService.saveEntry(configtosave, 'config').then((res) => {
+              console.log(res);
+            }).catch((err) => console.log(err));
+            
+          }).catch(err => console.log(err))
           
-          if (data.needs_password_update) {
+          if (data.login.needs_password_update) {
             setpwSetupModal(true)
           } else {
             await saveToIndexedDB(data);
@@ -574,8 +580,20 @@ const LoginPage = (props: any) => {
             setModalProps({
               ...modalProps,
               open: true,
-              title: 'Error',
-              message: data.error.message,
+              title: 'Login Failed',
+              message: data.error.message.replace(/Code UM06/, ''),
+              buttonText: 'Okay',
+              onClose: () => {setModalProps({...modalProps, open: false})}
+            })
+          } else if (data.error.message.includes('UM03')) {
+            console.log(data.error.message)
+            setError(true);
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'Login Failed',
+              message: data.error.message.replace(/Code UM03/, ''),
               buttonText: 'Okay',
               onClose: () => {setModalProps({...modalProps, open: false})}
             })
@@ -606,6 +624,15 @@ const LoginPage = (props: any) => {
               message: <span>Please contact your <strong>Department Head</strong> to activate your account.</span>,
               buttonText: 'Okay'
             })
+          } else if (data.error.message.includes('UM61')) {
+            setFetchingState(false);
+            setModalProps({
+              ...modalProps,
+              open: true,
+              title: 'Account has not been activated yet',
+              message: <span>Your account will be activated on <strong>{data.error.message.replace(/Code UM61/, '').trim()}</strong>.</span>,
+              buttonText: 'Okay'
+            })
           } else {
             setFetchingState(false);
             setModalProps({
@@ -630,7 +657,8 @@ const LoginPage = (props: any) => {
       })
   }
 
-  const onLogin = async () => {
+  const onLogin = async (e: any) => {
+    e.preventDefault()
     if (loginData.username.length === 0) {
       alert('Username is required.');
       window.location.reload();
@@ -677,9 +705,9 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Update Password Success',
-          message: 'New password has been set.',
-          buttonText: 'Continue',
+          title: 'Forgot Password',
+          message: 'A reset password email will be sent to the email address of the account.',
+          buttonText: 'Okay',
         })
         
         // await saveToIndexedDB(tmpData);
@@ -735,8 +763,8 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Success',
-          message: 'Password setup success',
+          title: 'Update Password Success',
+          message: 'New password has been set.',
           buttonText: 'Okay'
         })
         
@@ -769,10 +797,16 @@ const LoginPage = (props: any) => {
     onClose: handleModalClose
   });
 
+  const [pwSetupProps, setPwSetupProps] = React.useState<any>({
+    regex: '',
+    character: [],
+    min: 0
+  })
+
   const classes = useStyles();
 
   return (
-    <>
+    <form onSubmit={onLogin}>
       { isChanging && <LoadingIndicator /> }
       <Grid container className="login-main">
         <img
@@ -787,6 +821,7 @@ const LoginPage = (props: any) => {
         />
         <Grid item xs={6}></Grid>
         <Grid item xs={6} className="login-block">
+          {/* <form onSubmit={onLogin}> */}
           <img
             alt="logo"
             className="login-logo"
@@ -842,7 +877,7 @@ const LoginPage = (props: any) => {
               </div> : ''
             }
           </div>
-          <Button disabled={isFetching ? true : false} className="login-button" onClick={onLogin}>
+          <Button disabled={isFetching ? true : false} className="login-button" type="submit">
             {isFetching ? "Initializing..." : "LOG IN"}
           </Button>
           <div style={{ paddingTop: '3rem' }}>
@@ -852,6 +887,7 @@ const LoginPage = (props: any) => {
             </Link>
             &nbsp; for assistance.
           </div>
+          {/* </form> */}
         </Grid>
 
         {/* Modals */}
@@ -866,6 +902,7 @@ const LoginPage = (props: any) => {
         <PasswordSetupModal
           onSubmit={onSetupPasswordSubmit}
           open = {pwSetupModal}
+          setup={pwSetupProps}
           onClose = {() => {
             setpwSetupModal(false)
             setFetchingState(false)
@@ -877,7 +914,7 @@ const LoginPage = (props: any) => {
           onClose = {() => setForgotPassword(false)} />
 
       </Grid>
-    </>
+    </form>
   );
 };
 

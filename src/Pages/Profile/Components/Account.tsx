@@ -162,6 +162,10 @@ export const Account: React.FC<IAccountsProps> = (props: IAccountsProps): JSX.El
                     <Typography className={classes.label}>LAST NAME</Typography>
                     <Typography className={classes.value}>{props.userData.last_name ? props.userData.last_name : "N/A"}</Typography>
                 </Grid>
+                <Grid item xs={3}>
+                    <Typography className={classes.label}>SUFFIX</Typography>
+                    <Typography className={classes.value}>{props.userData.hasOwnProperty('suffix') && props.userData.suffix !== '' ? props.userData.last_name : "N/A"}</Typography>
+                </Grid>
             </Grid>
             <Grid container spacing={5}>
                 <Grid item xs={3}>

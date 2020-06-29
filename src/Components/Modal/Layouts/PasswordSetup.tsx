@@ -11,11 +11,17 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+import ErrorIcon from '@material-ui/icons/Error'
 
 interface IProps {
     open: boolean
     onClose: () => void
     onSubmit: (value: any) => void
+    setup: {
+        regex: string,
+        character: string[],
+        min: any
+    }
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -76,6 +82,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: 15,
         right: 15,
         cursor: 'pointer'
+    },
+    errorMessage: {
+        color: '#E53935',
+        fontSize: 12
+    },
+    errorIcon: {
+        color: '#E53935',
+        fontSize: 16
     }
 }));
 
@@ -83,7 +97,8 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
     const {
         open,
         onClose,
-        onSubmit
+        onSubmit,
+        setup
     } = props
     const classes = useStyles();
 
@@ -113,6 +128,8 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
             name
         } = target
 
+        let regex = new RegExp(setup.regex)
+
         setPwData({
             ...pwData,
             [name]: {
@@ -120,9 +137,66 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                 value: value
             }
         })
+
+        if (name === 'new_password') {
+            if (value === pwData.conf_password.value) {
+                if (!regex.test(value)) {
+                    setErrorNew(true)
+                    setNewPasswordErrorMsg('Invalid Input')
+                } else {
+                    setErrorConf(false)
+                    setNewPasswordErrorMsg('')
+                    setErrorNew(false)
+                    setNewPasswordErrorMsg('')
+                }
+
+                if (!regex.test(value)) {
+                    setErrorConf(true)
+                    setConfPasswordErrorMsg('Invalid Input')
+                } else {
+                    setErrorNew(false)
+                    setNewPasswordErrorMsg('')
+                    setErrorConf(false)
+                    setConfPasswordErrorMsg('')
+                }
+            } else {
+                setErrorNew(true)
+                setConfPasswordErrorMsg('Passwords do not match')
+                setNewPasswordErrorMsg('Passwords do not match')
+                setErrorConf(true)
+            }
+        } else {
+            if (value === pwData.new_password.value) {
+                if (!regex.test(value)) {
+                    setErrorConf(true)
+                    setConfPasswordErrorMsg('Invalid Input')
+                } else {
+                    setErrorNew(false)
+                    setNewPasswordErrorMsg('')
+                    setErrorConf(false)
+                    setConfPasswordErrorMsg('')
+                }
+
+                if (!regex.test(value)) {
+                    setErrorNew(true)
+                    setNewPasswordErrorMsg('Invalid Input')
+                } else {
+                    setErrorConf(false)
+                    setNewPasswordErrorMsg('')
+                    setErrorNew(false)
+                    setNewPasswordErrorMsg('')
+                }
+            } else {
+                setErrorNew(true)
+                setConfPasswordErrorMsg('Passwords do not match')
+                setNewPasswordErrorMsg('Passwords do not match')
+                setErrorConf(true)
+            }
+        }
     }
 
     const submitPassword = () => {
+        
         const { new_password, conf_password } = pwData;
 
         const _pwd = {
@@ -130,28 +204,7 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
             conf_password: conf_password.value
         }
 
-        if (new_password.value === '') {
-            setErrorNew(true)
-        } else {
-            setErrorNew(false)
-        }
-
-        if (conf_password.value === '') {
-            setErrorConf(true)
-
-            return;
-        } else {
-            setErrorConf(false)
-        }
-
-        if (new_password.value !== conf_password.value) {
-            setErrorConf(true)
-            setErrorNew(true)
-        } else {
-            setErrorConf(false)
-            setErrorNew(false)
-            onSubmit(_pwd)
-        }
+        onSubmit(_pwd)
     }
 
     const [pwData, setPwData] = React.useState<any>({
@@ -168,6 +221,9 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
     const [errorNew, setErrorNew] = React.useState<any>(null)
     const [errorConf, setErrorConf] = React.useState<any>(null)
 
+    const [newPasswordErrorMsg, setNewPasswordErrorMsg] = React.useState<any>('')
+    const [confPasswordErrorMsg, setConfPasswordErrorMsg] = React.useState<any>('')
+
     return (
         <>
             <Dialog
@@ -182,11 +238,17 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                     <div className={classes.instruction}>
                         <p>Please set a new password for your account:</p>
                         <span>
-                            {/* — Mismatched  */}
-                            — Must be 8 characters <br />
-                            — Must have number and letter <br />
-                            — Must have 1 upper case <br />
-                            — Must have 1 special character
+                            — Must be <strong>{setup.min} characters</strong> <br />
+                            {
+                                setup.character.map(e => 
+                                    e === 'number' ? 
+                                        <>— Must have <strong>letters and numbers</strong><br /> </> :
+                                    e === 'uppercase_letter' ?
+                                        <>— Must have <strong>at least 1 upper case</strong><br /> </> :
+                                    e === 'special_character' ?
+                                        <>— Must have <strong>at least 1 special</strong><br /> </> : ''
+                                )
+                            }
                         </span>
                     </div>
                     <div>
@@ -213,6 +275,17 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                                 }
                                 labelWidth={0}
                             />
+                            {
+                               newPasswordErrorMsg !== '' && 
+                               <Grid container justify='space-between'>
+                                    <Grid item xs={10}>
+                                        <span className={classes.errorMessage}>{newPasswordErrorMsg}</span>
+                                    </Grid>
+                                    <Grid item xs={2} style={{textAlign: 'right'}}>
+                                        <ErrorIcon className={classes.errorIcon} />
+                                    </Grid>
+                                </Grid>
+                            }
                         </div>
                         <div className={classes.fields}>
                             <span className={classes.inputlabel}>Confirm New Password</span>
@@ -236,6 +309,18 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                                 }
                                 labelWidth={0}
                             />
+                           {
+                               confPasswordErrorMsg !== '' && 
+                               <Grid container justify='space-between'>
+                                    <Grid item xs={10}>
+                                        <span className={classes.errorMessage}>{confPasswordErrorMsg}</span>
+                                    </Grid>
+                                    <Grid item xs={2} style={{textAlign: 'right'}}>
+                                        <ErrorIcon className={classes.errorIcon} />
+                                    </Grid>
+                                </Grid>
+                           }
+                            
                         </div>
 
                         <Grid
@@ -250,6 +335,7 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                             </Grid>
                             <Grid item xs={6} style={{textAlign: 'left'}}>
                                 <Button
+                                    disabled={RegExp(setup.regex).test(pwData.new_password.value) && RegExp(setup.regex).test(pwData.conf_password.value) ? false : true}
                                     onClick={submitPassword}
                                     className={classes.buttonRight}>Submit</Button>
                             </Grid>
