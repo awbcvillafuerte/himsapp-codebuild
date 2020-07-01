@@ -10,3 +10,6 @@
 [submodule "public/system-admin"]
 	path = public/system-admin
 	url = git@gitlab.com:hims-build-artifacts/system-admin.git
+[submodule "public/franchising"]
+	path = public/franchising
+	url = git@gitlab.com:hims-build-artifacts/franchising-module.git
