@@ -25,11 +25,11 @@ interface IProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    dialogTitle: {
+	dialogTitle: {
         fontSize: 20,
         fontWeight: 800,
         color: '#272E4C'
-    },
+	},
     dialogContent: {
         padding: theme.spacing(5),
         color: '#272E4C',

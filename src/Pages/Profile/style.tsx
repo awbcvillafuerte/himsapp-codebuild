@@ -14,6 +14,97 @@ export const accountsPageStyles = makeStyles(theme => ({
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 		
 	},
+	modal: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	paper: {
+		backgroundColor: theme.palette.background.paper,
+		border: '1px solid #000',
+		padding: theme.spacing(2, 4, 3),
+		'&:focus': {
+		  outline: 0
+		}
+	},
+	userAlignRight: {
+		textAlign: 'right',
+	},
+	closeButton: {
+		color: '#272E4C',
+		position: 'absolute',
+		right: 0,
+		top: 0,
+		'&hover': {
+		  fontSize: '0.875rem',
+		}
+	},
+
+	editIconContainer: {
+		position: 'absolute',
+		right: '10px',
+		bottom: '20px',
+		background: '#3AB77D',
+		borderRadius: '100%',
+		width: 24,
+		height: 24,
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		cursor: 'pointer'
+	},
+	editIcon: {
+		color: '#ffffff',
+		width: 13,
+		height: 13
+	},
+	saveButton: {
+		width: '135px',
+		fontSize: '14px',
+		color: '#fff',
+		backgroundColor: "#3AB77D",
+		'&:hover': {
+			backgroundColor: "#3AB77D"
+		}
+	},
+	cancelButton: {
+		width: '135px',
+		fontSize: '14px',
+		backgroundColor: "transparent",
+		borderColor: "#3AB77D",
+		color: "#3AB77D",
+		'&:hover': {
+			color: "#3AB77D",
+			borderColor: "#3AB77D",
+			backgroundColor: "transparent"
+		}
+	},
+	cancelAdd: {
+		width: '135px',
+		fontSize: '14px',
+		color: '#ffffff',
+		marginRight: '20px',
+		backgroundColor: '#3C394A',
+		'&:hover': {
+		  backgroundColor: '#302e3c'
+		}
+	},
+	centerDrop: {
+		display: 'flex',
+	},
+		centerDropLabels: {
+		marginLeft: '10px',
+		maxWidth: '140px',
+		whiteSpace: 'nowrap',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis'
+	},
+	centerDropLabel: {
+		display: 'block',
+		colro: '#272E4C',
+		fontSize: 12,
+		marginTop: -2
+	},
 	circular: {
 		color: '#3ab77d',
 	},
