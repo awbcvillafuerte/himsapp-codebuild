@@ -9,7 +9,12 @@ import {
 	List,
 	ListItem,
 	ListItemIcon,
-	ListItemText
+	ListItemText,
+	Modal,
+	Button,
+	Fade,
+	Link,
+	Backdrop
 } from '@material-ui/core';
 import { Account } from './Components/Account';
 import { SubHeader } from './Components/SubHeader';
@@ -19,11 +24,18 @@ import { withRouter } from 'react-router-dom';
 import { base64Image } from './base64Default';
 import { Header } from './Components/Header'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import CreateIcon from '@material-ui/icons/Create'
 import {
   faBookOpen
 } from '@fortawesome/free-solid-svg-icons';
 
 import { MsgModal } from './Components/MsgModal'
+import { ImageCropper } from './Components/ProfilePicCropper'
+import FloatingButtons from './Components/FloatingButtons'
+import IndexedDbHelper from '../Login/IndexedDbHelper'
+
+const storage = new IndexedDbHelper()
 
 const ProfilePage = (props: any): JSX.Element => {
 
@@ -59,6 +71,7 @@ const ProfilePage = (props: any): JSX.Element => {
 				if (!jsondata.error) {
 					setName(jsondata.body.first_name + " " + jsondata.body.last_name)
 					setUserData(jsondata.body);
+					setOriginalData(jsondata.body)
 					setModal(true)
 				} else {
 					props.history.push('/')
@@ -88,10 +101,137 @@ const ProfilePage = (props: any): JSX.Element => {
 		setModal(false)
 	}
 
+	const handleUpload = (imgBase64: any) => {
+		setUserData({
+		  ...userData,
+		  profile_pic: (imgBase64 as string).split(',')[1]
+		})
+		setUploadModal(false)
+	}
+
+	const openUploadModal = () => {
+		setUploadModal(true)
+	}
+
+	const closeUploadModal = () => {
+		setUploadModal(false)
+		setUserData(originalData)
+		setTemp64(null)
+	}
+
+	const handleAccountPhoto = (event: any) => {
+		const validFiles = ['image/jpeg', 'image/jpg,', 'image/png'];
+	
+		if (validFiles.includes(event[0].type)) {
+			let reader = new FileReader();
+			reader.readAsDataURL(event[0]);
+			reader.onload = () => {
+			  setTemp64(reader.result)
+		  };
+		} else {
+			alert("Invalid file extension.")
+		}
+	};
+
+	const updateProfile = async () => {
+		setLoading(true)
+
+		let update = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}/users/profile_pic`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			body: JSON.stringify({profile_pic: userData.profile_pic})
+		}).catch((err: any) => alert(err))
+
+		if (update) {
+			let jsonData = await update.json()
+
+			storage.openDb('himsDb').then((res: any) => {
+				storage.updateSinglePropertyByKey(res.result, 'user_data', 'profile_pic', jsonData.profile_pic).then(() => {
+					// save success
+					setModalProps({
+						...modalProps,
+						open: true,
+						title: 'Changes Save',
+						message: 'Your profile picture has been change',
+						onClose: () => window.location.reload()
+					})
+				}).catch(() => {
+					setModalProps({
+						...modalProps,
+						open: true,
+						title: 'Error',
+						message: '',
+						onClose: () => {setModalProps({...modalProps, open: false})}
+					})
+				})
+			}).catch(() => {
+				setModalProps({
+					...modalProps,
+					open: true,
+					title: 'Error',
+					message: '',
+					onClose: () => {setModalProps({...modalProps, open: false})}
+				})
+			})
+		}
+
+		setLoading(false)
+	}
+
+	const [uploadModal, setUploadModal] = React.useState(false);
+	const [temp64, setTemp64] = React.useState<any>(null);
+	const [originalData, setOriginalData] = React.useState<any>({});
+	const [modalProps, setModalProps] = React.useState<any>({
+		open: false,
+		title: '',
+		message: '',
+		onClose: () => {}
+	});
+
 	const [modal, setModal] = React.useState(false)
 
 	return (
 		<>
+			<Modal
+				aria-labelledby="transition-modal-title"
+				aria-describedby="transition-modal-description"
+				className={classes.modal}
+				open={uploadModal}
+				onClose={closeUploadModal}
+				closeAfterTransition
+				BackdropComponent={Backdrop}
+				BackdropProps={{
+					timeout: 500,
+				}}>
+              	<Fade in={uploadModal}>
+					<div className={classes.paper}>
+						<List>
+							<ListItemText>
+							<Link
+								className={classes.closeButton}
+								onClick={closeUploadModal}>
+								<FontAwesomeIcon icon={faTimes} />
+							</Link>
+							</ListItemText>
+						</List>
+						<p id="transition-modal-title"
+							style={{ fontSize: "20px" }}>
+							<b>Upload Picture</b>
+						</p>
+						<ImageCropper
+							onUpoad={handleUpload}
+							photo={temp64}
+							handleAccountPhoto={handleAccountPhoto}
+							classes={classes}
+							classes2={classes}
+							setPhoto={setTemp64}
+							closeUploadModal={closeUploadModal} />
+					</div>
+              	</Fade>
+            </Modal>
 			<Grid container>
 				<Grid item xs={1} style={{maxWidth: 85, backgroundColor: '#1E2071'}}>
 					<List style={{position: 'relative'}}>
@@ -138,6 +278,11 @@ const ProfilePage = (props: any): JSX.Element => {
 										className={classes.userImage}
 										src={userData.profile_pic !== 'DEFAULT_PIC' ? `data:image/jpeg;base64,${userData.profile_pic}` : `data:image/jpeg;base64,${base64Image}`}
 										alt="avatar" />
+									<span
+										onClick={openUploadModal}
+										className={classes.editIconContainer}>
+										<CreateIcon className={classes.editIcon} />
+									</span>
 								</IconButton>
 							</Grid>
 							<Grid item xs={9} className={classes.contentContainer}>
@@ -159,6 +304,33 @@ const ProfilePage = (props: any): JSX.Element => {
                     message={'Please contact your supervisor or your administrator for assistance.'}
                 />
 			</Grid>
+
+			{
+				temp64 && temp64 !== null &&
+				<FloatingButtons
+					rightButtons={
+						<Grid item xs={12} className={classes.userAlignRight}>
+							<Button
+								onClick={() => { setTemp64(null); setUserData(originalData); }}
+								className={classes.cancelAdd}
+								variant="contained" color="primary">
+								Cancel
+							</Button>
+							<Button
+								onClick={updateProfile}
+								className={classes.saveButton}
+								variant="contained" color="primary">
+								Save Changes
+							</Button>
+						</Grid>
+					} />
+			}
+
+			<MsgModal
+				isModalOpen={modalProps.open}
+				onClose={modalProps.onClose}
+				title={modalProps.title}
+				message={modalProps.message} />
 		</>
 	);
 }

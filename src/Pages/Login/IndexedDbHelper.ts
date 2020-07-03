@@ -307,6 +307,47 @@ export default class IndexedDbHelper {
             request.onsuccess = ()=> {resolve("store cleared")}
         })
     }
+
+    updateSinglePropertyByKey = (db: IDBDatabase, storeName: string, keyPath: string, newValue: string) => {
+        return new Promise<IndexedDBHelperResponse> ((resolve, reject) => {
+            try {
+                db.transaction([storeName], 'readwrite');
+                let request = db.transaction([storeName], 'readwrite');
+    
+                let store = request.objectStore(storeName);
+    
+                let response: IndexedDBHelperResponse = {
+                    cbType: '',
+                    result: {}
+                };
+    
+                db.onerror = (storeEvt) => {
+                    console.log(storeEvt);
+                }
+                
+                let query = store.get(keyPath);
+    
+                query.onsuccess = (res: any) => {
+                    let result = res.target.result;
+                    
+                    if (result !== undefined) {
+                        result.value = newValue;
+                        store.put(result).onsuccess = (updateRe) => {
+                            response.cbType = updateRe.type;
+                            response.result = {message: 'value updated.'};
+                        }
+                        resolve(response);
+                    } else {
+                        response.cbType = 'error';
+                        response.result = {message: 'error updating value.'};
+                        reject(response);
+                    }
+                }
+            } catch {
+                reject('store not found.')
+            }
+        })
+    }
 }
 
 
