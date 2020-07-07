@@ -19,12 +19,12 @@
     "win": {
       "icon": "public/hims-uat.png"
     },
-	"publish": [
+    "publish": [
       {
         "provider": "github",
         "owner": "veridata-hims",
         "repo": "hims-desktop",
-	"releaseType": "prerelease"
+        "releaseType": "prerelease"
       }
     ]
   },
@@ -44,7 +44,7 @@
     "buildmac": "yarn react-build && yarn electron-build -m",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
     "publish": "yarn react-build && electron-builder --win -p always",
-	"publish-only": "electron-builder --win -p always"
+    "publish-only": "electron-builder --win -p always"
   },
   "private": true,
   "jest": {
@@ -74,6 +74,10 @@
     "@hims/core"
   ],
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.22",
+    "@fortawesome/free-regular-svg-icons": "^5.10.2",
+    "@fortawesome/free-solid-svg-icons": "^5.10.2",
+    "@fortawesome/react-fontawesome": "^0.1.4",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
@@ -82,15 +86,11 @@
     "electron-is-dev": "^1.1.0",
     "electron-updater": "^4.2.0",
     "react": "^16.9.0",
+    "react-avatar-edit": "^0.8.3",
     "react-dom": "^16.9.0",
-    "react-scripts": "3.2.0",
-    "typescript": "3.6.2",
     "react-router-dom": "^5.2.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.22",
-    "@fortawesome/free-regular-svg-icons": "^5.10.2",
-    "@fortawesome/free-solid-svg-icons": "^5.10.2",
-    "@fortawesome/react-fontawesome": "^0.1.4"
-
+    "react-scripts": "3.2.0",
+    "typescript": "3.6.2"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
