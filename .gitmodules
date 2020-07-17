@@ -13,3 +13,6 @@
 [submodule "public/franchising"]
 	path = public/franchising
 	url = git@gitlab.com:hims-build-artifacts/franchising-module.git
+[submodule "public/treasury"]
+	path = public/treasury
+	url = git@gitlab.com:hims-build-artifacts/treasury.git
