@@ -497,7 +497,10 @@ const LoginPage = (props: any) => {
       localStorage.setItem('CLIENT_URL',process.env.REACT_APP_HIMS_API_CLIENT_URL!);
       localStorage.setItem('PARTNER_URL',process.env.REACT_APP_HIMS_API_PARTNER_URL!);
       localStorage.setItem('PMAKER_BASE_URL',process.env.REACT_APP_PMAKER_BASE_URL!);
-
+      localStorage.setItem('CLAIMS_URL',process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
+      localStorage.setItem('BILLING_URL',process.env.REACT_APP_HIMS_API_BILLING_URL!);
+      localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
+      
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
     let options = {
       method: 'POST',
