@@ -24,7 +24,7 @@ interface LoginDataType {
 }
 
 // Module URL
-const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
+// const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
 const customerCareUrl = 'customer-care/index.html#/customer-care/';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
@@ -111,18 +111,17 @@ const LoginPage = (props: any) => {
         urls.map(async (url: any) => {
           if (url.name === mainModule) {
             if (mainModule.toLowerCase() === 'customer care') {
-              console.log("pasok sa banga")
-              let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
-                .catch(err => console.log(err))
-              let logingroup = query && query.result ? query.result : null;
-              let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
-              if(loginGroupName.toLowerCase() === 'css group'){
-                window.location.replace(cssCustomerCareUrl)
+              // console.log("pasok sa banga")
+              // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
+              //   .catch(err => console.log(err))
+              // let logingroup = query && query.result ? query.result : null;
+              // let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
+              // if(loginGroupName.toLowerCase() === 'css group'){
+              //   window.location.replace(cssCustomerCareUrl)
                 
-              } else {
+              // } else {
                 window.location.replace(url.dashboard_url)
-               
-              }
+              // }
             } else {
               localStorage.setItem('sidebar','dashboard')
               window.location.replace(url.dashboard_url)
@@ -139,16 +138,16 @@ const LoginPage = (props: any) => {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule.toLowerCase() === 'customer care') {
-        let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
-          .catch(err => console.log(err))
-        let logingroup = query && query.result ? query.result : null;
-        let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
-          if(loginGroupName.toLowerCase() === 'css group'){
-          window.location.replace(cssCustomerCareUrl);
-        }
-        else{
+        // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
+        //   .catch(err => console.log(err))
+        // let logingroup = query && query.result ? query.result : null;
+        // let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
+        //   if(loginGroupName.toLowerCase() === 'css group'){
+        //   window.location.replace(cssCustomerCareUrl);
+        // }
+        // else{
           window.location.replace(customerCareUrl);
-        }
+        // }
       } else if (mainModule.toLowerCase() === 'membership') {
         localStorage.setItem('sidebar','dashboard');
         window.location.replace(membershipUrl);
