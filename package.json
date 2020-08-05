@@ -25,7 +25,6 @@
         "owner": "veridata-hims",
         "repo": "hims-desktop",
         "releaseType": "prerelease"
-        "channel": "alpha"
       }
     ]
   },
