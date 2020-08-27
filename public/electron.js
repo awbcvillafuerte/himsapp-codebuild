@@ -6,7 +6,7 @@ const path = require("path");
 
 const Printer = require('./printer')
 const Dialog = require('./dialog')
-const PartnerPrinter = require('./partnerview')
+const PartnerViewer = require('./partnerview')
 
 let isDev = true;
 let mainWindow;
@@ -143,5 +143,5 @@ app.on('ready', function()  {
  
 Dialog(electron); 
 Printer(electron);
-PartnerPrinter(electron, mainWindow);
+PartnerViewer(electron, mainWindow);
  
