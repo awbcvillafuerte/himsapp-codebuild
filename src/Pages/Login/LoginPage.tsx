@@ -111,6 +111,7 @@ const LoginPage = (props: any) => {
         urls.map(async (url: any) => {
           if (url.name === mainModule) {
             if (mainModule.toLowerCase() === 'customer care') {
+              // console.log("pasok sa banga")
               // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
               //   .catch(err => console.log(err))
               // let logingroup = query && query.result ? query.result : null;
@@ -496,7 +497,6 @@ const LoginPage = (props: any) => {
       localStorage.setItem('CLIENT_URL',process.env.REACT_APP_HIMS_API_CLIENT_URL!);
       localStorage.setItem('PARTNER_URL',process.env.REACT_APP_HIMS_API_PARTNER_URL!);
       localStorage.setItem('CLAIMS_URL',process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
-      localStorage.setItem('BILLING_URL',process.env.REACT_APP_HIMS_API_BILLING_URL!);
       localStorage.setItem('PMAKER_BASE_URL',process.env.REACT_APP_PMAKER_BASE_URL!);
       localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
 
