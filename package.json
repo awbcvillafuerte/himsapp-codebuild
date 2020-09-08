@@ -1,7 +1,7 @@
 {
   "name": "hims-dev",
   "productName": "hims-dev",
-  "version": "0.2.311-beta", 
+  "version": "0.2.311-alpha", 
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -25,7 +25,7 @@
         "owner": "veridata-hims",
         "repo": "hims-dev",
         "releaseType": "prerelease",
-        "channel": "latest"
+        "channel": "alpha"
       }
     ]
   },
