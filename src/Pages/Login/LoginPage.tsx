@@ -121,7 +121,7 @@ const LoginPage = (props: any) => {
     getModules();
 
   }, [])
-
+  
   useEffect(() => {
     let countLoop = countLoopICD + countLoopCPT;
     let totalCount = totalCountICD + totalCountCPT;
@@ -129,13 +129,12 @@ const LoginPage = (props: any) => {
     console.log(totalCount)
     let percentage = 0;
     console.log(percent);
-    if (percent == 0) {
-      if (countLoop != 0) {
+    if (percent === 0) {
+      if (countLoop !== 0) {
         percentage = 100 / countLoop;
       }
 
     } else {
-      console.log("aaaaa")
       let per = 100 / countLoop
       percentage = percent + per
     }
@@ -150,6 +149,8 @@ const LoginPage = (props: any) => {
 
     setPecent(percentage);
     // console.log(percentageCount);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [percentageCount])
 
   useEffect(() => {
