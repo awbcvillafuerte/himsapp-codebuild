@@ -12,11 +12,15 @@ import {
   MessageDialog,
   LoadingIndicator,
   ForgotPassword
- } from '../../Components'
- import moment from 'moment';
- import { makeStyles } from '@material-ui/core/styles';
- import ErrorIcon from '@material-ui/icons/Error';
- import { withRouter } from 'react-router-dom';
+} from '../../Components'
+import moment from 'moment';
+import { makeStyles } from '@material-ui/core/styles';
+import ErrorIcon from '@material-ui/icons/Error';
+import { withRouter } from 'react-router-dom';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 interface LoginDataType {
   username: string;
@@ -46,11 +50,25 @@ let icd10BatchSize: any = 5000;
 
 const loginStorageService = new LoginStorageService();
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+    flexDirection: 'column'
+  },
+  percentage :{
+    color: '#fff',
+  },
+  circularProgress:{
+    color: '#fff',
+    width : '100px !important',
+    height : '100px !important'
+
+  },
   fields: {
-      '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#3AB77D'
-      }
+    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#3AB77D'
+    }
   },
   inputField: {
     height: '50px',
@@ -75,6 +93,9 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
+
+
+
 const LoginPage = (props: any) => {
   const [loginData, setLoginData] = useState<LoginDataType>({
     username: '',
@@ -82,7 +103,17 @@ const LoginPage = (props: any) => {
   });
 
   const [urls, setUrls] = useState<any[]>([]);
+  const [percentageCount, setPercentageCount] = useState<any>();
+  const [countLoopICD, setCountLoopICD] = useState<number>(0);
+  const [countLoopCPT, setCountLoopCPT] = useState<number>(0);
+  const [totalCountICD, setTotalCountICD] = useState<number>(0);
+  const [totalCountCPT, setTotalCountCPT] = useState<number>(0);
+  const [percent, setPecent] = useState<number>(0);
 
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
@@ -91,8 +122,42 @@ const LoginPage = (props: any) => {
 
   }, [])
 
+  useEffect(() => {
+    let countLoop = countLoopICD + countLoopCPT;
+    let totalCount = totalCountICD + totalCountCPT;
+    console.log(countLoop)
+    console.log(totalCount)
+    let percentage = 0;
+    console.log(percent);
+    if (percent == 0) {
+      if (countLoop != 0) {
+        percentage = 100 / countLoop;
+      }
+
+    } else {
+      console.log("aaaaa")
+      let per = 100 / countLoop
+      percentage = percent + per
+    }
+    // if(isNaN(percent)){
+    //   if(countLoop!=0)
+    //   percentage = ( 100 / countLoop )
+    // }else{
+    //   percentage =  ( 100 / countLoop )
+    // }
+
+
+
+    setPecent(percentage);
+    // console.log(percentageCount);
+  }, [percentageCount])
+
+  useEffect(() => {
+    console.log(Math.ceil(percent));
+  }, [percent])
+
   const getModules = async () => {
-    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {method: 'GET'})
+    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, { method: 'GET' })
       .catch((err: any) => {
         console.log(err)
       })
@@ -123,10 +188,10 @@ const LoginPage = (props: any) => {
               // }
               window.location.replace(url.dashboard_url)
             } else {
-              localStorage.setItem('sidebar','dashboard')
+              localStorage.setItem('sidebar', 'dashboard')
               window.location.replace(url.dashboard_url)
             }
-          } 
+          }
         })
       } else {
         setFetchingState(false);
@@ -135,7 +200,7 @@ const LoginPage = (props: any) => {
     } else {
       // Fallback
       if (mainModule.toLowerCase() === 'underwriting') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule.toLowerCase() === 'customer care') {
         // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
@@ -150,22 +215,22 @@ const LoginPage = (props: any) => {
         // }
         window.location.replace(customerCareUrl);
       } else if (mainModule.toLowerCase() === 'membership') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(membershipUrl);
       } else if (mainModule.toLowerCase() === 'claims') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(claimsUrl);
       } else if (mainModule.toLowerCase() === 'user management') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(systemAdminUrl);
       } else if (mainModule.toLowerCase() === 'franchising') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(franchisingUrl);
       } else if (mainModule.toLowerCase() === 'billing and collections') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(BillingUrl);
       } else if (mainModule.toLowerCase() === 'partner network') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(PnUrl);
       } else {
         setFetchingState(false);
@@ -181,6 +246,9 @@ const LoginPage = (props: any) => {
     if (count) {
 
       let callCount = Math.ceil(count / limit);
+      setCountLoopICD(callCount)
+      setTotalCountICD(count)
+
       let arrayPromise: any[] = [];
 
       for (var i = 0; i < callCount; i++) {
@@ -198,16 +266,20 @@ const LoginPage = (props: any) => {
       let icd10_collection: any[] = [];
 
       let icd10List: any = await Promise.all(arrayPromise.map((promise: any) =>
-        fetch(promise.url, {method: promise.method})
-        )).catch((err: any) => {
-          setModalProps({
-            ...modalProps,
-            open: true,
-            title: 'Error',
-            message: err.message,
-            buttonText: 'Okay'
-          })
+        fetch(promise.url, { method: promise.method }).then(res => {
+          res.clone().json()
+          setPercentageCount(res);
+          return res
         })
+      )).catch((err: any) => {
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Error',
+          message: err.message,
+          buttonText: 'Okay'
+        })
+      })
 
       if (icd10List) {
         for (var x = 0; x < icd10List.length; x++) {
@@ -218,7 +290,7 @@ const LoginPage = (props: any) => {
 
       let saveEntry = await loginStorageService.saveEntry(icd10_collection, 'icd10_list')
         .catch(err => console.log(err));
-      
+
       if (saveEntry) {
         icd10FetchDone = true;
         let saveUpdatedIcd10Config = await loginStorageService.saveEntry(icd10ToSave, 'icd10')
@@ -247,7 +319,7 @@ const LoginPage = (props: any) => {
             icd10FetchDone = true;
             if (cptFetchDone) {
               redirect();
-            } 
+            }
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
@@ -256,13 +328,13 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Error',
-          message: err.message,
-          buttonText: 'Okay'
+          title: 'Incomplete Data Download',
+          message: 'Please click the button below.',
+          buttonText: 'Retry Downoad'
         })
       });
 
-       
+
   }
 
   const fetchCpt = async (data: any) => {
@@ -273,7 +345,8 @@ const LoginPage = (props: any) => {
 
       let callCount = Math.ceil(count / limit);
       let arrayPromise: any[] = [];
-
+      setCountLoopCPT(callCount);
+      setTotalCountCPT(count)
       for (var i = 0; i < callCount; i++) {
         let fetchConf = {
           method: 'GET',
@@ -289,16 +362,20 @@ const LoginPage = (props: any) => {
       let cpt_collection: any[] = [];
 
       let cptList: any = await Promise.all(arrayPromise.map((promise: any) =>
-        fetch(promise.url, {method: promise.method})
-        )).catch((err: any) => {
-          setModalProps({
-            ...modalProps,
-            open: true,
-            title: 'Error',
-            message: err.message,
-            buttonText: 'Okay'
-          })
+        fetch(promise.url, { method: promise.method }).then(res => {
+          res.clone().json()
+          setPercentageCount(res);
+          return res
         })
+      )).catch((err: any) => {
+        setModalProps({
+          ...modalProps,
+          open: true,
+          title: 'Incomplete Data Download',
+          message: 'Please click the button below.',
+          buttonText: 'Retry Downoad'
+        })
+      })
 
       if (cptList) {
         for (var x = 0; x < cptList.length; x++) {
@@ -309,7 +386,7 @@ const LoginPage = (props: any) => {
 
       let saveEntry = await loginStorageService.saveEntry(cpt_collection, 'cpt_list')
         .catch(err => console.log(err));
-      
+
       if (saveEntry) {
         cptFetchDone = true;
         let saveUpdatedCptConfig = await loginStorageService.saveEntry(cptToSave, 'cpt')
@@ -320,7 +397,7 @@ const LoginPage = (props: any) => {
       }
     }
   }
-  
+
   // Fetch Cpt updates
   const fetchCptUpdate = async () => {
     let query = await loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated');
@@ -338,7 +415,7 @@ const LoginPage = (props: any) => {
             cptFetchDone = true;
             if (icd10FetchDone) {
               redirect();
-            } 
+            }
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
@@ -347,9 +424,9 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Error',
-          message: err.message,
-          buttonText: 'Okay'
+          title: 'Incomplete Data Download',
+          message: 'Please click the button below.',
+          buttonText: 'Retry Downoad'
         })
       });
   }
@@ -358,28 +435,28 @@ const LoginPage = (props: any) => {
   const saveToIndexedDB = async (data: any) => {
 
     icd10ToSave = Object.entries(data.icd10).map(entry => {
-      return {key: entry[0], value: entry[1]}
+      return { key: entry[0], value: entry[1] }
     });
 
     cptToSave = Object.entries(data.cpt).map(entry => {
-      return {key: entry[0], value: entry[1]}
+      return { key: entry[0], value: entry[1] }
     });
 
     loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'juday').then((juday: any) => {
-      
+
       let newJuday = data.icd10.juday ? data.icd10.juday : null;
-      
+
       let existingJuday = juday.result;
 
       // console.log("new", newJuday);
       // console.log("old", existingJuday);
-      if(newJuday && (moment(newJuday).isAfter(existingJuday))) {
+      if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
           fetchIcd10(data);
         })
-      }else {
+      } else {
         loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
-          if(!moment(data.icd10.date_updated).isAfter(du.result)) {
+          if (!moment(data.icd10.date_updated).isAfter(du.result)) {
             loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
               console.log(res);
               if (res === 0) {
@@ -390,7 +467,7 @@ const LoginPage = (props: any) => {
                   if (res > 0) {
                     redirect();
                   }
-                }) 
+                })
               }
             })
           } else {
@@ -401,7 +478,7 @@ const LoginPage = (props: any) => {
         }).catch(() => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
             console.log(res);
-            fetchIcd10(data); 
+            fetchIcd10(data);
           }).catch((err) => console.log(err));
         });
       }
@@ -420,10 +497,10 @@ const LoginPage = (props: any) => {
         })
       })
     })
-    
-    
+
+
     loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'juday').then((juday: any) => {
-      
+
       let newJuday = data.cpt.juday ? data.cpt.juday : null;
       let existingJuday = juday.result;
 
@@ -436,10 +513,10 @@ const LoginPage = (props: any) => {
           fetchCpt(data);
         })
       } else {
-        
+
         loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated').then((du) => {
-          if(!moment(data.cpt.date_updated).isAfter(du.result)) {
-            
+          if (!moment(data.cpt.date_updated).isAfter(du.result)) {
+
             loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
               if (res === 0) {
                 fetchCpt(data);
@@ -449,7 +526,7 @@ const LoginPage = (props: any) => {
                   if (res > 0) {
                     redirect();
                   }
-                }) 
+                })
               }
             })
           } else {
@@ -460,14 +537,14 @@ const LoginPage = (props: any) => {
           }
         }).catch(() => {
           loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
-            fetchCpt(data); 
+            fetchCpt(data);
           }).catch((err) => console.log(err));
         });
       }
 
     }).catch(() => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
-      
+
       loginStorageService.clearList('cpt_list').then(() => {
         fetchCpt(data);
       }).catch(() => {
@@ -481,7 +558,7 @@ const LoginPage = (props: any) => {
         })
       })
     })
-    
+
   }
 
   const usernameRef = useRef(null);
@@ -493,12 +570,14 @@ const LoginPage = (props: any) => {
   };
 
   const login = async () => {
-     //set localstorage variable for modules
-      localStorage.setItem('CLIENT_URL',process.env.REACT_APP_HIMS_API_CLIENT_URL!);
-      localStorage.setItem('PARTNER_URL',process.env.REACT_APP_HIMS_API_PARTNER_URL!);
-      localStorage.setItem('CLAIMS_URL',process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
-      localStorage.setItem('PMAKER_BASE_URL',process.env.REACT_APP_PMAKER_BASE_URL!);
-      localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
+    //set localstorage variable for modules
+    localStorage.setItem('CLIENT_URL', process.env.REACT_APP_HIMS_API_CLIENT_URL!);
+    localStorage.setItem('PARTNER_URL', process.env.REACT_APP_HIMS_API_PARTNER_URL!);
+    localStorage.setItem('CLAIMS_URL', process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
+    localStorage.setItem('OCP_URL', process.env.REACT_APP_HIMS_API_OCP_URL!);
+    localStorage.setItem('DDS_URL', process.env.REACT_APP_HIMS_API_DDS_URL!);
+    localStorage.setItem('PMAKER_BASE_URL', process.env.REACT_APP_PMAKER_BASE_URL!);
+    localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
 
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
     let options = {
@@ -512,28 +591,29 @@ const LoginPage = (props: any) => {
     setFetchingState(true);
 
     await fetch(url, options)
-      .then((resp: any)=> resp.json())
+      .then((resp: any) => resp.json())
       .then(async (data: any) => {
         if (!data.error) {
+          setOpen(true);
           tmpData = data;
-          localStorage.setItem('api_token',data.login['access_token']);
-          localStorage.setItem('pm_token',data.login['access_token']);
-          localStorage.setItem('user_id',data.login.user_id);
-          localStorage.setItem('employee_id',data.login.employee_id);
-          localStorage.setItem('first_name',data.login.first_name);
-          localStorage.setItem('last_name',data.login.last_name);
+          localStorage.setItem('api_token', data.login['access_token']);
+          localStorage.setItem('pm_token', data.login['access_token']);
+          localStorage.setItem('user_id', data.login.user_id);
+          localStorage.setItem('employee_id', data.login.employee_id);
+          localStorage.setItem('first_name', data.login.first_name);
+          localStorage.setItem('last_name', data.login.last_name);
           if (data.login.main_module.toLowerCase() === 'underwriting') {
-            localStorage.setItem('sidebar','dashboard');
+            localStorage.setItem('sidebar', 'dashboard');
             // window.location.replace(underwritingUrl);
           } else if (data.login.main_module.toLowerCase() === 'customer care') {
             // window.location.replace(customerCareUrl);
           } else if (data.login.main_module.toLowerCase() === 'membership') {
-            localStorage.setItem('sidebar','dashboard');
+            localStorage.setItem('sidebar', 'dashboard');
             // window.location.replace(membershipUrl);
           } else {
             // window.location.replace(systemAdminUrl);
           }
-          
+
           mainModule = data.login.main_module;
           cptBatchSize = data.cpt.batch_size;
           icd10BatchSize = data.icd10.batch_size;
@@ -541,7 +621,7 @@ const LoginPage = (props: any) => {
           data.login.pm_token = data.login['access_token'];
 
           let userDataToSave = Object.entries(data.login).map(entry => {
-            return {key: entry[0], value: entry[1]}
+            return { key: entry[0], value: entry[1] }
           });
 
           loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
@@ -561,14 +641,14 @@ const LoginPage = (props: any) => {
               min: data.password.min_length
             })
             let configtosave = Object.entries(data).map(entry => {
-              return {key: entry[0], value: entry[1]}
+              return { key: entry[0], value: entry[1] }
             });
             loginStorageService.saveEntry(configtosave, 'config').then((res) => {
               console.log(res);
             }).catch((err) => console.log(err));
-            
+
           }).catch(err => console.log(err))
-          
+
           if (data.login.needs_password_update) {
             setpwSetupModal(true)
           } else {
@@ -585,7 +665,7 @@ const LoginPage = (props: any) => {
               title: 'Login Failed',
               message: data.error.message.replace(/Code UM06/, ''),
               buttonText: 'Okay',
-              onClose: () => {setModalProps({...modalProps, open: false})}
+              onClose: () => { setModalProps({ ...modalProps, open: false }) }
             })
           } else if (data.error.message.includes('UM03')) {
             console.log(data.error.message)
@@ -597,7 +677,7 @@ const LoginPage = (props: any) => {
               title: 'Login Failed',
               message: data.error.message.replace(/Code UM03/, ''),
               buttonText: 'Okay',
-              onClose: () => {setModalProps({...modalProps, open: false})}
+              onClose: () => { setModalProps({ ...modalProps, open: false }) }
             })
           } else if (data.error.message.includes('UM04')) {
             setFetchingState(false);
@@ -685,9 +765,9 @@ const LoginPage = (props: any) => {
 
     const request: RequestInit = {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json'
-       }
+      }
     }
 
     let requestSetup = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}password/forgot/${username}`, request).catch(err => {
@@ -711,7 +791,7 @@ const LoginPage = (props: any) => {
           message: 'A reset password email will be sent to the email address of the account.',
           buttonText: 'Okay',
         })
-        
+
         // await saveToIndexedDB(tmpData);
       } else {
         setModalProps({
@@ -741,10 +821,10 @@ const LoginPage = (props: any) => {
     let token = tmpData.login.access_token;
     const request: RequestInit = {
       method: 'PATCH',
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-       },
+      },
       body: JSON.stringify(value)
     }
 
@@ -769,7 +849,7 @@ const LoginPage = (props: any) => {
           message: 'New password has been set.',
           buttonText: 'Okay'
         })
-        
+
         // await saveToIndexedDB(tmpData);
       } else {
         setModalProps({
@@ -809,7 +889,7 @@ const LoginPage = (props: any) => {
 
   return (
     <form onSubmit={onLogin}>
-      { isChanging && <LoadingIndicator /> }
+      {isChanging && <LoadingIndicator />}
       <Grid container className="login-main">
         <img
           alt="shape1"
@@ -865,18 +945,18 @@ const LoginPage = (props: any) => {
             />
             {
               isError ?
-              <div className={classes.errorMessageContainer}>
-                <div>
-                  <ErrorIcon className={classes.iconError} />
-                </div>
-                <div className={classes.errorString}>
-                  <span className={classes.errText}>
-                  {
-                    errorMessage
-                  }
-                  </span>
-                </div>
-              </div> : ''
+                <div className={classes.errorMessageContainer}>
+                  <div>
+                    <ErrorIcon className={classes.iconError} />
+                  </div>
+                  <div className={classes.errorString}>
+                    <span className={classes.errText}>
+                      {
+                        errorMessage
+                      }
+                    </span>
+                  </div>
+                </div> : ''
             }
           </div>
           <Button disabled={isFetching ? true : false} className="login-button" type="submit">
@@ -894,28 +974,48 @@ const LoginPage = (props: any) => {
 
         {/* Modals */}
         <MessageDialog
-          isModalOpen = {modalProps.open}
-          onClose = {modalProps.onClose}
-          title = {modalProps.title}
-          message = {modalProps.message}
-          buttonText = {modalProps.buttonText !== '' ? modalProps.buttonText : 'Okay'}  
+          isModalOpen={modalProps.open}
+          onClose={modalProps.onClose}
+          title={modalProps.title}
+          message={modalProps.message}
+          buttonText={modalProps.buttonText !== '' ? modalProps.buttonText : 'Okay'}
         />
 
         <PasswordSetupModal
           onSubmit={onSetupPasswordSubmit}
-          open = {pwSetupModal}
+          open={pwSetupModal}
           setup={pwSetupProps}
-          onClose = {() => {
+          onClose={() => {
             setpwSetupModal(false)
             setFetchingState(false)
           }} />
 
         <ForgotPassword
           onSubmit={onForgotPasswordSubmit}
-          open = {forgotPassword}
-          onClose = {() => setForgotPassword(false)} />
+          open={forgotPassword}
+          onClose={() => setForgotPassword(false)} />
 
       </Grid>
+      <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
+      <Typography> Initializing </Typography>
+        <Box position="relative" display="inline-flex">
+          <CircularProgress className={classes.circularProgress} />
+          <Box
+            top={0}
+            left={0}
+            bottom={0}
+            right={0}
+            position="absolute"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography variant="caption" component="div" className={classes.percentage}>{`${Math.round(
+              percent,
+            )}%`}</Typography>
+          </Box>
+        </Box>
+      </Backdrop>
     </form>
   );
 };
