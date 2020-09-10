@@ -578,6 +578,7 @@ const LoginPage = (props: any) => {
     localStorage.setItem('OCP_URL', process.env.REACT_APP_HIMS_API_OCP_URL!);
     localStorage.setItem('DDS_URL', process.env.REACT_APP_HIMS_API_DDS_URL!);
     localStorage.setItem('PMAKER_BASE_URL', process.env.REACT_APP_PMAKER_BASE_URL!);
+    localStorage.setItem('REACT_APP_HIMS_TITLE', process.env.REACT_APP_HIMS_TITLE! || "");
     localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
 
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
