@@ -318,6 +318,8 @@ export const ChangePassword:
                                                                     <li>Must have <strong>letters and numbers</strong></li> :
                                                                 e === 'uppercase_letter' ?
                                                                     <li>Must have <strong>at least 1 upper case</strong></li> :
+                                                                e === 'lowercase_letter' ?
+                                                                    <li>Must have <strong>at least 1 lower case</strong></li> :
                                                                 e === 'special_character' ?
                                                                     <li>Must have <strong>at least 1 special</strong></li> : ''
                                                             )
