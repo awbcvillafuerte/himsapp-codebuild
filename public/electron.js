@@ -6,6 +6,7 @@ const path = require("path");
 
 const Printer = require('./printer')
 const Dialog = require('./dialog')
+const PartnerViewer = require('./partnerview')
 
 let isDev = true;
 let mainWindow;
@@ -67,7 +68,10 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS for VNI DEV"
+        title: "HIMS for VNI DEV",
+        webPreferences: {
+          preload: `${__dirname}/preload.js`
+        }
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
 
@@ -139,4 +143,5 @@ app.on('ready', function()  {
  
 Dialog(electron); 
 Printer(electron);
+PartnerViewer(electron, mainWindow);
  
