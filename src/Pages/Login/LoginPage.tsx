@@ -507,6 +507,7 @@ const LoginPage = (props: any) => {
       // console.log("old", existingJuday);
       if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
+          setOpen(true);
           fetchIcd10(data);
         })
       } else {
@@ -578,6 +579,7 @@ const LoginPage = (props: any) => {
 
             loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
               if (res === 0) {
+                setOpen(true);
                 fetchCpt(data);
               } else {
                 cptFetchDone = true;
@@ -1087,6 +1089,7 @@ const LoginPage = (props: any) => {
 };
 
 export default withRouter(LoginPage);
+
 
 
 
