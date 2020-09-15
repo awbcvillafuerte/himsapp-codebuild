@@ -20,7 +20,8 @@ interface IProps {
     setup: {
         regex: string,
         character: string[],
-        min: any
+        min: any,
+        max : any
     }
 }
 
@@ -238,13 +239,15 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                     <div className={classes.instruction}>
                         <p>Please set a new password for your account:</p>
                         <span>
-                            — Must be <strong>{setup.min} characters</strong> <br />
+                            — Must be <strong>{setup.min} characters</strong>  <br />
                             {
                                 setup.character.map(e => 
                                     e === 'number' ? 
                                         <>— Must have <strong>letters and numbers</strong><br /> </> :
                                     e === 'uppercase_letter' ?
                                         <>— Must have <strong>at least 1 upper case</strong><br /> </> :
+                                    e === 'lowercase_letter' ?
+                                        <>— Must have <strong>at least 1 lower case</strong><br /> </> :
                                     e === 'special_character' ?
                                         <>— Must have <strong>at least 1 special</strong><br /> </> : ''
                                 )
@@ -255,6 +258,9 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                         <div className={classes.fields}>
                             <span className={classes.inputlabel}>New Password</span>
                             <OutlinedInput
+                            inputProps={{
+                                maxLength: setup.max,
+                              }}
                                 autoFocus
                                 error={errorNew !== null && errorNew}
                                 className={classes.inputField}
@@ -290,6 +296,9 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                         <div className={classes.fields}>
                             <span className={classes.inputlabel}>Confirm New Password</span>
                             <OutlinedInput
+                            inputProps={{
+                                maxLength: setup.max,
+                              }}
                                 error={errorConf !== null && errorConf}
                                 className={classes.inputField}
                                 fullWidth={true}
