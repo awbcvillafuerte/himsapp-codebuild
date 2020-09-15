@@ -21,6 +21,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { generateRequestArrayIcd10, generateRequestArrayCpt, listToMatrix } from '../../utils';
 
 interface LoginDataType {
   username: string;
@@ -37,6 +38,9 @@ const claimsUrl = 'claims/index.html';
 const BillingUrl = 'billing/index.html';
 const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
+
+const abortController = new AbortController();
+const signal = abortController.signal;
 
 let mainModule = '';
 let cptFetchDone = false;
@@ -103,12 +107,14 @@ const LoginPage = (props: any) => {
   });
 
   const [urls, setUrls] = useState<any[]>([]);
-  const [percentageCount, setPercentageCount] = useState<any>();
-  const [countLoopICD, setCountLoopICD] = useState<number>(0);
-  const [countLoopCPT, setCountLoopCPT] = useState<number>(0);
-  const [totalCountICD, setTotalCountICD] = useState<number>(0);
-  const [totalCountCPT, setTotalCountCPT] = useState<number>(0);
-  const [percent, setPecent] = useState<number>(0);
+  const [initializingStatus] = useState<string>('Initializing...')
+
+
+  const [totalIcd10, setTotalIcd10] = useState<any>(0)
+  const [fetchedIcd10, setFetchedIcd10] = useState<any>(0)
+
+  const [totalCpt, setTotalCpt] = useState<any>(0)
+  const [fetchedCpt, setFetchedCpt] = useState<any>(0)
 
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
@@ -122,40 +128,43 @@ const LoginPage = (props: any) => {
 
   }, [])
   
-  useEffect(() => {
-    let countLoop = countLoopICD + countLoopCPT;
-    let totalCount = totalCountICD + totalCountCPT;
-    console.log(countLoop)
-    console.log(totalCount)
-    let percentage = 0;
-    console.log(percent);
-    if (percent === 0) {
-      if (countLoop !== 0) {
-        percentage = 100 / countLoop;
-      }
+  // TODO: REMOVE NEXT ISSUE
+  // useEffect(() => {
+  //   let countLoop = countLoopICD + countLoopCPT;
+  //   // let totalCount = totalCountICD + totalCountCPT;
+  //   // console.log(countLoop)
+  //   // console.log(countLoop)
+  //   // console.log("NOW", countLoop)
+  //   // console.log("TOTAL", totalCount)
+  //   let percentage = 0;
+  //   // console.log(percent);
+  //   if (percent === 0) {
+  //     if (countLoop !== 0) {
+  //       percentage = 100 / countLoop;
+  //     }
 
-    } else {
-      let per = 100 / countLoop
-      percentage = percent + per
-    }
-    // if(isNaN(percent)){
-    //   if(countLoop!=0)
-    //   percentage = ( 100 / countLoop )
-    // }else{
-    //   percentage =  ( 100 / countLoop )
-    // }
+  //   } else {
+  //     let per = 100 / countLoop
+  //     percentage = percent + per
+  //   }
+  //   // if(isNaN(percent)){
+  //   //   if(countLoop!=0)
+  //   //   percentage = ( 100 / countLoop )
+  //   // }else{
+  //   //   percentage =  ( 100 / countLoop )
+  //   // }
 
 
 
-    setPecent(percentage);
-    // console.log(percentageCount);
+  //   setPecent(percentage);
+  //   // console.log(percentageCount);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [percentageCount])
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [percentageCount, countLoopICD, totalCountICD])
 
-  useEffect(() => {
-    console.log(Math.ceil(percent));
-  }, [percent])
+  // useEffect(() => {
+  //   // console.log(Math.ceil(percent));
+  // }, [percent])
 
   const getModules = async () => {
     let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, { method: 'GET' })
@@ -240,52 +249,76 @@ const LoginPage = (props: any) => {
     }
   }
 
-  const fetchIcd10 = async (data: any) => {
-    const count: any = data.icd10.count;
-    const limit = icd10BatchSize;
+  // const retryFetch = async (args: any) => {
+  //   return new Promise(async (resolve, reject) => {
+  //     const promise = await args()
+
+  //     if (!promise) retryFetch(args)
+
+  //     return promise
+  //   })
+  // }
+
+  let icd10_collection: any[] = [];
+
+  const fetchIcd10 = async (data: any, defaultSkip?: number) => {
+    let count: any = data.icd10.count
+    setTotalIcd10(count)
+    let limit = icd10BatchSize;
+
+    if (defaultSkip) {
+      count = count - defaultSkip
+    }
 
     if (count) {
 
       let callCount = Math.ceil(count / limit);
-      setCountLoopICD(callCount)
-      setTotalCountICD(count)
-
-      let arrayPromise: any[] = [];
-
-      for (var i = 0; i < callCount; i++) {
-        let fetchConf = {
-          method: 'GET',
-          url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes?filter=${JSON.stringify({
-            limit: limit,
-            skip: (i * limit)
-          })}`
-        }
-
-        arrayPromise.push(fetchConf);
-      }
-
-      let icd10_collection: any[] = [];
-
-      let icd10List: any = await Promise.all(arrayPromise.map((promise: any) =>
-        fetch(promise.url, { method: promise.method }).then(res => {
-          res.clone().json()
-          setPercentageCount(res);
-          return res
-        })
-      )).catch((err: any) => {
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Error',
-          message: err.message,
-          buttonText: 'Okay'
-        })
+   
+      let requests = generateRequestArrayIcd10(callCount, {
+        limit,
+        signal,
+        defaultSkip: defaultSkip ? defaultSkip : 0
       })
 
-      if (icd10List) {
-        for (var x = 0; x < icd10List.length; x++) {
-          let jsonre = await icd10List[x].json();
-          icd10_collection.push(...jsonre);
+      const chunkRequest = listToMatrix(requests, 3)
+
+      for (let i=0; i < chunkRequest.length; i++) {
+        let startTime: any = null
+        let endTime: any = null
+        const promiseCall = () => {
+          startTime = moment()
+          return Promise.all(chunkRequest[i].map((promise: any) =>
+            fetch(promise.url, { method: promise.method }).then(async res => {
+              const resp = await res.clone().json()
+              return resp
+            })
+          )).catch((err: any) => {
+            // setinitializingStatus('Download failed retrying...')
+          })
+        }
+        
+        let icd10List: any = await promiseCall()
+
+        if (!icd10List) {
+          // Retry the batch if request was failed
+          icd10BatchSize = Math.round(icd10BatchSize / 2)
+
+          fetchIcd10(data, icd10_collection.length)
+          return
+        }
+        
+        // Otherwise push to icd10 collection variable
+        icd10List.map((icd10s: any) => icd10_collection.push(...icd10s))
+        setFetchedIcd10(icd10_collection.length)
+
+        endTime = moment()
+        const requestBatchDuration = endTime.diff(startTime, 'seconds')
+
+        if (requestBatchDuration > 10) {
+          icd10BatchSize = Math.round(icd10BatchSize / 2)
+          fetchIcd10(data, icd10_collection.length)
+        
+          return
         }
       }
 
@@ -338,50 +371,71 @@ const LoginPage = (props: any) => {
 
   }
 
-  const fetchCpt = async (data: any) => {
-    const count: any = data.cpt.count;
-    const limit = cptBatchSize;
+  let cpt_collection: any[] = [];
 
+  const fetchCpt = async (data: any, defaultSkip?: number) => {
+    let count: any = data.cpt.count;
+    setTotalCpt(count)
+    let limit = cptBatchSize;
+
+    if (defaultSkip) {
+      count = count - defaultSkip
+    }
+    
     if (count) {
 
-      let callCount = Math.ceil(count / limit);
-      let arrayPromise: any[] = [];
-      setCountLoopCPT(callCount);
-      setTotalCountCPT(count)
-      for (var i = 0; i < callCount; i++) {
-        let fetchConf = {
-          method: 'GET',
-          url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts?filter=${JSON.stringify({
-            limit: limit,
-            skip: (i * limit)
-          })}`
-        }
+      let callCount = Math.ceil(count / limit)
 
-        arrayPromise.push(fetchConf);
-      }
-
-      let cpt_collection: any[] = [];
-
-      let cptList: any = await Promise.all(arrayPromise.map((promise: any) =>
-        fetch(promise.url, { method: promise.method }).then(res => {
-          res.clone().json()
-          setPercentageCount(res);
-          return res
-        })
-      )).catch((err: any) => {
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Incomplete Data Download',
-          message: 'Please click the button below.',
-          buttonText: 'Retry Downoad'
-        })
+      let requests = generateRequestArrayCpt(callCount, {
+        limit,
+        signal,
+        defaultSkip: defaultSkip ? defaultSkip : 0
       })
 
-      if (cptList) {
-        for (var x = 0; x < cptList.length; x++) {
-          let jsonre = await cptList[x].json();
-          cpt_collection.push(...jsonre);
+      const chunkRequest = listToMatrix(requests, 3)
+
+
+      for (let i=0; i < chunkRequest.length; i++) {
+        let startTime: any = null
+        let endTime: any = null
+        const promiseCall = () => {
+          startTime = moment()
+          return Promise.all(chunkRequest[i].map((promise: any) =>
+            fetch(promise.url, { method: promise.method }).then(async res => {
+              const resp = await res.clone().json()
+              return resp
+            })
+          )).catch((err: any) => {
+            // setinitializingStatus('Download failed retrying...')
+          })
+        }
+        
+        let cptList: any = await promiseCall()
+
+        
+
+        if (!cptList) {
+          // Retry the batch if request was failed
+          cptBatchSize = Math.round(cptBatchSize / 2)
+
+          fetchCpt(data, cpt_collection.length)
+          return
+        }
+        
+        // Otherwise push to icd10 collection variable
+        cptList.map((cpts: any) => cpt_collection.push(...cpts))
+        setFetchedCpt(cpt_collection.length)
+
+        endTime = moment()
+        const requestBatchDuration = endTime.diff(startTime, 'seconds')
+
+        if (requestBatchDuration > 10) {
+          cptBatchSize = Math.round(cptBatchSize / 2)
+          fetchCpt(data, cpt_collection.length)
+        
+
+
+          return
         }
       }
 
@@ -461,6 +515,7 @@ const LoginPage = (props: any) => {
             loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
               console.log(res);
               if (res === 0) {
+                setOpen(true);
                 fetchIcd10(data);
               } else {
                 icd10FetchDone = true;
@@ -479,6 +534,7 @@ const LoginPage = (props: any) => {
         }).catch(() => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
             console.log(res);
+            setOpen(true);
             fetchIcd10(data);
           }).catch((err) => console.log(err));
         });
@@ -486,6 +542,7 @@ const LoginPage = (props: any) => {
     }).catch(() => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       loginStorageService.clearList('icd10_list').then(() => {
+        setOpen(true);
         fetchIcd10(data);
       }).catch(() => {
         loginStorageService.deleteDb('himsDb');
@@ -511,6 +568,7 @@ const LoginPage = (props: any) => {
       if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         // console.log("my juday")
         loginStorageService.clearList('cpt_list').then(() => {
+          setOpen(true);
           fetchCpt(data);
         })
       } else {
@@ -538,6 +596,7 @@ const LoginPage = (props: any) => {
           }
         }).catch(() => {
           loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
+            setOpen(true);
             fetchCpt(data);
           }).catch((err) => console.log(err));
         });
@@ -547,6 +606,7 @@ const LoginPage = (props: any) => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
 
       loginStorageService.clearList('cpt_list').then(() => {
+        setOpen(true);
         fetchCpt(data);
       }).catch(() => {
         loginStorageService.deleteDb('himsDb');
@@ -596,7 +656,6 @@ const LoginPage = (props: any) => {
       .then((resp: any) => resp.json())
       .then(async (data: any) => {
         if (!data.error) {
-          setOpen(true);
           tmpData = data;
           localStorage.setItem('api_token', data.login['access_token']);
           localStorage.setItem('pm_token', data.login['access_token']);
@@ -640,7 +699,8 @@ const LoginPage = (props: any) => {
             setPwSetupProps({
               regex: data.password.regex,
               character: data.password.character,
-              min: data.password.min_length
+              min: data.password.min_length,
+              max: data.password.max_length
             })
             let configtosave = Object.entries(data).map(entry => {
               return { key: entry[0], value: entry[1] }
@@ -884,7 +944,8 @@ const LoginPage = (props: any) => {
   const [pwSetupProps, setPwSetupProps] = React.useState<any>({
     regex: '',
     character: [],
-    min: 0
+    min: 0,
+    max:0
   })
 
   const classes = useStyles();
@@ -988,6 +1049,7 @@ const LoginPage = (props: any) => {
           open={pwSetupModal}
           setup={pwSetupProps}
           onClose={() => {
+            setOpen(false)
             setpwSetupModal(false)
             setFetchingState(false)
           }} />
@@ -999,7 +1061,9 @@ const LoginPage = (props: any) => {
 
       </Grid>
       <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
-      <Typography> Initializing </Typography>
+      <Typography> 
+        { Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100) === 100 ? 'Redirecting...' : initializingStatus } 
+      </Typography>
         <Box position="relative" display="inline-flex">
           <CircularProgress className={classes.circularProgress} />
           <Box
@@ -1012,9 +1076,9 @@ const LoginPage = (props: any) => {
             alignItems="center"
             justifyContent="center"
           >
-            <Typography variant="caption" component="div" className={classes.percentage}>{`${Math.round(
-              percent,
-            )}%`}</Typography>
+            <Typography variant="caption" component="div" className={classes.percentage}>
+              {`${isNaN(Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100)) ? 0 : Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100)}%`}
+            </Typography>
           </Box>
         </Box>
       </Backdrop>
@@ -1023,6 +1087,7 @@ const LoginPage = (props: any) => {
 };
 
 export default withRouter(LoginPage);
+
 
 
 
