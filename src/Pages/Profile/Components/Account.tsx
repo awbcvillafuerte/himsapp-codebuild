@@ -94,7 +94,7 @@ export const Account: React.FC<IAccountsProps> = (props: IAccountsProps): JSX.El
                         {
                             props.userData.hasOwnProperty('group_roles') ? props.userData.group_roles.length > 0 ?
                                 props.userData.group_roles.map((d: any, i: any) =>
-                                    `${d.description}${i !== (props.userData.group_roles.length - 1) ? ', ' : ''}`
+                                    `${d.name}${i !== (props.userData.group_roles.length - 1) ? ', ' : ''}`
                                 ) : 'N/A' : 'N/A'
                         }
                     </u></Typography>
