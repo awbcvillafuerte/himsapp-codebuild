@@ -12,11 +12,16 @@ import {
   MessageDialog,
   LoadingIndicator,
   ForgotPassword
- } from '../../Components'
- import moment from 'moment';
- import { makeStyles } from '@material-ui/core/styles';
- import ErrorIcon from '@material-ui/icons/Error';
- import { withRouter } from 'react-router-dom';
+} from '../../Components'
+import moment from 'moment';
+import { makeStyles } from '@material-ui/core/styles';
+import ErrorIcon from '@material-ui/icons/Error';
+import { withRouter } from 'react-router-dom';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import { generateRequestArrayIcd10, generateRequestArrayCpt, listToMatrix } from '../../utils';
 
 interface LoginDataType {
   username: string;
@@ -34,6 +39,9 @@ const BillingUrl = 'billing/index.html';
 const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
 
+const abortController = new AbortController();
+const signal = abortController.signal;
+
 let mainModule = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
@@ -46,11 +54,25 @@ let icd10BatchSize: any = 5000;
 
 const loginStorageService = new LoginStorageService();
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+    flexDirection: 'column'
+  },
+  percentage :{
+    color: '#fff',
+  },
+  circularProgress:{
+    color: '#fff',
+    width : '100px !important',
+    height : '100px !important'
+
+  },
   fields: {
-      '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#3AB77D'
-      }
+    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#3AB77D'
+    }
   },
   inputField: {
     height: '50px',
@@ -75,6 +97,9 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
+
+
+
 const LoginPage = (props: any) => {
   const [loginData, setLoginData] = useState<LoginDataType>({
     username: '',
@@ -82,7 +107,19 @@ const LoginPage = (props: any) => {
   });
 
   const [urls, setUrls] = useState<any[]>([]);
+  const [initializingStatus] = useState<string>('Initializing...')
 
+
+  const [totalIcd10, setTotalIcd10] = useState<any>(0)
+  const [fetchedIcd10, setFetchedIcd10] = useState<any>(0)
+
+  const [totalCpt, setTotalCpt] = useState<any>(0)
+  const [fetchedCpt, setFetchedCpt] = useState<any>(0)
+
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
@@ -90,9 +127,47 @@ const LoginPage = (props: any) => {
     getModules();
 
   }, [])
+  
+  // TODO: REMOVE NEXT ISSUE
+  // useEffect(() => {
+  //   let countLoop = countLoopICD + countLoopCPT;
+  //   // let totalCount = totalCountICD + totalCountCPT;
+  //   // console.log(countLoop)
+  //   // console.log(countLoop)
+  //   // console.log("NOW", countLoop)
+  //   // console.log("TOTAL", totalCount)
+  //   let percentage = 0;
+  //   // console.log(percent);
+  //   if (percent === 0) {
+  //     if (countLoop !== 0) {
+  //       percentage = 100 / countLoop;
+  //     }
+
+  //   } else {
+  //     let per = 100 / countLoop
+  //     percentage = percent + per
+  //   }
+  //   // if(isNaN(percent)){
+  //   //   if(countLoop!=0)
+  //   //   percentage = ( 100 / countLoop )
+  //   // }else{
+  //   //   percentage =  ( 100 / countLoop )
+  //   // }
+
+
+
+  //   setPecent(percentage);
+  //   // console.log(percentageCount);
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [percentageCount, countLoopICD, totalCountICD])
+
+  // useEffect(() => {
+  //   // console.log(Math.ceil(percent));
+  // }, [percent])
 
   const getModules = async () => {
-    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {method: 'GET'})
+    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, { method: 'GET' })
       .catch((err: any) => {
         console.log(err)
       })
@@ -118,15 +193,15 @@ const LoginPage = (props: any) => {
               // let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
               // if(loginGroupName.toLowerCase() === 'css group'){
               //   window.location.replace(cssCustomerCareUrl)
-                
               // } else {
-                window.location.replace(url.dashboard_url)
+              //   window.location.replace(url.dashboard_url)
               // }
+              window.location.replace(url.dashboard_url)
             } else {
-              localStorage.setItem('sidebar','dashboard')
+              localStorage.setItem('sidebar', 'dashboard')
               window.location.replace(url.dashboard_url)
             }
-          } 
+          }
         })
       } else {
         setFetchingState(false);
@@ -135,7 +210,7 @@ const LoginPage = (props: any) => {
     } else {
       // Fallback
       if (mainModule.toLowerCase() === 'underwriting') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule.toLowerCase() === 'customer care') {
         // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
@@ -146,25 +221,26 @@ const LoginPage = (props: any) => {
         //   window.location.replace(cssCustomerCareUrl);
         // }
         // else{
-          window.location.replace(customerCareUrl);
+        //   window.location.replace(customerCareUrl);
         // }
+        window.location.replace(customerCareUrl);
       } else if (mainModule.toLowerCase() === 'membership') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(membershipUrl);
       } else if (mainModule.toLowerCase() === 'claims') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(claimsUrl);
       } else if (mainModule.toLowerCase() === 'user management') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(systemAdminUrl);
       } else if (mainModule.toLowerCase() === 'franchising') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(franchisingUrl);
       } else if (mainModule.toLowerCase() === 'billing and collections') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(BillingUrl);
       } else if (mainModule.toLowerCase() === 'partner network') {
-        localStorage.setItem('sidebar','dashboard');
+        localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(PnUrl);
       } else {
         setFetchingState(false);
@@ -173,51 +249,82 @@ const LoginPage = (props: any) => {
     }
   }
 
-  const fetchIcd10 = async (data: any) => {
-    const count: any = data.icd10.count;
-    const limit = icd10BatchSize;
+  // const retryFetch = async (args: any) => {
+  //   return new Promise(async (resolve, reject) => {
+  //     const promise = await args()
+
+  //     if (!promise) retryFetch(args)
+
+  //     return promise
+  //   })
+  // }
+
+  let icd10_collection: any[] = [];
+
+  const fetchIcd10 = async (data: any, defaultSkip?: number) => {
+    let count: any = data.icd10.count
+    setTotalIcd10(count)
+    let limit = icd10BatchSize;
+
+    if (defaultSkip) {
+      count = count - defaultSkip
+    }
 
     if (count) {
 
       let callCount = Math.ceil(count / limit);
-      let arrayPromise: any[] = [];
+   
+      let requests = generateRequestArrayIcd10(callCount, {
+        limit,
+        signal,
+        defaultSkip: defaultSkip ? defaultSkip : 0
+      })
 
-      for (var i = 0; i < callCount; i++) {
-        let fetchConf = {
-          method: 'GET',
-          url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}icd10-codes?filter=${JSON.stringify({
-            limit: limit,
-            skip: (i * limit)
-          })}`
-        }
+      const chunkRequest = listToMatrix(requests, 3)
 
-        arrayPromise.push(fetchConf);
-      }
-
-      let icd10_collection: any[] = [];
-
-      let icd10List: any = await Promise.all(arrayPromise.map((promise: any) =>
-        fetch(promise.url, {method: promise.method})
-        )).catch((err: any) => {
-          setModalProps({
-            ...modalProps,
-            open: true,
-            title: 'Error',
-            message: err.message,
-            buttonText: 'Okay'
+      for (let i=0; i < chunkRequest.length; i++) {
+        let startTime: any = null
+        let endTime: any = null
+        const promiseCall = () => {
+          startTime = moment()
+          return Promise.all(chunkRequest[i].map((promise: any) =>
+            fetch(promise.url, { method: promise.method }).then(async res => {
+              const resp = await res.clone().json()
+              return resp
+            })
+          )).catch((err: any) => {
+            // setinitializingStatus('Download failed retrying...')
           })
-        })
+        }
+        
+        let icd10List: any = await promiseCall()
 
-      if (icd10List) {
-        for (var x = 0; x < icd10List.length; x++) {
-          let jsonre = await icd10List[x].json();
-          icd10_collection.push(...jsonre);
+        if (!icd10List) {
+          // Retry the batch if request was failed
+          icd10BatchSize = Math.round(icd10BatchSize / 2)
+
+          fetchIcd10(data, icd10_collection.length)
+          return
+        }
+        
+        // Otherwise push to icd10 collection variable
+        icd10List.map((icd10s: any) => icd10_collection.push(...icd10s))
+        setFetchedIcd10(icd10_collection.length)
+
+        endTime = moment()
+        const requestBatchDuration = endTime.diff(startTime, 'seconds')
+
+        if (requestBatchDuration > 10) {
+          icd10BatchSize = Math.round(icd10BatchSize / 2)
+          fetchIcd10(data, icd10_collection.length)
+        
+          return
         }
       }
 
       let saveEntry = await loginStorageService.saveEntry(icd10_collection, 'icd10_list')
         .catch(err => console.log(err));
-      
+
       if (saveEntry) {
         icd10FetchDone = true;
         let saveUpdatedIcd10Config = await loginStorageService.saveEntry(icd10ToSave, 'icd10')
@@ -246,7 +353,7 @@ const LoginPage = (props: any) => {
             icd10FetchDone = true;
             if (cptFetchDone) {
               redirect();
-            } 
+            }
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
@@ -255,60 +362,86 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Error',
-          message: err.message,
-          buttonText: 'Okay'
+          title: 'Incomplete Data Download',
+          message: 'Please click the button below.',
+          buttonText: 'Retry Downoad'
         })
       });
 
-       
+
   }
 
-  const fetchCpt = async (data: any) => {
-    const count: any = data.cpt.count;
-    const limit = cptBatchSize;
+  let cpt_collection: any[] = [];
 
+  const fetchCpt = async (data: any, defaultSkip?: number) => {
+    let count: any = data.cpt.count;
+    setTotalCpt(count)
+    let limit = cptBatchSize;
+
+    if (defaultSkip) {
+      count = count - defaultSkip
+    }
+    
     if (count) {
 
-      let callCount = Math.ceil(count / limit);
-      let arrayPromise: any[] = [];
+      let callCount = Math.ceil(count / limit)
 
-      for (var i = 0; i < callCount; i++) {
-        let fetchConf = {
-          method: 'GET',
-          url: `${process.env.REACT_APP_HIMS_API_CLIENT_URL}cpts?filter=${JSON.stringify({
-            limit: limit,
-            skip: (i * limit)
-          })}`
-        }
+      let requests = generateRequestArrayCpt(callCount, {
+        limit,
+        signal,
+        defaultSkip: defaultSkip ? defaultSkip : 0
+      })
 
-        arrayPromise.push(fetchConf);
-      }
+      const chunkRequest = listToMatrix(requests, 3)
 
-      let cpt_collection: any[] = [];
 
-      let cptList: any = await Promise.all(arrayPromise.map((promise: any) =>
-        fetch(promise.url, {method: promise.method})
-        )).catch((err: any) => {
-          setModalProps({
-            ...modalProps,
-            open: true,
-            title: 'Error',
-            message: err.message,
-            buttonText: 'Okay'
+      for (let i=0; i < chunkRequest.length; i++) {
+        let startTime: any = null
+        let endTime: any = null
+        const promiseCall = () => {
+          startTime = moment()
+          return Promise.all(chunkRequest[i].map((promise: any) =>
+            fetch(promise.url, { method: promise.method }).then(async res => {
+              const resp = await res.clone().json()
+              return resp
+            })
+          )).catch((err: any) => {
+            // setinitializingStatus('Download failed retrying...')
           })
-        })
+        }
+        
+        let cptList: any = await promiseCall()
 
-      if (cptList) {
-        for (var x = 0; x < cptList.length; x++) {
-          let jsonre = await cptList[x].json();
-          cpt_collection.push(...jsonre);
+        
+
+        if (!cptList) {
+          // Retry the batch if request was failed
+          cptBatchSize = Math.round(cptBatchSize / 2)
+
+          fetchCpt(data, cpt_collection.length)
+          return
+        }
+        
+        // Otherwise push to icd10 collection variable
+        cptList.map((cpts: any) => cpt_collection.push(...cpts))
+        setFetchedCpt(cpt_collection.length)
+
+        endTime = moment()
+        const requestBatchDuration = endTime.diff(startTime, 'seconds')
+
+        if (requestBatchDuration > 10) {
+          cptBatchSize = Math.round(cptBatchSize / 2)
+          fetchCpt(data, cpt_collection.length)
+        
+
+
+          return
         }
       }
 
       let saveEntry = await loginStorageService.saveEntry(cpt_collection, 'cpt_list')
         .catch(err => console.log(err));
-      
+
       if (saveEntry) {
         cptFetchDone = true;
         let saveUpdatedCptConfig = await loginStorageService.saveEntry(cptToSave, 'cpt')
@@ -319,7 +452,7 @@ const LoginPage = (props: any) => {
       }
     }
   }
-  
+
   // Fetch Cpt updates
   const fetchCptUpdate = async () => {
     let query = await loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated');
@@ -337,7 +470,7 @@ const LoginPage = (props: any) => {
             cptFetchDone = true;
             if (icd10FetchDone) {
               redirect();
-            } 
+            }
           }).catch((err) => console.log(err));
         }).catch((err) => console.log(err));
       })
@@ -346,9 +479,9 @@ const LoginPage = (props: any) => {
         setModalProps({
           ...modalProps,
           open: true,
-          title: 'Error',
-          message: err.message,
-          buttonText: 'Okay'
+          title: 'Incomplete Data Download',
+          message: 'Please click the button below.',
+          buttonText: 'Retry Downoad'
         })
       });
   }
@@ -357,31 +490,33 @@ const LoginPage = (props: any) => {
   const saveToIndexedDB = async (data: any) => {
 
     icd10ToSave = Object.entries(data.icd10).map(entry => {
-      return {key: entry[0], value: entry[1]}
+      return { key: entry[0], value: entry[1] }
     });
 
     cptToSave = Object.entries(data.cpt).map(entry => {
-      return {key: entry[0], value: entry[1]}
+      return { key: entry[0], value: entry[1] }
     });
 
     loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'juday').then((juday: any) => {
-      
+
       let newJuday = data.icd10.juday ? data.icd10.juday : null;
-      
+
       let existingJuday = juday.result;
 
       // console.log("new", newJuday);
       // console.log("old", existingJuday);
-      if(newJuday && (moment(newJuday).isAfter(existingJuday))) {
+      if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
+          setOpen(true);
           fetchIcd10(data);
         })
-      }else {
+      } else {
         loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
-          if(!moment(data.icd10.date_updated).isAfter(du.result)) {
+          if (!moment(data.icd10.date_updated).isAfter(du.result)) {
             loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
               console.log(res);
               if (res === 0) {
+                setOpen(true);
                 fetchIcd10(data);
               } else {
                 icd10FetchDone = true;
@@ -389,7 +524,7 @@ const LoginPage = (props: any) => {
                   if (res > 0) {
                     redirect();
                   }
-                }) 
+                })
               }
             })
           } else {
@@ -400,13 +535,15 @@ const LoginPage = (props: any) => {
         }).catch(() => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
             console.log(res);
-            fetchIcd10(data); 
+            setOpen(true);
+            fetchIcd10(data);
           }).catch((err) => console.log(err));
         });
       }
     }).catch(() => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
       loginStorageService.clearList('icd10_list').then(() => {
+        setOpen(true);
         fetchIcd10(data);
       }).catch(() => {
         loginStorageService.deleteDb('himsDb');
@@ -419,10 +556,10 @@ const LoginPage = (props: any) => {
         })
       })
     })
-    
-    
+
+
     loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'juday').then((juday: any) => {
-      
+
       let newJuday = data.cpt.juday ? data.cpt.juday : null;
       let existingJuday = juday.result;
 
@@ -432,15 +569,17 @@ const LoginPage = (props: any) => {
       if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         // console.log("my juday")
         loginStorageService.clearList('cpt_list').then(() => {
+          setOpen(true);
           fetchCpt(data);
         })
       } else {
-        
+
         loginStorageService.getSingleEntryByKeyReturnValue('cpt', 'date_updated').then((du) => {
-          if(!moment(data.cpt.date_updated).isAfter(du.result)) {
-            
+          if (!moment(data.cpt.date_updated).isAfter(du.result)) {
+
             loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
               if (res === 0) {
+                setOpen(true);
                 fetchCpt(data);
               } else {
                 cptFetchDone = true;
@@ -448,7 +587,7 @@ const LoginPage = (props: any) => {
                   if (res > 0) {
                     redirect();
                   }
-                }) 
+                })
               }
             })
           } else {
@@ -459,15 +598,17 @@ const LoginPage = (props: any) => {
           }
         }).catch(() => {
           loginStorageService.saveEntry(cptToSave, 'cpt').then((res) => {
-            fetchCpt(data); 
+            setOpen(true);
+            fetchCpt(data);
           }).catch((err) => console.log(err));
         });
       }
 
     }).catch(() => {
       // console.log("wala akong juday kaya mag clear ako tapos fetch ulit hehe");
-      
+
       loginStorageService.clearList('cpt_list').then(() => {
+        setOpen(true);
         fetchCpt(data);
       }).catch(() => {
         loginStorageService.deleteDb('himsDb');
@@ -480,7 +621,7 @@ const LoginPage = (props: any) => {
         })
       })
     })
-    
+
   }
 
   const usernameRef = useRef(null);
@@ -492,14 +633,16 @@ const LoginPage = (props: any) => {
   };
 
   const login = async () => {
-     //set localstorage variable for modules
-      localStorage.setItem('CLIENT_URL',process.env.REACT_APP_HIMS_API_CLIENT_URL!);
-      localStorage.setItem('PARTNER_URL',process.env.REACT_APP_HIMS_API_PARTNER_URL!);
-      localStorage.setItem('PMAKER_BASE_URL',process.env.REACT_APP_PMAKER_BASE_URL!);
-      localStorage.setItem('CLAIMS_URL',process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
-      localStorage.setItem('BILLING_URL',process.env.REACT_APP_HIMS_API_BILLING_URL!);
-      localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
-      
+    //set localstorage variable for modules
+    localStorage.setItem('CLIENT_URL', process.env.REACT_APP_HIMS_API_CLIENT_URL!);
+    localStorage.setItem('PARTNER_URL', process.env.REACT_APP_HIMS_API_PARTNER_URL!);
+    localStorage.setItem('CLAIMS_URL', process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
+    localStorage.setItem('OCP_URL', process.env.REACT_APP_HIMS_API_OCP_URL!);
+    localStorage.setItem('DDS_URL', process.env.REACT_APP_HIMS_API_DDS_URL!);
+    localStorage.setItem('PMAKER_BASE_URL', process.env.REACT_APP_PMAKER_BASE_URL!);
+    localStorage.setItem('REACT_APP_HIMS_TITLE', process.env.REACT_APP_HIMS_TITLE! || "");
+    localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
+
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
     let options = {
       method: 'POST',
@@ -512,28 +655,28 @@ const LoginPage = (props: any) => {
     setFetchingState(true);
 
     await fetch(url, options)
-      .then((resp: any)=> resp.json())
+      .then((resp: any) => resp.json())
       .then(async (data: any) => {
         if (!data.error) {
           tmpData = data;
-          localStorage.setItem('api_token',data.login['access_token']);
-          localStorage.setItem('pm_token',data.login['access_token']);
-          localStorage.setItem('user_id',data.login.user_id);
-          localStorage.setItem('employee_id',data.login.employee_id);
-          localStorage.setItem('first_name',data.login.first_name);
-          localStorage.setItem('last_name',data.login.last_name);
+          localStorage.setItem('api_token', data.login['access_token']);
+          localStorage.setItem('pm_token', data.login['access_token']);
+          localStorage.setItem('user_id', data.login.user_id);
+          localStorage.setItem('employee_id', data.login.employee_id);
+          localStorage.setItem('first_name', data.login.first_name);
+          localStorage.setItem('last_name', data.login.last_name);
           if (data.login.main_module.toLowerCase() === 'underwriting') {
-            localStorage.setItem('sidebar','dashboard');
+            localStorage.setItem('sidebar', 'dashboard');
             // window.location.replace(underwritingUrl);
           } else if (data.login.main_module.toLowerCase() === 'customer care') {
             // window.location.replace(customerCareUrl);
           } else if (data.login.main_module.toLowerCase() === 'membership') {
-            localStorage.setItem('sidebar','dashboard');
+            localStorage.setItem('sidebar', 'dashboard');
             // window.location.replace(membershipUrl);
           } else {
             // window.location.replace(systemAdminUrl);
           }
-          
+
           mainModule = data.login.main_module;
           cptBatchSize = data.cpt.batch_size;
           icd10BatchSize = data.icd10.batch_size;
@@ -541,7 +684,7 @@ const LoginPage = (props: any) => {
           data.login.pm_token = data.login['access_token'];
 
           let userDataToSave = Object.entries(data.login).map(entry => {
-            return {key: entry[0], value: entry[1]}
+            return { key: entry[0], value: entry[1] }
           });
 
           loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
@@ -558,17 +701,18 @@ const LoginPage = (props: any) => {
             setPwSetupProps({
               regex: data.password.regex,
               character: data.password.character,
-              min: data.password.min_length
+              min: data.password.min_length,
+              max: data.password.max_length
             })
             let configtosave = Object.entries(data).map(entry => {
-              return {key: entry[0], value: entry[1]}
+              return { key: entry[0], value: entry[1] }
             });
             loginStorageService.saveEntry(configtosave, 'config').then((res) => {
               console.log(res);
             }).catch((err) => console.log(err));
-            
+
           }).catch(err => console.log(err))
-          
+
           if (data.login.needs_password_update) {
             setpwSetupModal(true)
           } else {
@@ -585,7 +729,7 @@ const LoginPage = (props: any) => {
               title: 'Login Failed',
               message: data.error.message.replace(/Code UM06/, ''),
               buttonText: 'Okay',
-              onClose: () => {setModalProps({...modalProps, open: false})}
+              onClose: () => { setModalProps({ ...modalProps, open: false }) }
             })
           } else if (data.error.message.includes('UM03')) {
             console.log(data.error.message)
@@ -597,7 +741,7 @@ const LoginPage = (props: any) => {
               title: 'Login Failed',
               message: data.error.message.replace(/Code UM03/, ''),
               buttonText: 'Okay',
-              onClose: () => {setModalProps({...modalProps, open: false})}
+              onClose: () => { setModalProps({ ...modalProps, open: false }) }
             })
           } else if (data.error.message.includes('UM04')) {
             setFetchingState(false);
@@ -685,9 +829,9 @@ const LoginPage = (props: any) => {
 
     const request: RequestInit = {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json'
-       }
+      }
     }
 
     let requestSetup = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}password/forgot/${username}`, request).catch(err => {
@@ -711,7 +855,7 @@ const LoginPage = (props: any) => {
           message: 'A reset password email will be sent to the email address of the account.',
           buttonText: 'Okay',
         })
-        
+
         // await saveToIndexedDB(tmpData);
       } else {
         setModalProps({
@@ -741,10 +885,10 @@ const LoginPage = (props: any) => {
     let token = tmpData.login.access_token;
     const request: RequestInit = {
       method: 'PATCH',
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-       },
+      },
       body: JSON.stringify(value)
     }
 
@@ -769,7 +913,7 @@ const LoginPage = (props: any) => {
           message: 'New password has been set.',
           buttonText: 'Okay'
         })
-        
+
         // await saveToIndexedDB(tmpData);
       } else {
         setModalProps({
@@ -802,14 +946,15 @@ const LoginPage = (props: any) => {
   const [pwSetupProps, setPwSetupProps] = React.useState<any>({
     regex: '',
     character: [],
-    min: 0
+    min: 0,
+    max:0
   })
 
   const classes = useStyles();
 
   return (
     <form onSubmit={onLogin}>
-      { isChanging && <LoadingIndicator /> }
+      {isChanging && <LoadingIndicator />}
       <Grid container className="login-main">
         <img
           alt="shape1"
@@ -865,18 +1010,18 @@ const LoginPage = (props: any) => {
             />
             {
               isError ?
-              <div className={classes.errorMessageContainer}>
-                <div>
-                  <ErrorIcon className={classes.iconError} />
-                </div>
-                <div className={classes.errorString}>
-                  <span className={classes.errText}>
-                  {
-                    errorMessage
-                  }
-                  </span>
-                </div>
-              </div> : ''
+                <div className={classes.errorMessageContainer}>
+                  <div>
+                    <ErrorIcon className={classes.iconError} />
+                  </div>
+                  <div className={classes.errorString}>
+                    <span className={classes.errText}>
+                      {
+                        errorMessage
+                      }
+                    </span>
+                  </div>
+                </div> : ''
             }
           </div>
           <Button disabled={isFetching ? true : false} className="login-button" type="submit">
@@ -894,33 +1039,58 @@ const LoginPage = (props: any) => {
 
         {/* Modals */}
         <MessageDialog
-          isModalOpen = {modalProps.open}
-          onClose = {modalProps.onClose}
-          title = {modalProps.title}
-          message = {modalProps.message}
-          buttonText = {modalProps.buttonText !== '' ? modalProps.buttonText : 'Okay'}  
+          isModalOpen={modalProps.open}
+          onClose={modalProps.onClose}
+          title={modalProps.title}
+          message={modalProps.message}
+          buttonText={modalProps.buttonText !== '' ? modalProps.buttonText : 'Okay'}
         />
 
         <PasswordSetupModal
           onSubmit={onSetupPasswordSubmit}
-          open = {pwSetupModal}
+          open={pwSetupModal}
           setup={pwSetupProps}
-          onClose = {() => {
+          onClose={() => {
+            setOpen(false)
             setpwSetupModal(false)
             setFetchingState(false)
           }} />
 
         <ForgotPassword
           onSubmit={onForgotPasswordSubmit}
-          open = {forgotPassword}
-          onClose = {() => setForgotPassword(false)} />
+          open={forgotPassword}
+          onClose={() => setForgotPassword(false)} />
 
       </Grid>
+      <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
+      <Typography> 
+        { Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100) === 100 ? 'Redirecting...' : initializingStatus } 
+      </Typography>
+        <Box position="relative" display="inline-flex">
+          <CircularProgress className={classes.circularProgress} />
+          <Box
+            top={0}
+            left={0}
+            bottom={0}
+            right={0}
+            position="absolute"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography variant="caption" component="div" className={classes.percentage}>
+              {`${isNaN(Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100)) ? 0 : Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100)}%`}
+            </Typography>
+          </Box>
+        </Box>
+      </Backdrop>
     </form>
   );
 };
 
 export default withRouter(LoginPage);
+
+
 
 
 
