@@ -26,7 +26,8 @@ module.exports = (electron, parentWindow) => {
   const ipc = electron.ipcMain
   ipc.on('preview-image', (e, options) => {
     console.log('Preview Partner Dialog')
-    console.log('Preview Partner Dialog IPC',ipc)
+    console.log('Preview Partner Dialog IPC', ipc)
+    
     createViewWindow(parentWindow, options.url)
   })
 }
