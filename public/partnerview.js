@@ -8,7 +8,6 @@ const createViewWindow = (parentWindow, url) => {
   viewWindow = new BrowserWindow({
     width: 1024,
     height: 800,
-    parent: parentWindow,
     webPreferences: {
       nodeIntegration: true,
       plugins: true
