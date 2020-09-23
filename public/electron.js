@@ -70,6 +70,7 @@ function createWindow() {
         show: false,
         title: "HIMS for VNI DEV",
         webPreferences: {
+          nodeIntegration: true,
           preload: `${__dirname}/preload.js`
         }
     });
