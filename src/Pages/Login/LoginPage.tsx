@@ -123,9 +123,6 @@ const LoginPage = (props: any) => {
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
-
-    getModules();
-
   }, [])
   
   // TODO: REMOVE NEXT ISSUE
@@ -166,8 +163,14 @@ const LoginPage = (props: any) => {
   //   // console.log(Math.ceil(percent));
   // }, [percent])
 
-  const getModules = async () => {
-    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, { method: 'GET' })
+  const getModules = async (token: string) => {
+    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {
+      method: 'GET',
+      headers: {
+        'Content-Tyoe': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .catch((err: any) => {
         console.log(err)
       })
@@ -507,7 +510,6 @@ const LoginPage = (props: any) => {
       // console.log("old", existingJuday);
       if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
-          setOpen(true);
           fetchIcd10(data);
         })
       } else {
@@ -579,7 +581,6 @@ const LoginPage = (props: any) => {
 
             loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
               if (res === 0) {
-                setOpen(true);
                 fetchCpt(data);
               } else {
                 cptFetchDone = true;
@@ -640,8 +641,8 @@ const LoginPage = (props: any) => {
     localStorage.setItem('OCP_URL', process.env.REACT_APP_HIMS_API_OCP_URL!);
     localStorage.setItem('DDS_URL', process.env.REACT_APP_HIMS_API_DDS_URL!);
     localStorage.setItem('PMAKER_BASE_URL', process.env.REACT_APP_PMAKER_BASE_URL!);
-    localStorage.setItem('HIMS_TITLE', process.env.REACT_APP_HIMS_TITLE!);
-    localStorage.setItem('HIMS_ICON', process.env.REACT_APP_ICON!);
+    localStorage.setItem('HIMS_TITLE', process.env.REACT_APP_HIMS_TITLE! || "");
+    localStorage.setItem('HIMS_ICON', process.env.REACT_APP_ICON! || "");
     localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
 
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
@@ -682,7 +683,11 @@ const LoginPage = (props: any) => {
           cptBatchSize = data.cpt.batch_size;
           icd10BatchSize = data.icd10.batch_size;
 
+          
+
           data.login.pm_token = data.login['access_token'];
+
+          getModules(data.login.access_token);
 
           let userDataToSave = Object.entries(data.login).map(entry => {
             return { key: entry[0], value: entry[1] }
