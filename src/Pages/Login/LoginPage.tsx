@@ -38,6 +38,7 @@ const claimsUrl = 'claims/index.html';
 const BillingUrl = 'billing/index.html';
 const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
+const treasuryUrl = 'treasury/';
 
 const abortController = new AbortController();
 const signal = abortController.signal;
@@ -97,18 +98,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-
-
-
 const LoginPage = (props: any) => {
   const [loginData, setLoginData] = useState<LoginDataType>({
     username: '',
     password: '',
   });
 
-  const [urls, setUrls] = useState<any[]>([]);
   const [initializingStatus] = useState<string>('Initializing...')
-
 
   const [totalIcd10, setTotalIcd10] = useState<any>(0)
   const [fetchedIcd10, setFetchedIcd10] = useState<any>(0)
@@ -124,108 +120,49 @@ const LoginPage = (props: any) => {
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
   }, [])
-  
-  // TODO: REMOVE NEXT ISSUE
-  // useEffect(() => {
-  //   let countLoop = countLoopICD + countLoopCPT;
-  //   // let totalCount = totalCountICD + totalCountCPT;
-  //   // console.log(countLoop)
-  //   // console.log(countLoop)
-  //   // console.log("NOW", countLoop)
-  //   // console.log("TOTAL", totalCount)
-  //   let percentage = 0;
-  //   // console.log(percent);
-  //   if (percent === 0) {
-  //     if (countLoop !== 0) {
-  //       percentage = 100 / countLoop;
-  //     }
 
-  //   } else {
-  //     let per = 100 / countLoop
-  //     percentage = percent + per
-  //   }
-  //   // if(isNaN(percent)){
-  //   //   if(countLoop!=0)
-  //   //   percentage = ( 100 / countLoop )
-  //   // }else{
-  //   //   percentage =  ( 100 / countLoop )
-  //   // }
+  let redirecting: boolean = false
+  const redirect = async () => {
+    if (redirecting) return // NOTE (TJ): TO MAKE SURE THIS EXECUTE ONLY ONCE
 
-
-
-  //   setPecent(percentage);
-  //   // console.log(percentageCount);
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [percentageCount, countLoopICD, totalCountICD])
-
-  // useEffect(() => {
-  //   // console.log(Math.ceil(percent));
-  // }, [percent])
-
-  const getModules = async (token: string) => {
-    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {
-      method: 'GET',
-      headers: {
-        'Content-Tyoe': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .catch((err: any) => {
-        console.log(err)
+    try {
+      // NOTE (TJ): HAS SIDE EFFECTS
+      redirecting = true
+      let modules: any = []
+      let token = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'access_token') // GET ACCEESS TOKEN
+      let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {
+        method: 'GET',
+        headers: {
+          'Content-Tyoe': 'application/json',
+          'Authorization': `Bearer ${token.result}`
+        }
       })
 
-    if (urls) {
-      let jsondata = await urls.json();
+      if (urls) {
+        modules = await urls.json();
+      }
 
-      setUrls(jsondata)
-    }
-  }
+      let foundIndex = modules.findIndex((el: any) => el.name === mainModule) // Get index of module
 
-  const redirect = async () => {
-    if (urls && urls.length > 0) {
-      let found = urls.find(el => el.name === mainModule)
-      if (found) {
-        urls.map(async (url: any) => {
-          if (url.name === mainModule) {
-            if (mainModule.toLowerCase() === 'customer care') {
-              // console.log("pasok sa banga")
-              // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
-              //   .catch(err => console.log(err))
-              // let logingroup = query && query.result ? query.result : null;
-              // let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
-              // if(loginGroupName.toLowerCase() === 'css group'){
-              //   window.location.replace(cssCustomerCareUrl)
-              // } else {
-              //   window.location.replace(url.dashboard_url)
-              // }
-              window.location.replace(url.dashboard_url)
-            } else {
-              localStorage.setItem('sidebar', 'dashboard')
-              window.location.replace(url.dashboard_url)
-            }
-          }
-        })
+      if (foundIndex) {
+        const module = modules[foundIndex]
+
+        if (mainModule.toLowerCase() === 'customer care') {
+          window.location.replace(module.dashboard_url)
+        } else {
+          localStorage.setItem('sidebar', 'dashboard')
+          window.location.replace(module.dashboard_url)
+        }
       } else {
         setFetchingState(false);
-        props.history.push('profile')
+        // props.history.push('profile')
       }
-    } else {
-      // Fallback
+    } catch(err) { // NOTE (TJ): Fallback redirect statements incase module fetch to failed
+      console.log(err)
       if (mainModule.toLowerCase() === 'underwriting') {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule.toLowerCase() === 'customer care') {
-        // let query = await loginStorageService.getSingleEntryByKeyReturnValue('user_data', 'group')
-        //   .catch(err => console.log(err))
-        // let logingroup = query && query.result ? query.result : null;
-        // let loginGroupName = logingroup && logingroup.name ? logingroup.name : '';
-        //   if(loginGroupName.toLowerCase() === 'css group'){
-        //   window.location.replace(cssCustomerCareUrl);
-        // }
-        // else{
-        //   window.location.replace(customerCareUrl);
-        // }
         window.location.replace(customerCareUrl);
       } else if (mainModule.toLowerCase() === 'membership') {
         localStorage.setItem('sidebar', 'dashboard');
@@ -245,22 +182,15 @@ const LoginPage = (props: any) => {
       } else if (mainModule.toLowerCase() === 'partner network') {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(PnUrl);
+      } else if (mainModule.toLowerCase() === 'treasury') {
+        localStorage.setItem('sidebar', 'dashboard');
+        window.location.replace(treasuryUrl);
       } else {
         setFetchingState(false);
         props.history.push('profile')
       }
     }
   }
-
-  // const retryFetch = async (args: any) => {
-  //   return new Promise(async (resolve, reject) => {
-  //     const promise = await args()
-
-  //     if (!promise) retryFetch(args)
-
-  //     return promise
-  //   })
-  // }
 
   let icd10_collection: any[] = [];
 
@@ -510,13 +440,14 @@ const LoginPage = (props: any) => {
       // console.log("old", existingJuday);
       if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
+          setOpen(true)
           fetchIcd10(data);
         })
       } else {
         loginStorageService.getSingleEntryByKeyReturnValue('icd10', 'date_updated').then((du) => {
           if (!moment(data.icd10.date_updated).isAfter(du.result)) {
             loginStorageService.validateStoreCount('himsDb', 'icd10_list').then((res: number) => {
-              console.log(res);
+              // console.log(res);
               if (res === 0) {
                 setOpen(true);
                 fetchIcd10(data);
@@ -536,7 +467,7 @@ const LoginPage = (props: any) => {
           }
         }).catch(() => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
-            console.log(res);
+            // console.log(res);
             setOpen(true);
             fetchIcd10(data);
           }).catch((err) => console.log(err));
@@ -594,7 +525,7 @@ const LoginPage = (props: any) => {
           } else {
             fetchCptUpdate();
             loginStorageService.updateEntry('cpt', 'date_updated', data.cpt.date_updated).then((r) => {
-              console.log(r);
+              // console.log(r);
             }).catch(err => console.log(err));
           }
         }).catch(() => {
@@ -622,7 +553,6 @@ const LoginPage = (props: any) => {
         })
       })
     })
-
   }
 
   const usernameRef = useRef(null);
@@ -687,14 +617,12 @@ const LoginPage = (props: any) => {
 
           data.login.pm_token = data.login['access_token'];
 
-          getModules(data.login.access_token);
-
           let userDataToSave = Object.entries(data.login).map(entry => {
             return { key: entry[0], value: entry[1] }
           });
 
           loginStorageService.saveEntry(userDataToSave, 'user_data').then((res) => {
-            console.log(res);
+            // console.log(res);
           }).catch((err) => console.log(err));
 
           await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}system-settings/config`, {
@@ -714,7 +642,7 @@ const LoginPage = (props: any) => {
               return { key: entry[0], value: entry[1] }
             });
             loginStorageService.saveEntry(configtosave, 'config').then((res) => {
-              console.log(res);
+              // console.log(res);
             }).catch((err) => console.log(err));
 
           }).catch(err => console.log(err))
@@ -738,7 +666,7 @@ const LoginPage = (props: any) => {
               onClose: () => { setModalProps({ ...modalProps, open: false }) }
             })
           } else if (data.error.message.includes('UM03')) {
-            console.log(data.error.message)
+            // console.log(data.error.message)
             setError(true);
             setFetchingState(false);
             setModalProps({
@@ -1095,15 +1023,3 @@ const LoginPage = (props: any) => {
 };
 
 export default withRouter(LoginPage);
-
-
-
-
-
-
-
-
-
-
-
-
