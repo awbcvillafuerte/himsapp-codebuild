@@ -123,6 +123,9 @@ const LoginPage = (props: any) => {
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
+
+    getModules();
+
   }, [])
   
   // TODO: REMOVE NEXT ISSUE
@@ -163,14 +166,8 @@ const LoginPage = (props: any) => {
   //   // console.log(Math.ceil(percent));
   // }, [percent])
 
-  const getModules = async (token: string) => {
-    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, {
-      method: 'GET',
-      headers: {
-        'Content-Tyoe': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
+  const getModules = async () => {
+    let urls = await fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}modules`, { method: 'GET' })
       .catch((err: any) => {
         console.log(err)
       })
@@ -510,6 +507,7 @@ const LoginPage = (props: any) => {
       // console.log("old", existingJuday);
       if (newJuday && (moment(newJuday).isAfter(existingJuday))) {
         loginStorageService.clearList('icd10_list').then(() => {
+          setOpen(true)
           fetchIcd10(data);
         })
       } else {
@@ -581,6 +579,7 @@ const LoginPage = (props: any) => {
 
             loginStorageService.validateStoreCount('himsDb', 'cpt_list').then((res: number) => {
               if (res === 0) {
+                setOpen(true)
                 fetchCpt(data);
               } else {
                 cptFetchDone = true;
@@ -594,7 +593,7 @@ const LoginPage = (props: any) => {
           } else {
             fetchCptUpdate();
             loginStorageService.updateEntry('cpt', 'date_updated', data.cpt.date_updated).then((r) => {
-              console.log(r);
+              // console.log(r);
             }).catch(err => console.log(err));
           }
         }).catch(() => {
@@ -683,11 +682,7 @@ const LoginPage = (props: any) => {
           cptBatchSize = data.cpt.batch_size;
           icd10BatchSize = data.icd10.batch_size;
 
-          
-
           data.login.pm_token = data.login['access_token'];
-
-          getModules(data.login.access_token);
 
           let userDataToSave = Object.entries(data.login).map(entry => {
             return { key: entry[0], value: entry[1] }
@@ -1095,14 +1090,3 @@ const LoginPage = (props: any) => {
 };
 
 export default withRouter(LoginPage);
-
-
-
-
-
-
-
-
-
-
-
