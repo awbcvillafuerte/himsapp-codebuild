@@ -155,7 +155,7 @@ const LoginPage = (props: any) => {
         }
       } else {
         setFetchingState(false);
-        // props.history.push('profile')
+        props.history.push('profile')
       }
     } catch(err) { // NOTE (TJ): Fallback redirect statements incase module fetch to failed
       console.log(err)
