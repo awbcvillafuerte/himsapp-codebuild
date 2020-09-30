@@ -144,7 +144,7 @@ const LoginPage = (props: any) => {
 
       let foundIndex = modules.findIndex((el: any) => el.name === mainModule) // Get index of module
 
-      if (foundIndex) {
+      if (foundIndex >= 0) {
         const module = modules[foundIndex]
 
         if (mainModule.toLowerCase() === 'customer care') {
