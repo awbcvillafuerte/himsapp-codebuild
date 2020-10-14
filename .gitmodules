@@ -16,3 +16,6 @@
 [submodule "public/treasury"]
 	path = public/treasury
 	url = git@gitlab.com:hims-build-artifacts/treasury.git
+[submodule "public/dds-requestor"]
+	path = public/dds-requestor
+	url = git@gitlab.com:hims-build-artifacts/dds-requestor.git
