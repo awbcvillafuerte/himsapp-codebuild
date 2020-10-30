@@ -344,7 +344,7 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                             </Grid>
                             <Grid item xs={6} style={{textAlign: 'left'}}>
                                 <Button
-                                    disabled={RegExp(setup.regex).test(pwData.new_password.value) && RegExp(setup.regex).test(pwData.conf_password.value) ? false : true}
+                                     disabled={RegExp(setup.regex).test(pwData.new_password.value) && RegExp(setup.regex).test(pwData.conf_password.value) ? (pwData.new_password.value == pwData.conf_password.value) ? false : true : true}
                                     onClick={submitPassword}
                                     className={classes.buttonRight}>Submit</Button>
                             </Grid>
