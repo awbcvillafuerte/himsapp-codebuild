@@ -4,6 +4,8 @@ const {autoUpdater} = require("electron-updater");
 const path = require("path");
 //const isDev = require('electron-is-dev');
 
+const communicator = require('./communicator');
+
 const Printer = require('./printer')
 const Dialog = require('./dialog')
 const PartnerViewer = require('./partnerview')
@@ -88,6 +90,7 @@ function createWindow() {
         height: 720,
         show: false,
         title: "HIMS for VNI DEV",
+        webPreferences: {preload: path.join(__dirname, 'preload.js') },
     });
 	
 	if (!isDev) {
@@ -98,6 +101,8 @@ function createWindow() {
         login.loadFile('build/index.html');
 
     }, 2000);
+
+    communicator.communicator(electron.ipcMain).register('sync-message', 'data')
 
     login.once("ready-to-show", () => {
         splash.close();
