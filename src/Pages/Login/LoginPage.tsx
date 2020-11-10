@@ -28,6 +28,12 @@ interface LoginDataType {
   password: string;
 }
 
+declare global {
+  interface Window {
+    downloadFile: any;
+  }
+}
+
 // Module URL
 // const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
 const customerCareUrl = 'customer-care/index.html#/customer-care/';
@@ -910,6 +916,23 @@ const LoginPage = (props: any) => {
           />
           <div className="login-project-name">Intellicare HIMS</div>
           <div className={`login-input-area ${classes.fields}`}>
+            <button onClick={async () => {
+              if (window.hasOwnProperty('downloadFile')){
+                let args = {
+                  file: 'data',
+                  filename: 'test',
+                  extension: 'csv'
+                }
+
+                const download = await window.downloadFile(args)
+
+                if (download.success) alert('MR mo na!')
+              } else {
+                alert ('di nagana')
+              }
+            }}>
+              Click me
+            </button>
             <span className="login-text">Username</span>
             <OutlinedInput
               error={isError}
