@@ -11,7 +11,8 @@ import {
   PasswordSetupModal,
   MessageDialog,
   LoadingIndicator,
-  ForgotPassword
+  ForgotPassword,
+  SecondInstanceError
 } from '../../Components'
 import moment from 'moment';
 import { makeStyles } from '@material-ui/core/styles';
@@ -115,9 +116,18 @@ const LoginPage = (props: any) => {
   const [fetchedCpt, setFetchedCpt] = useState<any>(0)
 
   const [open, setOpen] = React.useState(false);
+
+  const [secondInstanceModal, setSecondInstanceModal] = React.useState(false);
+
   const handleClose = () => {
     setOpen(false);
   };
+
+  const closeSecondInstanceModal = () => {
+    setFetchingState(false)
+    setSecondInstanceModal(false)
+  }
+  
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
@@ -748,13 +758,15 @@ const LoginPage = (props: any) => {
 
       })
       .catch((err: any) => {
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Error',
-          message: err.message,
-          buttonText: 'Okay'
-        })
+        console.log(err)
+        setSecondInstanceModal(true)
+        // setModalProps({
+        //   ...modalProps,
+        //   open: true,
+        //   title: 'Error',
+        //   message: err.message,
+        //   buttonText: 'Okay'
+        // })
       })
   }
 
@@ -1029,6 +1041,8 @@ const LoginPage = (props: any) => {
           onSubmit={onForgotPasswordSubmit}
           open={forgotPassword}
           onClose={() => setForgotPassword(false)} />
+
+        <SecondInstanceError open={secondInstanceModal} onClose={closeSecondInstanceModal} />
 
       </Grid>
       <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
