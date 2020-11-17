@@ -22,6 +22,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { generateRequestArrayIcd10, generateRequestArrayCpt, listToMatrix } from '../../utils';
+import get from 'lodash/get';
 
 interface LoginDataType {
   username: string;
@@ -43,6 +44,7 @@ const treasuryUrl = 'treasury/';
 const abortController = new AbortController();
 const signal = abortController.signal;
 
+let firstActiveRole: any = {};
 let mainModule = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
@@ -142,17 +144,23 @@ const LoginPage = (props: any) => {
         modules = await urls.json();
       }
 
-      let foundIndex = modules.findIndex((el: any) => el.name === mainModule) // Get index of module
+      // let foundIndex = modules.findIndex((el: any) => el.name === mainModule) // Get index of module
+      let foundIndex = modules.findIndex((el: any) => Boolean(el.name && firstActiveRole && firstActiveRole.module === el.name));
+
+      console.log(`FOUND INDEX ${foundIndex} from array ${JSON.stringify(modules, null, 2)}`);
+      console.log('FIRST ACTIVE ROLE: ', firstActiveRole);
 
       if (foundIndex >= 0) {
         const module = modules[foundIndex]
 
-        if (mainModule.toLowerCase() === 'customer care') {
-          window.location.replace(module.dashboard_url)
-        } else {
-          localStorage.setItem('sidebar', 'dashboard')
-          window.location.replace(module.dashboard_url)
-        }
+        localStorage.setItem('sidebar', 'dashboard')
+        window.location.replace(module.dashboard_url)
+        // if (mainModule.toLowerCase() === 'customer care') {
+        //   window.location.replace(module.dashboard_url)
+        // } else {
+        //   localStorage.setItem('sidebar', 'dashboard')
+        //   window.location.replace(module.dashboard_url)
+        // }
       } else {
         setFetchingState(false);
         props.history.push('profile')
@@ -610,6 +618,19 @@ const LoginPage = (props: any) => {
           }
 
           mainModule = data.login.main_module;
+          const login_roles = get(data, "login.role", []);
+          const main_role_id = get(data, "login.main_role_id", "");
+          if (Array.isArray(login_roles) && login_roles.length && main_role_id) {
+            const activeMainRole:any = login_roles.find(rl => rl.role_id === main_role_id && rl.status === 'active');
+            if (activeMainRole) {
+              firstActiveRole = activeMainRole;
+            } else{
+              const activeRole = login_roles.find(rl => rl.status === 'active');
+              if (activeRole){
+                firstActiveRole = activeRole;
+              }
+            }
+          }
           cptBatchSize = data.cpt.batch_size;
           icd10BatchSize = data.icd10.batch_size;
 
