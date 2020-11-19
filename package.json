@@ -1,7 +1,7 @@
 {
   "name": "hims-dev",
   "productName": "hims-dev",
-  "version": "0.2.409-beta", 
+  "version": "0.2.410-beta", 
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -41,12 +41,12 @@
     "react-eject": "react-scripts eject",
     "electron-build": "electron-builder",
     "release": "yarn react-build && electron-builder --publish=always",
-    "build": "yarn react-build && yarn electron-build -w",
+    "build": "nice -n 10 yarn react-build && nice -n 10 yarn electron-build -w",
     "buildmac": "yarn react-build && yarn electron-build -m",
     "build:dev": "yarn react-build && electron-builder -c.extraMetadata.version=${CURRENT_VERSION} --win --config config/dev.json",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "publish": "yarn react-build && electron-builder --win -p always",
-    "publish-only": "electron-builder --win -p always"
+    "publish": "nice -n 10 yarn react-build && nice -n 10 electron-builder --win -p always",
+    "publish-only": "nice -n 10 electron-builder --win -p always"
   },
   "private": true,
   "jest": {
