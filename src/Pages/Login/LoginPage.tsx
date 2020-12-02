@@ -871,13 +871,27 @@ const LoginPage = (props: any) => {
 
         // await saveToIndexedDB(tmpData);
       } else {
-        setModalProps({
-          ...modalProps,
-          open: true,
-          title: 'Error',
-          message: respjson.error.message,
-          buttonText: 'Okay'
-        })
+        if (respjson.error.message.includes('UM90')){
+          let message = respjson.error.message.split('last')
+          let attempts = message[1].split('password')
+          setModalProps({
+            ...modalProps,
+            open: true,
+            title: 'Password History Validation',
+            message: <span style={{ display: 'inlne-block', width: 350 }}>
+              The last <strong>{attempts[0]}</strong> password/s may not be reused as new password.
+            </span>,
+            buttonText: 'Okay'
+          })
+        } else {
+          setModalProps({
+            ...modalProps,
+            open: true,
+            title: 'Error',
+            message: respjson.error.message,
+            buttonText: 'Okay'
+          })
+        }
       }
     }
 
