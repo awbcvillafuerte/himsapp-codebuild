@@ -9,8 +9,16 @@ const communicator = (ipc) => {
         register: (evtString) => {
             ipc.on(evtString, (evt, arg) => {
 
+                const images = ['jpg', 'png', 'heic', 'tif'];
+                const documents = ['pdf', 'xls', 'xlsx', 'doc', 'docx', 'csv', 'txt', 'zip'];
+                
                 const option = {
-                    defaultPath: `${electron.app.getPath('downloads')}/${arg.filename}`
+                    defaultPath: `${electron.app.getPath('downloads')}/${arg.filename}`,
+                    filters: images.includes(arg.extension) ? 
+                    [{ name: 'Images', extensions: [] }, { name: 'All Files', extensions: ['*'] }] :
+                    documents.includes(arg.extension) ? 
+                    [{ name: 'Documents', extensions: []}, { name: 'All Files', extensions: ['*'] }] :
+                    [{ name: 'All Files', extensions: ['*'] }]
                 }
 
                 dialog.showSaveDialog(null, option, (filename) => {
