@@ -3,7 +3,7 @@ const dialog = electron.dialog
 
 const fs = require('fs')
 
-const communicator = (ipc, mainWindow) => {
+const communicator = (ipc) => {
 
     this.comm = {
         register: (evtString) => {
@@ -21,19 +21,28 @@ const communicator = (ipc, mainWindow) => {
                     [{ name: 'All Files', extensions: ['*'] }]
                 }
 
-                const filename = dialog.showSaveDialogSync(mainWindow, option)
+                dialog.showSaveDialog(null, option, (filename) => {
+                    if (!filename) {
+                        evt.returnValue = {
+                            success: false
+                        }
+                        return;
+                    }
 
-                try { 
-                    fs.writeFileSync(filename, 'asdasdas'); 
-                  } catch(err) { 
-                    console.error(err); 
-                  } 
+                    fs.writeFile(`${filename}.${arg.extension}`, arg.file, 'base64', (err) => {
+                        console.log(err)
+                        if (err) {
+                            evt.returnValue = {
+                                success: false
+                            }
+                            return
+                        }
 
-                console.log(filename)
-
-                evt.returnValue = {
-                    success: false
-                }
+                        evt.returnValue = {
+                            success: true
+                        }
+                    })
+                })
             })
         }
     }
