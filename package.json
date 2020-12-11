@@ -1,7 +1,7 @@
 {
   "name": "hims-dev",
   "productName": "hims-dev",
-  "version": "0.2.428-beta", 
+  "version": "0.2.429-beta", 
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -97,7 +97,7 @@
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
-    "electron": "^6.0.9",
+    "electron": "^11.0.4",
     "electron-builder": "^21.2.0",
     "wait-on": "^3.3.0",
     "yarn": "^1.17.3"
