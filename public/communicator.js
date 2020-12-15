@@ -14,6 +14,7 @@ const communicator = (ipc, mainWindow) => {
                 
                 const option = {
                     defaultPath: `${electron.app.getPath('downloads')}/${arg.filename}`,
+                    title: 'Save As',
                     filters: images.includes(arg.extension) ? 
                     [{ name: 'Images', extensions: [] }, { name: 'All Files', extensions: ['*'] }] :
                     documents.includes(arg.extension) ? 
@@ -24,16 +25,17 @@ const communicator = (ipc, mainWindow) => {
                 const filename = dialog.showSaveDialogSync(mainWindow, option)
 
                 try { 
-                    fs.writeFileSync(filename, 'asdasdas'); 
+                    fs.writeFileSync(`${filename}.${arg.extension}`, arg.file, 'base64')
+                    evt.returnValue = {
+                        success: true
+                    }
+
                   } catch(err) { 
                     console.error(err); 
+                    evt.returnValue = {
+                        success: false
+                    }
                   } 
-
-                console.log(filename)
-
-                evt.returnValue = {
-                    success: false
-                }
             })
         }
     }

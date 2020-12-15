@@ -102,7 +102,7 @@ function createWindow() {
 
     }, 2000);
 
-    communicator.communicator(electron.ipcMain, mainWindow).register('sync-message', 'data')
+    communicator.communicator(electron.ipcMain, mainWindow).register('sync-message')
 
     login.once("ready-to-show", () => {
         splash.close();
