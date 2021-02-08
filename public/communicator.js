@@ -26,9 +26,16 @@ const communicator = (ipc, mainWindow) => {
 
                 try { 
                     fs.writeFileSync(`${filename}.${arg.extension}`, arg.file, 'base64')
-                    evt.returnValue = {
-                        success: true
+                    if (filename !== undefined) {
+                        evt.returnValue = {
+                            success: true
+                        }
+                    } else {
+                        evt.returnValue = {
+                            success: false
+                        }
                     }
+
 
                   } catch(err) { 
                     console.error(err); 
