@@ -749,7 +749,7 @@ const LoginPage = (props: any) => {
             setModalProps({
               ...modalProps,
               open: true,
-              title: 'Error',
+              title: 'Login Failed',
               message: data.error.message,
               buttonText: 'Okay'
             })
@@ -772,15 +772,52 @@ const LoginPage = (props: any) => {
 
   const onLogin = async (e: any) => {
     e.preventDefault()
-    if (loginData.username.length === 0) {
-      alert('Username is required.');
-      window.location.reload();
+    if (loginData.username.length === 0 && loginData.password.length === 0) {
+      setModalProps({
+        ...modalProps,
+        open: true,
+        title: 'Login Failed',
+        message: 'Username and Password are required.',
+        buttonText: 'Okay',
+        onClose: () => {
+          setModalProps({ ...modalProps, open: false })
+          window.location.reload();
+        }
+      })
+      
       return;
     }
 
-    if (loginData.password.length === 0) {
-      alert('Password is required.');
-      window.location.reload();
+    if (loginData.username.length === 0 && loginData.password.length > 0) {
+      // alert('Username is required.');
+      setModalProps({
+        ...modalProps,
+        open: true,
+        title: 'Login Failed',
+        message: 'Username is required.',
+        buttonText: 'Okay',
+        onClose: () => {
+          setModalProps({ ...modalProps, open: false })
+          window.location.reload();
+        }
+      })
+      return;
+    }
+
+    if (loginData.password.length === 0 && loginData.username.length > 0) {
+      // alert('Password is required.');
+      setModalProps({
+        ...modalProps,
+        open: true,
+        title: 'Login Failed',
+        message: 'Password is required.',
+        buttonText: 'Okay',
+        onClose: () => {
+          setModalProps({ ...modalProps, open: false })
+          window.location.reload();
+        }
+      })
+      
       return;
     }
     await login();
