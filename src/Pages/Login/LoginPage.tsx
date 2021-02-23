@@ -45,7 +45,7 @@ const treasuryUrl = 'treasury/';
 const abortController = new AbortController();
 const signal = abortController.signal;
 
-let firstActiveRole: any = {};
+let firstActiveRole:any = {};
 let mainModule = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
@@ -158,8 +158,7 @@ const LoginPage = (props: any) => {
       let foundIndex = modules.findIndex((el: any) => Boolean(el.name && firstActiveRole && firstActiveRole.module === el.name));
 
       console.log(`FOUND INDEX ${foundIndex} from array ${JSON.stringify(modules, null, 2)}`);
-      console.log('FIRST ACTIVE ROLE: ', firstActiveRole);
-
+      console.log('FIRST ACTIVE ROLE ID: ', firstActiveRole);
       if (foundIndex >= 0) {
         const module = modules[foundIndex]
 
@@ -265,7 +264,9 @@ const LoginPage = (props: any) => {
               icd10s[i].diagnosis_code = icd10s[i].illness_code
             }
           }
-          icd10_collection.push(...icd10s)})
+          icd10_collection.push(...icd10s);
+          return;
+        })
         setFetchedIcd10(icd10_collection.length)
 
         endTime = moment()
@@ -310,7 +311,6 @@ const LoginPage = (props: any) => {
             data.diagnosis_code = data.illness_code;
           }
         }
-
         loginStorageService.saveEntry(data, 'icd10_list').then((res) => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
             icd10FetchDone = true;
@@ -799,7 +799,6 @@ const LoginPage = (props: any) => {
       
       return;
     }
-
     if (loginData.username.length === 0 && loginData.password.length > 0) {
       // alert('Username is required.');
       setModalProps({
@@ -932,6 +931,7 @@ const LoginPage = (props: any) => {
 
         // await saveToIndexedDB(tmpData);
       } else {
+        
         if (respjson.error.message.includes('UM90')){
           let message = respjson.error.message.split('last')
           let attempts = message[1].split('password')
