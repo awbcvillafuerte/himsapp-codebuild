@@ -259,7 +259,13 @@ const LoginPage = (props: any) => {
         }
         
         // Otherwise push to icd10 collection variable
-        icd10List.map((icd10s: any) => icd10_collection.push(...icd10s))
+        icd10List.map((icd10s: any) => {
+          for (let i=0;i<icd10s.length;i++) {
+            if (icd10s[i].illness_code) {
+              icd10s[i].diagnosis_code = icd10s[i].illness_code
+            }
+          }
+          icd10_collection.push(...icd10s)})
         setFetchedIcd10(icd10_collection.length)
 
         endTime = moment()
@@ -299,6 +305,12 @@ const LoginPage = (props: any) => {
     await fetch(url, options)
       .then((res) => res.json())
       .then((data) => {
+        for (let i=0;i<data.length;i++) {
+          if (data.illness_code) {
+            data.diagnosis_code = data.illness_code;
+          }
+        }
+
         loginStorageService.saveEntry(data, 'icd10_list').then((res) => {
           loginStorageService.saveEntry(icd10ToSave, 'icd10').then((res) => {
             icd10FetchDone = true;
