@@ -265,7 +265,7 @@ const LoginPage = (props: any) => {
             }
           }
           icd10_collection.push(...icd10s);
-          return;
+          return icd10s;
         })
         setFetchedIcd10(icd10_collection.length)
 
