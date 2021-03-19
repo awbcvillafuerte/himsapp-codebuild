@@ -5,6 +5,8 @@ const path = require("path");
 //const isDev = require('electron-is-dev');
 
 const communicator = require('./communicator');
+// const wrtc = require('electron-webrtc')()
+const publicIp = require('what-is-my-ip-address')
 
 const Printer = require('./printer')
 const Dialog = require('./dialog')
@@ -108,6 +110,13 @@ function createWindow() {
         splash.close();
         login.show();
     });
+
+    session.defaultSession.webRequest.onBeforeSendHeaders(async (details,callback)=>{
+        let tmpIPV4 = await publicIp.v4().then(tmpip=>{return tmpip})
+        
+        details.requestHeaders['X-Forwarded-For']=details.requestHeaders['X-Forwarded-For']!==undefined ? details.requestHeaders['X-Forwarded-For'] : tmpIPV4
+        callback({ requestHeaders: details.requestHeaders })
+    })
 
     mainWindow.on("closed", () => (mainWindow = null));
 }
