@@ -3,10 +3,14 @@ import {
   OutlinedInput,
   Link,
   Grid,
-  Button
+  Button,
+  InputAdornment,
+  IconButton
 } from '@material-ui/core';
 import './style.scss';
 import LoginStorageService from './LoginStorageService';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import {
   PasswordSetupModal,
   MessageDialog,
@@ -45,7 +49,7 @@ const treasuryUrl = 'treasury/';
 const abortController = new AbortController();
 const signal = abortController.signal;
 
-let firstActiveRole:any = {};
+let firstActiveRole: any = {};
 let mainModule = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
@@ -64,13 +68,13 @@ const useStyles = makeStyles((theme) => ({
     color: '#fff',
     flexDirection: 'column'
   },
-  percentage :{
+  percentage: {
     color: '#fff',
   },
-  circularProgress:{
+  circularProgress: {
     color: '#fff',
-    width : '100px !important',
-    height : '100px !important'
+    width: '100px !important',
+    height: '100px !important'
 
   },
   fields: {
@@ -98,6 +102,9 @@ const useStyles = makeStyles((theme) => ({
   },
   errorString: {
     marginLeft: '8px'
+  },
+  eyeIcon: {
+    opacity: 0.5
   }
 }))
 
@@ -114,6 +121,7 @@ const LoginPage = (props: any) => {
 
   const [totalCpt, setTotalCpt] = useState<any>(0)
   const [fetchedCpt, setFetchedCpt] = useState<any>(0)
+  const [visible, setVisible] = React.useState<boolean>(false);
 
   const [open, setOpen] = React.useState(false);
 
@@ -127,7 +135,7 @@ const LoginPage = (props: any) => {
     setFetchingState(false)
     setSecondInstanceModal(false)
   }
-  
+
 
   useEffect(() => {
     loginStorageService.initStorage('himsDb');
@@ -174,7 +182,7 @@ const LoginPage = (props: any) => {
         setFetchingState(false);
         props.history.push('profile')
       }
-    } catch(err) { // NOTE (TJ): Fallback redirect statements incase module fetch to failed
+    } catch (err) { // NOTE (TJ): Fallback redirect statements incase module fetch to failed
       console.log(err)
       if (mainModule.toLowerCase() === 'underwriting') {
         localStorage.setItem('sidebar', 'dashboard');
@@ -223,7 +231,7 @@ const LoginPage = (props: any) => {
     if (count) {
 
       let callCount = Math.ceil(count / limit);
-   
+
       let requests = generateRequestArrayIcd10(callCount, {
         limit,
         signal,
@@ -232,7 +240,7 @@ const LoginPage = (props: any) => {
 
       const chunkRequest = listToMatrix(requests, 3)
 
-      for (let i=0; i < chunkRequest.length; i++) {
+      for (let i = 0; i < chunkRequest.length; i++) {
         let startTime: any = null
         let endTime: any = null
         const promiseCall = () => {
@@ -246,7 +254,7 @@ const LoginPage = (props: any) => {
             // setinitializingStatus('Download failed retrying...')
           })
         }
-        
+
         let icd10List: any = await promiseCall()
 
         if (!icd10List) {
@@ -256,10 +264,10 @@ const LoginPage = (props: any) => {
           fetchIcd10(data, icd10_collection.length)
           return
         }
-        
+
         // Otherwise push to icd10 collection variable
         icd10List.map((icd10s: any) => {
-          for (let i=0;i<icd10s.length;i++) {
+          for (let i = 0; i < icd10s.length; i++) {
             if (icd10s[i].illness_code) {
               icd10s[i].diagnosis_code = icd10s[i].illness_code
             }
@@ -275,7 +283,7 @@ const LoginPage = (props: any) => {
         if (requestBatchDuration > 10) {
           icd10BatchSize = Math.round(icd10BatchSize / 2)
           fetchIcd10(data, icd10_collection.length)
-        
+
           return
         }
       }
@@ -306,7 +314,7 @@ const LoginPage = (props: any) => {
     await fetch(url, options)
       .then((res) => res.json())
       .then((data) => {
-        for (let i=0;i<data.length;i++) {
+        for (let i = 0; i < data.length; i++) {
           if (data.illness_code) {
             data.diagnosis_code = data.illness_code;
           }
@@ -344,7 +352,7 @@ const LoginPage = (props: any) => {
     if (defaultSkip) {
       count = count - defaultSkip
     }
-    
+
     if (count) {
 
       let callCount = Math.ceil(count / limit)
@@ -358,7 +366,7 @@ const LoginPage = (props: any) => {
       const chunkRequest = listToMatrix(requests, 3)
 
 
-      for (let i=0; i < chunkRequest.length; i++) {
+      for (let i = 0; i < chunkRequest.length; i++) {
         let startTime: any = null
         let endTime: any = null
         const promiseCall = () => {
@@ -372,10 +380,10 @@ const LoginPage = (props: any) => {
             // setinitializingStatus('Download failed retrying...')
           })
         }
-        
+
         let cptList: any = await promiseCall()
 
-        
+
 
         if (!cptList) {
           // Retry the batch if request was failed
@@ -384,7 +392,7 @@ const LoginPage = (props: any) => {
           fetchCpt(data, cpt_collection.length)
           return
         }
-        
+
         // Otherwise push to icd10 collection variable
         cptList.map((cpts: any) => cpt_collection.push(...cpts))
         setFetchedCpt(cpt_collection.length)
@@ -395,7 +403,7 @@ const LoginPage = (props: any) => {
         if (requestBatchDuration > 10) {
           cptBatchSize = Math.round(cptBatchSize / 2)
           fetchCpt(data, cpt_collection.length)
-        
+
 
 
           return
@@ -643,12 +651,12 @@ const LoginPage = (props: any) => {
           const login_roles = get(data, "login.role", []);
           const main_role_id = get(data, "login.main_role_id", "");
           if (Array.isArray(login_roles) && login_roles.length && main_role_id) {
-            const activeMainRole:any = login_roles.find(rl => rl.role_id === main_role_id && rl.status === 'active');
+            const activeMainRole: any = login_roles.find(rl => rl.role_id === main_role_id && rl.status === 'active');
             if (activeMainRole) {
               firstActiveRole = activeMainRole;
-            } else{
+            } else {
               const activeRole = login_roles.find(rl => rl.status === 'active');
-              if (activeRole){
+              if (activeRole) {
                 firstActiveRole = activeRole;
               }
             }
@@ -656,7 +664,7 @@ const LoginPage = (props: any) => {
           cptBatchSize = data.cpt.batch_size;
           icd10BatchSize = data.icd10.batch_size;
 
-          
+
 
           data.login.pm_token = data.login['access_token'];
 
@@ -796,7 +804,7 @@ const LoginPage = (props: any) => {
           window.location.reload();
         }
       })
-      
+
       return;
     }
     if (loginData.username.length === 0 && loginData.password.length > 0) {
@@ -828,7 +836,7 @@ const LoginPage = (props: any) => {
           window.location.reload();
         }
       })
-      
+
       return;
     }
     await login();
@@ -931,8 +939,8 @@ const LoginPage = (props: any) => {
 
         // await saveToIndexedDB(tmpData);
       } else {
-        
-        if (respjson.error.message.includes('UM90')){
+
+        if (respjson.error.message.includes('UM90')) {
           let message = respjson.error.message.split('last')
           let attempts = message[1].split('password')
           setModalProps({
@@ -977,7 +985,7 @@ const LoginPage = (props: any) => {
     regex: '',
     character: [],
     min: 0,
-    max:0
+    max: 0
   })
 
   const classes = useStyles();
@@ -1033,10 +1041,21 @@ const LoginPage = (props: any) => {
               error={isError}
               className={classes.inputField}
               fullWidth
-              type="password"
+              type={visible ? 'text' : 'password'}
               onChange={handleTextFieldOnChange('password')}
               inputRef={passwordRef}
               labelWidth={0}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setVisible(!visible)
+                    }}
+                  >
+                    {visible ? <Visibility className={classes.eyeIcon} /> : <VisibilityOff className={classes.eyeIcon} />}
+                  </IconButton>
+                </InputAdornment>
+              }
             />
             {
               isError ?
@@ -1095,9 +1114,9 @@ const LoginPage = (props: any) => {
 
       </Grid>
       <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
-      <Typography> 
-        { Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100) === 100 ? 'Redirecting...' : initializingStatus } 
-      </Typography>
+        <Typography>
+          {Math.round((fetchedCpt + fetchedIcd10) / (totalCpt + totalIcd10) * 100) === 100 ? 'Redirecting...' : initializingStatus}
+        </Typography>
         <Box position="relative" display="inline-flex">
           <CircularProgress className={classes.circularProgress} />
           <Box
