@@ -1,5 +1,6 @@
 const electron = require('electron');
 const { app, BrowserWindow, Menu, protocol, ipcMain } = electron;
+const session = electron.session
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
 //const isDev = require('electron-is-dev');
