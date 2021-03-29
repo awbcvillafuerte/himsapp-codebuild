@@ -45,6 +45,8 @@ const ProfilePage = (props: any): JSX.Element => {
 	const [userData, setUserData] = useState<any>([]);
 	const [userIdDb, setUserIdDb] = useState('');
 	const [token, setToken] = useState('');
+	const [url, setUrl] = useState<any>('');
+
 
 
 	React.useEffect(() => {
@@ -56,12 +58,15 @@ const ProfilePage = (props: any): JSX.Element => {
 			props.history.push('/')
 			return false;
 		})
+		let urlApp = localStorage.getItem('CLIENT_URL') ? localStorage.getItem('CLIENT_URL') : process.env.REACT_APP_HIMS_API_CLIENT_URL
+
+		setUrl(urlApp)
 
 		setLoading(true)
 
 		StorageService('user_data', 'access_token').then(({result}: any) => {
 			setToken(result)
-			fetch(`${process.env.REACT_APP_HIMS_API_CLIENT_URL}profile`, {
+			fetch(`${url}profile`, {
 				method: 'GET',
 				headers: {
 					'Authorization': `Bearer ${result}`
