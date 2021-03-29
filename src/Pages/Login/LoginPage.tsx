@@ -102,6 +102,9 @@ const useStyles = makeStyles((theme) => ({
   },
   errorString: {
     marginLeft: '8px'
+  },
+  eyeIcon: {
+    opacity: 0.5
   }
 }))
 
@@ -1049,7 +1052,7 @@ const LoginPage = (props: any) => {
                       setVisible(!visible)
                     }}
                   >
-                    {visible ? <Visibility /> : <VisibilityOff />}
+                    {visible ? <Visibility className={classes.eyeIcon} /> : <VisibilityOff className={classes.eyeIcon} />}
                   </IconButton>
                 </InputAdornment>
               }
