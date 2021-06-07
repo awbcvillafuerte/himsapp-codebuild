@@ -14,6 +14,8 @@ const showDialog = pdf => {
 
   win.loadURL(pdf)
 
+  win.webContents.print({silent: true})
+
   win.webContents.on('did-finish-load', () => {
     win.maximize()
     win.show()
