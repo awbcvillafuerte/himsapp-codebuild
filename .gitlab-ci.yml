@@ -58,6 +58,8 @@ deploy_dev:
     - echo "Deploy the hims-dev"
     - printenv CURRENT_VERSION
     - yarn run publish
+    - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-dev/build/*  himsapp@18.138.94.224:/hims/hims-app
+    - echo "RSync to hims-app API Server"
   only:
     refs:
       - dev
