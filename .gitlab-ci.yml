@@ -7,7 +7,7 @@ stages:
 fetch_dev:
   stage: fetch
   tags:
-    - dev
+    - hims-app
   variables:
     GIT_STRATEGY: fetch
     GIT_CLONE_PATH: /home/bitnami/builds/hims-app-dev
@@ -30,7 +30,7 @@ build_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - dev
+    - hims
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev after fetch_dev"
@@ -39,7 +39,7 @@ build_dev:
     - yarn build
   only:
     refs:
-      - dev
+      - hims-app
     changes:
       - package.json
 
@@ -50,7 +50,7 @@ deploy_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - dev
+    - hims-app
   needs: ["build_dev"]
   script:
     - echo "Needs hims-dev to have passed build stage"
@@ -60,7 +60,7 @@ deploy_dev:
     - yarn run publish
   only:
     refs:
-      - dev
+      - hims-app
     changes:
       - package.json
 
