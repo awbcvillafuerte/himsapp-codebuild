@@ -21,7 +21,7 @@ fetch_dev:
     - yarn install
   only:
     refs:
-      - dev
+      - hims-app
     changes:
       - package.json
 
@@ -30,7 +30,7 @@ build_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - hims
+    - hims-app
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev after fetch_dev"
