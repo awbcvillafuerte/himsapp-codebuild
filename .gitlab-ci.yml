@@ -21,7 +21,7 @@ fetch_dev:
     - yarn install
   only:
     refs:
-      - hims-app
+      - dev
     changes:
       - package.json
 
@@ -39,7 +39,7 @@ build_dev:
     - yarn build
   only:
     refs:
-      - hims-app
+      - dev
     changes:
       - package.json
 
@@ -60,7 +60,7 @@ deploy_dev:
     - yarn run publish
   only:
     refs:
-      - hims-app
+      - dev
     changes:
       - package.json
 
