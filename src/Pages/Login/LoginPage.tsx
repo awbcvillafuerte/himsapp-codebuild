@@ -838,7 +838,8 @@ const LoginPage = (props: any) => {
           window.location.reload();
         }
       })
-
+      setError(true);
+      setErrorMessage('The password is required.');
       return;
     }
     await login();

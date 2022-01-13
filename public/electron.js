@@ -156,6 +156,8 @@ autoUpdater.on('update-downloaded', (info) => {
 app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
+
+app.setAsDefaultProtocolClient('veridata');
  
 Dialog(electron); 
 Printer(electron);
