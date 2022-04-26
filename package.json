@@ -2,7 +2,7 @@
   "name": "hims-dev",
   "productName": "hims-dev",
   "version": "0.2.661-beta-test-002", 
-  "description": "HIMS Development Version",
+  "description": "HIMS Development Version DDS",
   "author": "Veridata",
   "main": "public/electron.js",
   "build": {
