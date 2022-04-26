@@ -45,7 +45,7 @@ const BillingUrl = 'billing/index.html';
 const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
 const treasuryUrl = 'treasury/';
-const distributionUrl = 'dds-requestor/';
+const distributionUrl = 'dds-requestor/index.html#/app/requests/';
 
 const abortController = new AbortController();
 const signal = abortController.signal;
