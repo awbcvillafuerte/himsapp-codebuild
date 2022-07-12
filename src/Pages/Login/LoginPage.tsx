@@ -45,7 +45,7 @@ const BillingUrl = 'billing/index.html';
 const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
 const treasuryUrl = 'treasury/';
-const distributionUrl = 'dds-requestor/index.html#/app/requests/';
+const distributionUrl = 'dds-requestor/index.html#';
 
 const abortController = new AbortController();
 const signal = abortController.signal;
@@ -164,6 +164,7 @@ const LoginPage = (props: any) => {
       }
 
       // let foundIndex = modules.findIndex((el: any) => el.name === mainModule) // Get index of module
+      console.log(modules, "MODULES");
       let foundIndex = modules.findIndex((el: any) => Boolean(el.name && firstActiveRole && firstActiveRole.module === el.name));
 
       console.log(`FOUND INDEX ${foundIndex} from array ${JSON.stringify(modules, null, 2)}`);
