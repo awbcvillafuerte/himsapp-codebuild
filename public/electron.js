@@ -3,7 +3,7 @@ const {autoUpdater} = require("electron-updater");
 const path = require("path");
 const isDev = require('electron-is-dev');
 
-//let isDev = true;
+let isDev = true;
 let mainWindow;
 let isWin = process.platform === "win32";
 let splashPath;
@@ -124,6 +124,18 @@ function createWindow() {
 
     mainWindow.on("closed", () => (mainWindow = null));
 }
+
+let win = null
+let devtools = null
+
+app.once('ready', () => {
+  win = new BrowserWindow()
+  devtools = new BrowserWindow()
+  win.loadURL('https://github.com')
+  win.webContents.setDevToolsWebContents(devtools.webContents)
+  win.webContents.openDevTools({ mode: 'detach' })
+})
+
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
