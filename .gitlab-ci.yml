@@ -45,6 +45,7 @@ build_uat:
 
 deploy_uat:
   stage: deploy
+  when: manual
   variables:
     GIT_STRATEGY: none
   tags:
