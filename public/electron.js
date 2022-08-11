@@ -63,7 +63,10 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS Desktop for UAT"
+        title: "HIMS Desktop for UAT",
+        webPreferences: {
+          devTools: true
+        }
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-uat.png"));
 
@@ -132,4 +135,6 @@ autoUpdater.on('update-downloaded', (info) => {
 app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
+
+app.setAsDefaultProtocolClient('veridata');
   
