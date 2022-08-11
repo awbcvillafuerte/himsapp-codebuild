@@ -40,7 +40,17 @@ template.unshift({
       submenu: [
         {
           label: 'Open Dev Tools',
+          accelerator: 'CommandOrControl+I',
           click() {
+            mainWindow = new BrowserWindow({
+              width: 900,
+              height: 720,
+              show: false,
+              title: "HIMS Desktop for UAT",
+              webPreferences: {
+                devTools: true
+              }
+            });
             mainWindow.webContents.openDevTools();
           },
         },
@@ -85,6 +95,9 @@ function createWindow() {
         width: 900,
         height: 720,
         title: "HIMS Desktop for UAT",
+        webPreferences: {
+          devTools: true
+        }
     });
     splash.loadURL(splashPath);
 
