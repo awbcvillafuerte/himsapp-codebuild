@@ -36,6 +36,17 @@ template.unshift({
       click() { autoUpdater.checkForUpdates(); }
     },
     {
+      label: 'Options',
+      submenu: [
+        {
+          label: 'Open Dev Tools',
+          click() {
+            mainWindow.webContents.openDevTools();
+          },
+        },
+      ],
+    },
+    {
       label: 'Exit and Update',
       accelerator: 'Command+Q',
       click() { app.quit(); }
