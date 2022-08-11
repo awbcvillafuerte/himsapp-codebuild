@@ -1,0 +1,24 @@
+Webpack Bundle Analyzer
+https://www.npmjs.com/package/webpack-bundle-analyzer
+# NPM
+npm install --save-dev webpack-bundle-analyzer
+# Yarn
+yarn add -D webpack-bundle-analyzer
+
+
+Sourcemap Explorer
+https://www.npmjs.com/package/source-map-explorer
+npm install -g source-map-explorer
+
+https://blog.bitsrc.io/6-tools-and-techniques-to-analyze-webpack-bundle-size-817337f8cf91
+
+Webpack Visualizer
+https://chrisbateman.github.io/webpack-visualizer/
+online tool, just need to create a stats.json file
+webpack --json > stats.json
+
+Webpack Analyzer
+https://github.com/webpack/analyse
+Also just need to get a stats.json
+webpack --json > stats.json
+
