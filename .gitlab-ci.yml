@@ -78,6 +78,3 @@ sync_dev:
       - dev
     changes:
       - package.json
-
-
-
