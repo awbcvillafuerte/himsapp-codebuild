@@ -2,6 +2,7 @@ stages:
   - fetch
   - build
   - deploy
+  - -sync
 
 
 fetch_uat:
