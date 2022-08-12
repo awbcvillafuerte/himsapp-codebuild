@@ -62,5 +62,22 @@ deploy_uat:
     changes:
       - package.json
 
+sync_dev:
+  stage: sync
+  when: manual
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - uat-intellicare
+  needs: ["deploy_dev"]
+  script:
+    - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-uat/build/*  himsapp@18.138.94.224:/hims/hims-app
+    - echo "RSync to hims-app API Server"
+  only:
+    refs:
+      - dev
+    changes:
+      - package.json
+
 
 
