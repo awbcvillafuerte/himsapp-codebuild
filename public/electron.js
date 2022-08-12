@@ -41,16 +41,10 @@ template.unshift({
           label: 'Open Dev Tools',
           accelerator: 'CommandOrControl+I',
           click() {
-            mainWindow = new BrowserWindow({
-              width: 900,
-              height: 720,
-              show: false,
-              title: "HIMS Desktop for UAT",
-              webPreferences: {
-                devTools: true
-              }
-            });
-            mainWindow.webContents.openDevTools();
+            devtools = new BrowserWindow();
+            mainWindow.webContents.setDevToolsWebContents(devtools.webContents);
+            mainWindow.loadURL(splashPath);
+            mainWindow.webContents.openDevTools({ mode: 'detach' });
           },
         },
       ],
@@ -123,17 +117,6 @@ function createWindow() {
 
     mainWindow.on("closed", () => (mainWindow = null));
 }
-
-let win = null
-let devtools = null
-
-app.once('ready', () => {
-  win = new BrowserWindow()
-  devtools = new BrowserWindow()
-  win.loadURL('https://github.com')
-  win.webContents.setDevToolsWebContents(devtools.webContents)
-  win.webContents.openDevTools({ mode: 'detach' })
-})
 
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {
