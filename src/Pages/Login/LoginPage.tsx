@@ -37,6 +37,7 @@ interface LoginDataType {
 // Module URL
 // const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
 const customerCareUrl = 'customer-care/index.html#/customer-care/';
+const CSSModuleUrl = 'customer-care/index.html#/customer-care/create-ticket';
 const membershipUrl = 'membership/index.html#/membership/';
 const systemAdminUrl = 'system-admin/index.html#/system-admin/';
 const underwritingUrl = 'underwriting/index.html#/underwriting/';
@@ -52,6 +53,7 @@ const signal = abortController.signal;
 
 let firstActiveRole: any = {};
 let mainModule = '';
+let groupName = '';
 let cptFetchDone = false;
 let icd10FetchDone = false;
 let icd10ToSave: any = [];
@@ -171,8 +173,11 @@ const LoginPage = (props: any) => {
       console.log('FIRST ACTIVE ROLE ID: ', firstActiveRole);
       if (foundIndex >= 0) {
         const module = modules[foundIndex]
-
+        
         localStorage.setItem('sidebar', 'dashboard')
+        if (module.name.toLowerCase() === 'customer care' && groupName == 'CSS GROUP') 
+          window.location.replace(CSSModuleUrl)
+        else
         window.location.replace(module.dashboard_url)
         // if (mainModule.toLowerCase() === 'customer care') {
         //   window.location.replace(module.dashboard_url)
@@ -190,7 +195,7 @@ const LoginPage = (props: any) => {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule.toLowerCase() === 'customer care') {
-        window.location.replace(customerCareUrl);
+        groupName == 'CSS GROUP' ? window.location.replace(CSSModuleUrl) : window.location.replace(customerCareUrl);
       } else if (mainModule.toLowerCase() === 'membership') {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(membershipUrl);
@@ -655,6 +660,7 @@ const LoginPage = (props: any) => {
           }
 
           mainModule = data.login.main_module;
+          groupName = data.login['group']['name'];
           const login_roles = get(data, "login.role", []);
           const main_role_id = get(data, "login.main_role_id", "");
           if (Array.isArray(login_roles) && login_roles.length && main_role_id) {
