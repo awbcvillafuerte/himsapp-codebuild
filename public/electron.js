@@ -76,7 +76,8 @@ function createWindow() {
         title: "HIMS for VNI DEV",
         webPreferences: {
           nodeIntegration: true,
-          preload: `${__dirname}/preload.js`
+          preload: `${__dirname}/preload.js`,
+          partition: 'persist:himsDb'
         }
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
@@ -93,7 +94,10 @@ function createWindow() {
         height: 720,
         show: false,
         title: "HIMS for VNI DEV",
-        webPreferences: {preload: path.join(__dirname, 'preload.js') },
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          partition: 'persist:himsDb'
+        },
     });
 	
 	if (!isDev) {
