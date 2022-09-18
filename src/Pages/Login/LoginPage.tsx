@@ -175,7 +175,7 @@ const LoginPage = (props: any) => {
         const module = modules[foundIndex]
         
         localStorage.setItem('sidebar', 'dashboard')
-        if (module.name.toLowerCase() === 'customer care' && groupName == 'CSS GROUP') 
+        if (module.name.toLowerCase() === 'customer care' && groupName === 'CSS GROUP') 
           window.location.replace(CSSModuleUrl)
         else
         window.location.replace(module.dashboard_url)
@@ -195,7 +195,7 @@ const LoginPage = (props: any) => {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(underwritingUrl);
       } else if (mainModule.toLowerCase() === 'customer care') {
-        groupName == 'CSS GROUP' ? window.location.replace(CSSModuleUrl) : window.location.replace(customerCareUrl);
+        groupName === 'CSS GROUP' ? window.location.replace(CSSModuleUrl) : window.location.replace(customerCareUrl);
       } else if (mainModule.toLowerCase() === 'membership') {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(membershipUrl);
