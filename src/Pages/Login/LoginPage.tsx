@@ -660,7 +660,7 @@ const LoginPage = (props: any) => {
           }
 
           mainModule = data.login.main_module;
-          if (data.login['group']['name']) {
+          if (data.login && data.login['group'] && data.login['group']['name']) {
             groupName = data.login['group']['name'];
           }
           const login_roles = get(data, "login.role", []);
