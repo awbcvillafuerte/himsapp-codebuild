@@ -660,7 +660,9 @@ const LoginPage = (props: any) => {
           }
 
           mainModule = data.login.main_module;
-          groupName = data.login['group']['name'];
+          if (data.login['group']['name']) {
+            groupName = data.login['group']['name'];
+          }
           const login_roles = get(data, "login.role", []);
           const main_role_id = get(data, "login.main_role_id", "");
           if (Array.isArray(login_roles) && login_roles.length && main_role_id) {
