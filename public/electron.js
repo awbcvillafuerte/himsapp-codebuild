@@ -77,7 +77,7 @@ function createWindow() {
         webPreferences: {
           nodeIntegration: true,
           preload: `${__dirname}/preload.js`,
-          partition: 'persist:himsDb'
+          // partition: 'persist:himsDb'
         }
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
@@ -125,7 +125,22 @@ function createWindow() {
 
     mainWindow.on("closed", () => (mainWindow = null));
 }
-app.on("ready", createWindow);
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+    
+  app.on("ready", createWindow);
+}
+
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         app.quit();
