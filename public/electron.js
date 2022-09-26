@@ -96,7 +96,7 @@ function createWindow() {
         title: "HIMS for VNI DEV",
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
-          partition: 'persist:himsDb'
+          // partition: 'persist:himsDb'
         },
     });
 	
