@@ -36,7 +36,6 @@ build_dev:
   script:
     - echo "This job builds hims-dev after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev
-    - printenv CURRENT_VERSION
     - yarn build
   only:
     refs:
@@ -48,6 +47,7 @@ build_dev:
 
 deploy_dev:
   stage: deploy
+  when: manual
   variables:
     GIT_STRATEGY: none
   tags:
