@@ -77,7 +77,7 @@ sync_dev:
     - hims-app
   needs: ["deploy_dev"]
   script:
-    - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-dev/build/*  himsapp@18.138.94.224:/hims/hims-app
+    - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-dev/build/*  centos@18.138.94.224:/hims/hims-app
     - echo "RSync to hims-app API Server"
   only:
     refs:
