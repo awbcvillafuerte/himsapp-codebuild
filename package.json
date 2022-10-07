@@ -1,7 +1,7 @@
 {
   "name": "hims-dev",
   "productName": "hims-dev",
-  "version": "0.2.782-beta",
+  "version": "0.2.783-beta",
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
