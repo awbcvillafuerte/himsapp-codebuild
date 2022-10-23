@@ -243,7 +243,7 @@ export const PasswordSetupModal: React.FC<IProps> = (props: IProps):JSX.Element 
                             {
                                 setup.character.map(e => 
                                     e === 'number' ? 
-                                        <>— Must have <strong>letters and numbers</strong><br /> </> :
+                                        <>— Must have <strong>numbers</strong><br /> </> :
                                     e === 'uppercase_letter' ?
                                         <>— Must have <strong>at least 1 upper case</strong><br /> </> :
                                     e === 'lowercase_letter' ?
