@@ -154,5 +154,5 @@ app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
 
-app.setAsDefaultProtocolClient('veridata');
+app.setAsDefaultProtocolClient('hims-uat');
   
