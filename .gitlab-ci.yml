@@ -36,7 +36,7 @@ build_uat:
     - echo "This job builds hims-uat after fetch_uat"
     - cd /home/bitnami/builds/hims-app-uat
     - printenv CURRENT_VERSION
-    - yarn build
+    - echo "yarn build skipped - build via yarn run publish"
   only:
     refs:
       - uat
