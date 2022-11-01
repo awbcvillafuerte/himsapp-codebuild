@@ -37,6 +37,8 @@ build_uat:
     - cd /home/bitnami/builds/hims-app-uat
     - printenv CURRENT_VERSION
     - echo "yarn build skipped - build via yarn run publish"
+    - echo "clearing the build folder"
+    - rm -rf build/*
   only:
     refs:
       - uat
