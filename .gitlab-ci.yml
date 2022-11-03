@@ -34,7 +34,6 @@ build_dev:
   script:
     - echo "This job builds hims-dev after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev
-    - yarn build
   only:
     refs:
       - dev
