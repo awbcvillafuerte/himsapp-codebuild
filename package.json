@@ -1,7 +1,7 @@
 {
   "name": "hims-desktop",
   "productName": "hims-desktop",
-  "version": "0.2.451-beta", 
+  "version": "0.2.483-beta", 
   "description": "HIMS Desktop for UAT",
   "author": "Veridata",
   "main": "public/electron.js",
@@ -43,8 +43,8 @@
     "build": "yarn react-build && yarn electron-build -w --x64",
     "buildmac": "yarn react-build && yarn electron-build -m",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "publish": "yarn react-build && electron-builder --win --x64 --ia32 -p always",
-    "publish-only": "electron-builder --win --x64 --ia32 -p always"
+    "publish": "yarn react-build && electron-builder --win --x64 -p always",
+    "publish-only": "electron-builder --win --x64 -p always"
   },
   "private": true,
   "jest": {
