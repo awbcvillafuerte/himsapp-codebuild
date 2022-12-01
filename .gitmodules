@@ -1,21 +1,21 @@
 [submodule "public/customer-care"]
 	path = public/customer-care
-	url = git@gitlab.com:hims-build-artifacts/customer-care.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/client/customer-care/customer-care.git
 [submodule "public/membership"]
 	path = public/membership
-	url = git@gitlab.com:hims-build-artifacts/membership.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/client/membership/membership.git
 [submodule "public/underwriting"]
 	path = public/underwriting
-	url = git@gitlab.com:hims-build-artifacts/underwriting.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/client/underwriting/underwriting.git
 [submodule "public/system-admin"]
 	path = public/system-admin
-	url = git@gitlab.com:hims-build-artifacts/system-admin.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/client/user-management/system-admin.git
 [submodule "public/franchising"]
 	path = public/franchising
-	url = git@gitlab.com:hims-build-artifacts/franchising-module.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/client/franchising/18320557-franchising-module.git
 [submodule "public/treasury"]
 	path = public/treasury
 	url = git@gitlab.com:hims-build-artifacts/treasury.git
 [submodule "public/dds-requestor"]
 	path = public/dds-requestor
-	url = git@gitlab.com:hims-build-artifacts/dds-requestor.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/client/customer-care/customer-care.git
