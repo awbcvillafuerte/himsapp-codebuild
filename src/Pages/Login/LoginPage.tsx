@@ -39,6 +39,7 @@ const BillingUrl = 'billing/index.html';
 const PnUrl = 'partner_network/index.html';
 const franchisingUrl = 'franchising/index.html#/franchising/';
 const treasuryUrl = 'treasury/';
+const distributionUrl = 'dds-requestor/index.html#';
 
 const abortController = new AbortController();
 const signal = abortController.signal;
@@ -185,6 +186,9 @@ const LoginPage = (props: any) => {
       } else if (mainModule.toLowerCase() === 'treasury') {
         localStorage.setItem('sidebar', 'dashboard');
         window.location.replace(treasuryUrl);
+      } else if (mainModule.toLowerCase() === 'document distribution') {
+        localStorage.setItem('sidebar', 'dashboard');
+        window.location.replace(distributionUrl);
       } else {
         setFetchingState(false);
         props.history.push('profile')
