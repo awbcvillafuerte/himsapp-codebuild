@@ -18,4 +18,4 @@
 	url = git@gitlab.com:hims-build-artifacts/treasury.git
 [submodule "public/dds-requestor"]
 	path = public/dds-requestor
-	url = git@gitlab.veridata.com.ph:hims-frontend/client/customer-care/customer-care.git
+	url = git@gitlab.veridata.com.ph:hims-frontend/dds/dds-requestor.git
