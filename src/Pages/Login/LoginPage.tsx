@@ -597,6 +597,7 @@ const LoginPage = (props: any) => {
           tmpData = data;
           localStorage.setItem('api_token', data.login['access_token']);
           localStorage.setItem('pm_token', data.login['access_token']);
+          localStorage.setItem('token', data.login['access_token']);
           localStorage.setItem('user_id', data.login.user_id);
           localStorage.setItem('employee_id', data.login.employee_id);
           localStorage.setItem('first_name', data.login.first_name);
