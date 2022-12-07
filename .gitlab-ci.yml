@@ -14,6 +14,8 @@ fetch_dev:
     GIT_CLONE_PATH: /home/bitnami/builds/hims-app-dev
   script:
     - echo "This job fetches hims_app dev branch. "
+    - echo "pulling submodules"
+    - ssh-agent ~/.scripts/submod_update.sh dev
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Ensure all node modules are updated and available"
     - cp config/dev.env .env
