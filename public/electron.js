@@ -7,6 +7,8 @@ let mainWindow;
 let isWin = process.platform === "win32";
 let splashPath;
 
+const Printer = require('./printer')
+
 if (isWin) {
     splashPath = `file://${__dirname}/../build/splash.html`;
 } else {
@@ -153,6 +155,8 @@ autoUpdater.on('update-downloaded', (info) => {
 app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
+
+Printer(electron);
 
 app.setAsDefaultProtocolClient('hims-uat');
   
