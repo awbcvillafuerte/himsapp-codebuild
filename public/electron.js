@@ -2,6 +2,7 @@ const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
 const {autoUpdater} = require("electron-updater");
 const path = require("path");
 const isDev = require('electron-is-dev');
+const electron = require('electron');
 
 let mainWindow;
 let isWin = process.platform === "win32";
