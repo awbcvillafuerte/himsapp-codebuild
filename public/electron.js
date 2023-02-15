@@ -124,6 +124,9 @@ function createWindow() {
     //})
 
     mainWindow.on("closed", () => (mainWindow = null));
+    login.on("closed", () => {
+      if (process.platform !== "darwin") app.quit();
+    });
 }
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -132,9 +135,13 @@ if (!gotTheLock) {
   app.quit()
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore()
-      mainWindow.focus()
+    // if (mainWindow) {
+    //   if (mainWindow.isMinimized()) mainWindow.restore()
+    //   mainWindow.focus()
+    // }
+    if (login) {
+      if (login.isMinimized()) login.restore()
+      login.focus()
     }
   })
     
