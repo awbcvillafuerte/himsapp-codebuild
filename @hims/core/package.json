@@ -4,7 +4,7 @@
   "description": "Core components for HIMS frontend",
   "author": "VNI DevOps<devops@veridata.com.ph>",
   "license": "MIT",
-  "repository": "git@gitlab.veridata.com.ph:hims-frontend/client/core-frontend.git",
+  "repository": "git@gitlab.com:hims_client/modules/core-frontend.git",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
