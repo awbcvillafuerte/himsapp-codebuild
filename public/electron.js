@@ -9,6 +9,8 @@ let isWin = process.platform === "win32";
 let splashPath;
 
 const Printer = require('./printer')
+const Dialog = require('./dialog')
+const PartnerViewer = require('./partnerview')
 
 if (isWin) {
     splashPath = `file://${__dirname}/../build/splash.html`;
@@ -157,7 +159,9 @@ app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
 
+Dialog(electron); 
 Printer(electron);
+PartnerViewer(electron, mainWindow);
 
 app.setAsDefaultProtocolClient('hims-uat');
   
