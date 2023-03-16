@@ -618,6 +618,7 @@ const LoginPage = (props: any) => {
     localStorage.setItem('CLAIMS_URL', process.env.REACT_APP_HIMS_API_CLAIMS_URL!);
     localStorage.setItem('OCP_URL', process.env.REACT_APP_HIMS_API_OCP_URL!);
     localStorage.setItem('DDS_URL', process.env.REACT_APP_HIMS_API_DDS_URL!);
+    localStorage.setItem('FRANCHISING_URL', process.env.REACT_APP_HIMS_API_FRANCHISING!);
     localStorage.setItem('DDS_USERNAME', process.env.REACT_APP_DDS_USERNAME!);
     localStorage.setItem('DDS_PASSWORD', process.env.REACT_APP_DDS_PASSWORD!);
     localStorage.setItem('PMAKER_BASE_URL', process.env.REACT_APP_PMAKER_BASE_URL!);
