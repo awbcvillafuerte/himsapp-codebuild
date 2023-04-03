@@ -3,7 +3,6 @@ const {autoUpdater} = require("electron-updater");
 const path = require("path");
 const isDev = require('electron-is-dev');
 const electron = require('electron');
-const { webFrame } = require('electron')
 
 let mainWindow;
 let isWin = process.platform === "win32";
@@ -163,8 +162,6 @@ app.on('ready', function()  {
 Dialog(electron); 
 Printer(electron);
 PartnerViewer(electron, mainWindow);
-
-webFrame.setZoomFactor(2)
 
 app.setAsDefaultProtocolClient('hims-uat');
   
