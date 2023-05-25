@@ -91,6 +91,6 @@ code_review:
     - /usr/local/bin/cr_uat.sh
   only:
     refs:
-      - release-claims-uat
+      - uat
     changes:
       - package.json
