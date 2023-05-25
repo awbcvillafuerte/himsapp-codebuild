@@ -85,13 +85,9 @@ build_web_sync:
 code_review:
   stage: codereview
   tags:
-    - uat-intellicare
+    - uat-electron
   needs: ['build_web_sync']
   script:
-    - pwd
-    - cd /usr/local/bin
-    - ls
-    - pwd
     - /usr/local/bin/cr_uat.sh
   only:
     refs:
