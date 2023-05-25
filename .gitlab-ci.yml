@@ -88,6 +88,10 @@ code_review:
     - uat-intellicare
   needs: ['build_web_sync']
   script:
+    - pwd
+    - cd /usr/local/bin
+    - ls
+    - pwd
     - /usr/local/bin/cr_uat.sh
   only:
     refs:
