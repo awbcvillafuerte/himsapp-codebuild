@@ -3,6 +3,7 @@ stages:
   - build
   - deploy
   - sync
+  - codereview
 
 
 fetch_uat:
@@ -67,7 +68,6 @@ deploy_uat:
 
 build_web_sync:
   stage: sync
-  when: manual
   variables:
     GIT_STRATEGY: none
   tags:
@@ -79,5 +79,18 @@ build_web_sync:
   only:
     refs:
       - uat
+    changes:
+      - package.json
+
+code_review:
+  stage: codereview
+  tags:
+    - uat-intellicare
+  needs: ['build_web_sync']
+  script:
+    - /usr/local/bin/cr_uat.sh
+  only:
+    refs:
+      - release-claims-uat
     changes:
       - package.json
