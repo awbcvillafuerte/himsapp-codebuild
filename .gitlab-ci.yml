@@ -3,7 +3,6 @@ stages:
   - build
   - deploy
   - sync
-  - clean
 
 
 fetch_dev:
@@ -77,20 +76,6 @@ sync_dev:
   script:
     - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-dev/build/*  himsapp@18.138.94.224:/hims/hims-app
     - echo "RSync to hims-app API Server"
-  only:
-    refs:
-      - dev
-    changes:
-      - package.json
-
-cleanup:
-  stage: clean
-  tags:
-    - hims-app
-  needs: ["sync_dev"]
-  script:
-    - rm -rf /home/bitnami/builds/hims-app-dev
-    - mkdir /hims-app-dev/
   only:
     refs:
       - dev
