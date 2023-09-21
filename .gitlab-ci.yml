@@ -8,7 +8,7 @@ stages:
 fetch_dev:
   stage: fetch
   tags:
-    - hims-app
+    - hims-app-builder
   variables:
     GIT_STRATEGY: fetch
     GIT_CLONE_PATH: /home/bitnami/builds/hims-app-dev
@@ -31,7 +31,7 @@ build_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - hims-app
+    - hims-app-builder
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev after fetch_dev"
@@ -49,7 +49,7 @@ deploy_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - hims-app
+    - hims-app-builder
   needs: ["build_dev"]
   script:
     - echo "Needs hims-dev to have passed build stage"
@@ -71,7 +71,7 @@ sync_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - hims-app
+    - hims-app-builder
   needs: ["deploy_dev"]
   script:
     - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-dev/build/*  himsapp@18.138.94.224:/hims/hims-app
