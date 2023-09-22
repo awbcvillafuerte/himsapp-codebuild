@@ -1,5 +1,3 @@
-before_script:
-  - git clone git@gitlab.veridata.com.ph:hims-frontend/client/hims_app.git
 
 stages:
   - fetch
