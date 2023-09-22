@@ -1,3 +1,6 @@
+before_script:
+  - git clone git@gitlab.veridata.com.ph:hims-frontend/client/hims_app.git
+
 stages:
   - fetch
   - build
@@ -50,6 +53,7 @@ deploy_dev:
     GIT_STRATEGY: none
   tags:
     - hims-app-build
+  when: manual
   needs: ["build_dev"]
   script:
     - echo "Needs hims-dev to have passed build stage"
