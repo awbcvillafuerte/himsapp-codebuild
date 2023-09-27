@@ -22,7 +22,7 @@ fetch_dev:
     - yarn install
   only:
     refs:
-      - dev
+      - dev-2
     changes:
       - package.json
 
@@ -38,7 +38,7 @@ build_dev:
     - cd /home/bitnami/builds/hims-app-dev
   only:
     refs:
-      - dev
+      - dev-2
     changes:
       - package.json
 
@@ -60,7 +60,7 @@ deploy_dev:
     - echo "Build on ProcessMaker DevServer"
   only:
     refs:
-      - dev
+      - dev-2
     changes:
       - package.json
 
@@ -78,6 +78,6 @@ sync_dev:
     - echo "RSync to hims-app API Server"
   only:
     refs:
-      - dev
+      - dev-2
     changes:
       - package.json
