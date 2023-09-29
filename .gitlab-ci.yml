@@ -2,7 +2,6 @@ stages:
   - fetch
   - build
   - deploy
-  - sync
 
 
 fetch_dev:
@@ -15,10 +14,10 @@ fetch_dev:
   script:
     - echo "This job fetches hims_app dev branch. "
     - echo "pulling submodules"
-    - ssh-agent ~/.scripts/submod_update.sh dev
+    - ssh-agent ~/.scripts/submod_update.sh dev2
     - cd /home/bitnami/builds/hims-app-dev
     - echo "Ensure all node modules are updated and available"
-    - cp config/dev.env .env
+    - cp config/dev2.env .env
     - yarn install
   only:
     refs:
@@ -58,24 +57,6 @@ deploy_dev:
     - printenv CURRENT_VERSION
     - yarn run publish
     - echo "Build on ProcessMaker DevServer"
-  only:
-    refs:
-      - dev-2
-    changes:
-      - package.json
-
-
-
-sync_dev:
-  stage: sync
-  variables:
-    GIT_STRATEGY: none
-  tags:
-    - dev-2
-  needs: ["deploy_dev"]
-  script:
-    - rsync -e 'ssh -p 8152' -avHl /home/bitnami/builds/hims-app-dev/build/*  himsapp@18.138.94.224:/hims/hims-app
-    - echo "RSync to hims-app API Server"
   only:
     refs:
       - dev-2
