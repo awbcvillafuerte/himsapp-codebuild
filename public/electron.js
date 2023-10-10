@@ -34,7 +34,7 @@ let template = []
 const name = app.getName();
 const version = app.getVersion();
 template.unshift({
-  label: 'hims-dev ' + version,
+  label: 'hims-dev-2 ' + version,
   submenu: [
     {
       label: 'About HIMS ' + version,
