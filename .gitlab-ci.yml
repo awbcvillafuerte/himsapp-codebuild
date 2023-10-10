@@ -10,7 +10,7 @@ fetch_dev:
     - dev-2
   variables:
     GIT_STRATEGY: fetch
-    GIT_CLONE_PATH: /home/bitnami/builds/hims-app-dev
+    GIT_CLONE_PATH: /home/bitnami/builds/hims-app-dev-2
   script:
     - echo "This job fetches hims_app dev branch. "
     - echo "pulling submodules"
@@ -34,7 +34,7 @@ build_dev:
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev after fetch_dev"
-    - cd /home/bitnami/builds/hims-app-dev
+    - cd /home/bitnami/builds/hims-app-dev-2
   only:
     refs:
       - dev-2
@@ -52,7 +52,7 @@ deploy_dev:
   needs: ["build_dev"]
   script:
     - echo "Needs hims-dev to have passed build stage"
-    - cd /home/bitnami/builds/hims-app-dev
+    - cd /home/bitnami/builds/hims-app-dev-2
     - echo "Deploy the hims-dev"
     - printenv CURRENT_VERSION
     - yarn run publish
