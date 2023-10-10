@@ -183,7 +183,7 @@ app.on('ready', function()  {
     autoUpdater.checkForUpdatesAndNotify();
 });
 
-app.setAsDefaultProtocolClient('veridata');
+app.setAsDefaultProtocolClient('hims-dev-2');
  
 Dialog(electron); 
 Printer(electron);
