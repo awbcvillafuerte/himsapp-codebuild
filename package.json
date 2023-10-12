@@ -1,12 +1,12 @@
 {
-  "name": "hims-dev",
-  "productName": "hims-dev",
-  "version": "1.0.3-beta",
+  "name": "hims-dev-2",
+  "productName": "hims-dev-2",
+  "version": "1.0.4-beta",
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
   "build": {
-    "appId": "ph.com.veridata.hims-dev",
+    "appId": "ph.com.veridata.hims-dev-2",
     "files": [
       "build/*",
       "build/**/*",

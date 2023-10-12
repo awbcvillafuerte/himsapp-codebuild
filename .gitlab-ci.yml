@@ -32,7 +32,7 @@ build_dev:
     - dev-2
   needs: ["fetch_dev"]
   script:
-    - echo "This job builds hims-dev after fetch_dev"
+    - echo "This job builds hims-dev-2 after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev-2
   only:
     refs:
@@ -50,9 +50,9 @@ deploy_dev:
     - dev-2
   needs: ["build_dev"]
   script:
-    - echo "Needs hims-dev to have passed build stage"
+    - echo "Needs hims-dev-2 to have passed build stage"
     - cd /home/bitnami/builds/hims-app-dev-2
-    - echo "Deploy the hims-dev"
+    - echo "Deploy the hims-dev-2"
     - printenv CURRENT_VERSION
     - yarn run publish
     - echo "Build on ProcessMaker DevServer"

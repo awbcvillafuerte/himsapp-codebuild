@@ -73,7 +73,7 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS for VNI DEV",
+        title: "HIMS for VNI DEV 2",
         webPreferences: {
           nodeIntegration: true,
           preload: `${__dirname}/preload.js`,
@@ -85,7 +85,7 @@ function createWindow() {
     splash = new BrowserWindow({
         width: 900,
         height: 720,
-        title: "HIMS for VNI DEV",
+        title: "HIMS for VNI DEV 2",
     });
     splash.loadURL(splashPath);
 
@@ -93,7 +93,7 @@ function createWindow() {
         width: 900,
         height: 720,
         show: false,
-        title: "HIMS for VNI DEV",
+        title: "HIMS for VNI DEV 2",
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           // partition: 'persist:himsDb'
