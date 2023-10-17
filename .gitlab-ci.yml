@@ -9,7 +9,7 @@ stages:
 fetch_uat:
   stage: fetch
   tags:
-    - hims-app-build
+    - hims-app-builds-uat
   variables:
     GIT_STRATEGY: fetch
     GIT_CLONE_PATH: /home/bitnami/builds/hims-app-uat
@@ -32,7 +32,7 @@ build_uat:
   variables:
     GIT_STRATEGY: none
   tags:
-    - hims-app-build
+    - hims-app-builds-uat
   needs: ["fetch_uat"]
   script:
     - echo "This job builds hims-uat after fetch_uat"
@@ -52,7 +52,7 @@ deploy_uat:
   variables:
     GIT_STRATEGY: none
   tags:
-    - hims-app-build
+    - hims-app-builds-uat
   needs: ["build_uat"]
   script:
     - echo "Needs hims-uat to have passed build stage"
@@ -85,7 +85,7 @@ build_web_sync:
 code_review:
   stage: codereview
   tags:
-    - hims-app-build
+    - hims-app-builds-uat
   needs: ['build_web_sync']
   script:
     - /usr/local/bin/cr_uat.sh
