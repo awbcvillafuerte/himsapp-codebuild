@@ -28,11 +28,19 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { generateRequestArrayIcd10, generateRequestArrayCpt, listToMatrix } from '../../utils';
 import get from 'lodash/get';
+import * as crypto from 'crypto';
 
 interface LoginDataType {
   username: string;
   password: string;
 }
+
+const key = crypto
+  .createHash('sha256')
+  .update(String(process.env.HASHING_PASSWORD))
+  .digest('base64')
+  .substring(0, 32)
+const cipherAlgorithm = 'aes-256-gcm'
 
 // Module URL
 // const cssCustomerCareUrl = 'customer-care/index.html#/customer-care/create-ticket';
@@ -113,6 +121,10 @@ const useStyles = makeStyles((theme) => ({
 
 const LoginPage = (props: any) => {
   const [loginData, setLoginData] = useState<LoginDataType>({
+    username: '',
+    password: '',
+  });
+  const [eloginData, setELoginData] = useState<any>({
     username: '',
     password: '',
   });
@@ -608,7 +620,11 @@ const LoginPage = (props: any) => {
 
   const handleTextFieldOnChange = (name: string) => (event: any) => {
     const data = { ...loginData, [name]: event.target.value };
+    const data2 = { ...loginData, [name]: event.target.value };
     setLoginData(data);
+    data2.username = encryptCredentials(data2.username);
+    data2.password = encryptCredentials(data2.password);
+    setELoginData(data2);
   };
 
   const login = async () => {
@@ -625,14 +641,14 @@ const LoginPage = (props: any) => {
     localStorage.setItem('HIMS_TITLE', process.env.REACT_APP_HIMS_TITLE! || "");
     localStorage.setItem('HIMS_ICON', process.env.REACT_APP_ICON! || "");
     localStorage.removeItem('CC_TICKET_TRANSACTION_ID');
-
+    
     let url = `${process.env.REACT_APP_HIMS_API_CLIENT_URL}login`;
     let options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(loginData)
+      body: JSON.stringify(eloginData)
     }
 
     setFetchingState(true);
@@ -1155,6 +1171,16 @@ const LoginPage = (props: any) => {
       </Backdrop>
     </form>
   );
+};
+
+const encryptCredentials = (text: any) => {
+	const initVector = crypto.randomBytes(16)
+    const initVectorHex = initVector.toString('hex')
+    const cipher = crypto.createCipheriv(cipherAlgorithm, key, initVector)
+    const encoded = cipher.update(text, 'utf8', 'hex') + cipher.final('hex')
+    const authTag = cipher.getAuthTag().toString('hex')
+    const metaAndEncoded = [authTag, initVectorHex, encoded].join('|')
+    return metaAndEncoded
 };
 
 export default withRouter(LoginPage);
