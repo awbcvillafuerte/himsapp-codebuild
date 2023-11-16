@@ -1,7 +1,7 @@
 {
   "name": "hims-desktop",
   "productName": "hims-desktop",
-  "version": "1.2.611-beta", 
+  "version": "1.2.612-beta", 
   "description": "HIMS Desktop for UAT",
   "author": "Veridata",
   "main": "public/electron.js",
