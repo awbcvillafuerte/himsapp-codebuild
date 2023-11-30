@@ -35,7 +35,7 @@
     "npm": ">=6"
   },
   "scripts": {
-    "react-start": "env $(cat .env | xargs) react-scripts start",
+    "react-start": "react-scripts start",
     "react-build": "env $(cat .env | xargs) react-scripts build",
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
