@@ -2,6 +2,7 @@ stages:
   - fetch
   - build
   - deploy
+  - sync
 
 
 fetch_dev:
@@ -56,6 +57,21 @@ deploy_dev:
     - printenv CURRENT_VERSION
     - yarn run publish
     - echo "Build on ProcessMaker DevServer"
+  only:
+    refs:
+      - dev-2
+    changes:
+      - package.json
+
+sync_dev:
+  stage: sync
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - dev-2
+  needs: ["build_dev"]
+  script:
+    - echo "Add Script for web application sync"
   only:
     refs:
       - dev-2
