@@ -75,6 +75,7 @@ build_web_sync:
   needs: ["deploy_uat"]
   script:
     - echo "himsapp build to UAT API Server"
+    - chmod 600 /home/himsadmin/himsapp-websync.sh
     - bash /home/himsadmin/himsapp-websync.sh
   only:
     refs:
