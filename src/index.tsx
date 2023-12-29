@@ -14,7 +14,7 @@ const history = createBrowserHistory();
 ReactDOM.render(
     <Router>
         <Switch>
-            {/* <Route path={'/profile'} render={() => <ProfilePage history={history} />} /> */}
+            <Route path={'/profile'} render={() => <ProfilePage history={history} />} />
             <Route exact path={'/'} render={() => <LoginPage history={history} />} />
         </Switch>
     </Router>
