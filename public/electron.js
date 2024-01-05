@@ -40,26 +40,10 @@ template.unshift({
       click() { autoUpdater.checkForUpdates(); }
     },
     {
-      label: 'Options',
-      submenu: [
-        {
-          label: 'Open Dev Tools',
-          accelerator: 'CommandOrControl+I',
-          click() {
-            devtools = new BrowserWindow();
-            mainWindow.webContents.setDevToolsWebContents(devtools.webContents);
-            mainWindow.loadURL(splashPath);
-            mainWindow.webContents.openDevTools({ mode: 'detach' });
-          },
-        },
-      ],
-    },
-    {
     label: 'View',
       submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
-        { role: 'toggleDevTools' },
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
@@ -75,21 +59,6 @@ template.unshift({
     },
   ]
 })
-
-// Create simple menu for easy devtools access, and for demo
-const menuTemplateDev = [
-  {
-    label: 'Options',
-    submenu: [
-      {
-        label: 'Open Dev Tools',
-        click() {
-          mainWindow.webContents.openDevTools();
-        },
-      },
-    ],
-  },
-];
 
 function createWindow() {
        mainWindow = new BrowserWindow({
