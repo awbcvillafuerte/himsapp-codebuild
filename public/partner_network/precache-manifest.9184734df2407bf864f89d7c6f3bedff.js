@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "aace60283fe11bddba477342d459baa8",
+    "revision": "7965904c1433374f71a86e30045ecac6",
     "url": "/partner_network/index.html"
   },
   {
-    "revision": "6f512d24b31c1d5ff05b",
+    "revision": "6b3c90b5c50a201afc19",
     "url": "/partner_network/static/css/5.fd43a845.chunk.css"
   },
   {
@@ -20,7 +20,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/partner_network/static/css/8.20518e07.chunk.css"
   },
   {
-    "revision": "ebb8253d5a9f18828129",
+    "revision": "087a26fedb2410050a16",
     "url": "/partner_network/static/css/main.cf97fbe9.chunk.css"
   },
   {
@@ -68,12 +68,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/partner_network/static/js/2.63bffca7.chunk.js"
   },
   {
-    "revision": "6f512d24b31c1d5ff05b",
-    "url": "/partner_network/static/js/5.889c9169.chunk.js"
+    "revision": "6b3c90b5c50a201afc19",
+    "url": "/partner_network/static/js/5.fb79bb5c.chunk.js"
   },
   {
     "revision": "d225879461650baeb743d8134cc09fbb",
-    "url": "/partner_network/static/js/5.889c9169.chunk.js.LICENSE.txt"
+    "url": "/partner_network/static/js/5.fb79bb5c.chunk.js.LICENSE.txt"
   },
   {
     "revision": "e3698a9d00713970ae21",
@@ -104,16 +104,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/partner_network/static/js/9.0d17dfff.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "ebb8253d5a9f18828129",
-    "url": "/partner_network/static/js/main.bc030b38.chunk.js"
+    "revision": "087a26fedb2410050a16",
+    "url": "/partner_network/static/js/main.a3b9390d.chunk.js"
   },
   {
     "revision": "4e0e34f265fae8f33b01b27ae29d9d6f",
-    "url": "/partner_network/static/js/main.bc030b38.chunk.js.LICENSE.txt"
+    "url": "/partner_network/static/js/main.a3b9390d.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "046239df2370cf0d3a2b",
-    "url": "/partner_network/static/js/runtime-main.920258fb.js"
+    "revision": "78aa5a702d25b236d8ca",
+    "url": "/partner_network/static/js/runtime-main.478fe85a.js"
   },
   {
     "revision": "d95152ab5a160491d28b3fce25bf4ff2",
