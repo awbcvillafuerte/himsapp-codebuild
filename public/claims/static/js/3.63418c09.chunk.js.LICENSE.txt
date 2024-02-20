@@ -1,0 +1,39 @@
+/*
+        object-assign
+        (c) Sindre Sorhus
+        @license MIT
+        */
+
+/*!
+                  Copyright (c) 2017 Jed Watson.
+                  Licensed under the MIT License (MIT), see
+                  http://jedwatson.github.io/classnames
+                  */
+
+/*!
+        * The buffer module from node.js, for the browser.
+        *
+        * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+        * @license  MIT
+        */
+
+/*!
+ * Chart.js v2.9.4
+ * https://www.chartjs.org
+ * (c) 2020 Chart.js Contributors
+ * Released under the MIT License
+ */
+
+/*! @preserve
+ * numeral.js
+ * version : 2.0.6
+ * author : Adam Draper
+ * license : MIT
+ * http://adamwdraper.github.com/Numeral-js/
+ */
+
+/*! http://mths.be/fromcodepoint v0.1.0 by @mathias */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+//!\ DECLARE ALIAS AFTER assign prototype !
