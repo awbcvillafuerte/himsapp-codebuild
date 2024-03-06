@@ -123,6 +123,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const LoginPage = (props: any) => {
+  const userId = tmpData && tmpData.login ? tmpData.login.user_id : undefined;
   const [loginData, setLoginData] = useState<LoginDataType>({
     username: '',
     password: '',
@@ -131,7 +132,7 @@ const LoginPage = (props: any) => {
     username: '',
     password: '',
   });
-  console.log('asde', process.env.REACT_APP_HASHING_PASSWORD);
+
   const [initializingStatus] = useState<string>('Initializing...');
 
   const [totalIcd10, setTotalIcd10] = useState<any>(0);
@@ -1282,6 +1283,7 @@ const LoginPage = (props: any) => {
 
         <PasswordSetupModal
           onSubmit={onSetupPasswordSubmit}
+          id={userId}
           open={pwSetupModal}
           setup={pwSetupProps}
           onClose={() => {
