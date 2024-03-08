@@ -50,7 +50,6 @@ deploy_dev:
     GIT_STRATEGY: none
   tags:
     - dev-2
-  when: manual
   needs: ["build_dev"]
   script:
     - echo "Needs hims-dev to have passed build stage"
