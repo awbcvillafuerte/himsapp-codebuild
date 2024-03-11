@@ -840,7 +840,7 @@ const LoginPage = (props: any) => {
             })
             .catch(err => console.log(err));
 
-          if (data.login.needs_password_update) {
+          if (data.login.needs_password_update && !data.login.access_token) {
             setpwSetupModal(true);
           } else {
             await saveToIndexedDB(data);
