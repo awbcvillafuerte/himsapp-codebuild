@@ -69,7 +69,7 @@ sync_dev:
     GIT_STRATEGY: none
   tags:
     - dev-2
-  needs: ["build_dev"]
+  needs: ["deploy_dev"]
   script:
     - echo "Add Script for web application sync"
   only:
