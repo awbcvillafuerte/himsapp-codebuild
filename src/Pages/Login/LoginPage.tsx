@@ -842,6 +842,11 @@ const LoginPage = (props: any) => {
 
           if (data.login.needs_password_update && !data.login.access_token) {
             setpwSetupModal(true);
+          } else if (
+            data.login.needs_password_update &&
+            data.login.first_time_login
+          ) {
+            setpwSetupModal(true);
           } else {
             await saveToIndexedDB(data);
           }
