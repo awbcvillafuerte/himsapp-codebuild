@@ -19,6 +19,3 @@
 [submodule "public/partner_network"]
 	path = public/partner_network
 	url = git@gitlab.veridata.com.ph:hims-frontend/client/partner-network/partner_network.git
-[submodule "public/claims"]
-	path = public/claims
-	url = git@gitlab.veridata.com.ph:hims-frontend/client/claims/claims.git
