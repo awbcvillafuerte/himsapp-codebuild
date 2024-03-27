@@ -12,6 +12,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import ErrorIcon from '@material-ui/icons/Error';
+import { encryptCredentials } from '../../../Utils/utils';
 
 interface IProps {
   open: boolean;
@@ -196,8 +197,8 @@ export const PasswordSetupModal: React.FC<IProps> = (
     const { new_password, conf_password } = pwData;
 
     const _pwd = {
-      password: new_password.value,
-      conf_password: conf_password.value,
+      password: encryptCredentials(new_password.value),
+      conf_password: encryptCredentials(conf_password.value),
       id: id,
     };
 
