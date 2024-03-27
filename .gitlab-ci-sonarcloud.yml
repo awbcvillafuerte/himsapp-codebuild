@@ -1,0 +1,16 @@
+stages:
+  - fetch
+review_code:
+  stage: fetch
+  tags:
+    - code-review
+  variables:
+    GIT_STRATEGY: fetch
+  script:
+    - whoami
+    - export NVM_DIR=""$HOME/.nvm"" && . ""$NVM_DIR/nvm.sh"" --no-use #load nvm
+    - eval [ -s ""$NVM_DIR/nvm.sh"" ] && \. ""$NVM_DIR/nvm.sh""
+    - nvm use 16
+    - /home/bitnami/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner
+  only:
+    - dev-2
