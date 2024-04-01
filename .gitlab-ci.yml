@@ -73,6 +73,7 @@ sync_dev:
   script:
     - echo "Syncing Web Application for DEV2"
     - rm -rf /tmp/dev2.tar
+    - cd /home/bitnami/builds/hims-app-dev-2
     - tar cvf /tmp/dev2.tar ./build
   only:
     refs:
