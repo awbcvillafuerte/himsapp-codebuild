@@ -71,7 +71,9 @@ sync_dev:
     - dev-2
   needs: ["deploy_dev"]
   script:
-    - echo "Add Script for web application sync"
+    - echo "Syncing Web Application for DEV2"
+    - rm -rf /tmp/dev2.tar
+    - tar cvf /tmp/dev2.tar ./build
   only:
     refs:
       - dev-2
