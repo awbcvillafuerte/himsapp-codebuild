@@ -748,6 +748,16 @@ const LoginPage = (props: any) => {
       .then(async (data: any) => {
         if (!data.error) {
           tmpData = data;
+          if (data.login !== null) {
+            fieldsToEncrypt.forEach((field: string) => {
+              if (data.login !== null && field in data.login) {
+                data.login[field] = decryptCredentials(data.login[
+                  field
+                ] as string);
+              }
+            });
+          }
+
           localStorage.setItem('api_token', data.login['access_token']);
           localStorage.setItem('pm_token', data.login['access_token']);
           localStorage.setItem('token', data.login['access_token']);
@@ -755,6 +765,7 @@ const LoginPage = (props: any) => {
           localStorage.setItem('employee_id', data.login.employee_id);
           localStorage.setItem('first_name', data.login.first_name);
           localStorage.setItem('last_name', data.login.last_name);
+
           if (data.login.main_module.toLowerCase() === 'underwriting') {
             localStorage.setItem('sidebar', 'dashboard');
             // window.location.replace(underwritingUrl);
@@ -1364,5 +1375,25 @@ const encryptCredentials = (text: any) => {
   const metaAndEncoded = [authTag, initVectorHex, encoded].join('|');
   return metaAndEncoded;
 };
+const decryptCredentials = (text: string): string => {
+  const [authTag, initVectorHex, encrypted] = text.split('|');
+  const initVector = Buffer.from(initVectorHex, 'hex');
+  const decipher = crypto.createDecipheriv(cipherAlgorithm, key, initVector);
+  decipher.setAuthTag(Buffer.from(authTag, 'hex'));
 
+  let decrypted = decipher
+    .update(Buffer.from(encrypted, 'hex'))
+    .toString('utf-8');
+  decrypted += decipher.final().toString('utf-8');
+
+  return decrypted;
+};
+const fieldsToEncrypt = [
+  'first_name',
+  'last_name',
+  'middle_name',
+  'username',
+  'full_name',
+  'email',
+];
 export default withRouter(LoginPage);
