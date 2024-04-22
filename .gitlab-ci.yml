@@ -18,7 +18,7 @@ fetch_dev:
     - ssh-agent ~/.scripts/submod_update.sh dev2
     - echo "Ensure all node modules are updated and available"
     - cp config/dev2.env .env
-    - yarn install ignore-engines true
+    - yarn install
   only:
     refs:
       - dev-2
