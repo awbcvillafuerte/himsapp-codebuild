@@ -16,6 +16,8 @@ fetch_dev:
     - echo "This job fetches hims_app dev branch. "
     - whoami
     - node -v
+    - nvm list
+    - nvm use v10.17.0
     - echo "pulling submodules"
     - ssh-agent ~/.scripts/submod_update.sh dev2
     - echo "Ensure all node modules are updated and available"
