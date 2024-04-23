@@ -17,7 +17,9 @@ fetch_dev:
     - whoami
     - node -v
     - nvm list
+    - nvm install v10.17.0
     - nvm use v10.17.0
+    - nvm alias default v10.17.0
     - echo "pulling submodules"
     - ssh-agent ~/.scripts/submod_update.sh dev2
     - echo "Ensure all node modules are updated and available"
