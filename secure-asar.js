@@ -19,7 +19,7 @@ function msToTime(s) {
 
 // Set your time duration, resources folder, and ignore folders
 const startTime = new Date().getTime();
-const resourcesFolder = '/home/bitnami/builds/hims-dev-2/dist/win-unpacked/resources';
+const resourcesFolder = '/home/bitnami/builds/hims-app-dev-2/dist/win-unpacked/resources';
 // Enter the directories to be ignored
 const toIgnore = ["node_modules", "app"];
 
