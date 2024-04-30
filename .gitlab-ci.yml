@@ -1,7 +1,6 @@
 stages:
   - fetch
   - build
-  - hardening
   - deploy
   - sync
 
@@ -23,7 +22,7 @@ fetch_dev:
     - ssh-agent ~/.scripts/submod_update.sh dev2
     - echo "Ensure all node modules are updated and available"
     - cp config/dev2.env .env
-    - yarn install --ignore-engines
+    - yarn install
   only:
     refs:
       - dev-2
@@ -40,32 +39,13 @@ build_dev:
   script:
     - echo "This job builds hims-dev-2 after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev-2
-    - yarn run build
   only:
     refs:
       - dev-2
     changes:
       - package.json
 
-secure_dev:
-  stage: hardening
-  variables:
-    GIT_STRATEGY: none
-  tags:
-    - dev-2
-  needs: ["build_dev"]
-  script:
-    - echo "Securing The Application"
-    - cd /home/bitnami/builds/hims-app-dev-2
-    - node --max-old-space-size=16384 secure-asar.js
-    - echo "Deploy the hims-dev-2"
-    - printenv CURRENT_VERSION
-    - echo "Done securing the application"
-  only:
-    refs:
-      - dev-2
-    changes:
-      - package.json
+
 
 deploy_dev:
   stage: deploy
@@ -73,13 +53,13 @@ deploy_dev:
     GIT_STRATEGY: none
   tags:
     - dev-2
-  needs: ["secure_dev"]
+  needs: ["build_dev"]
   script:
     - echo "Needs hims-dev-2 to have passed build stage"
     - cd /home/bitnami/builds/hims-app-dev-2
     - echo "Deploy the hims-dev-2"
     - printenv CURRENT_VERSION
-    - npx electron-builder --win --prepackaged dist/win-unpacked --publish always
+    - yarn run publish
     - echo "Build on ProcessMaker DevServer"
   only:
     refs:
