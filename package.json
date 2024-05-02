@@ -5,6 +5,26 @@
   "description": "HIMS Development Version",
   "author": "Veridata",
   "main": "public/electron.js",
+  "homepage": "./",
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6"
+  },
+  "scripts": {
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts build",
+    "react-test": "react-scripts test --env=jsdom",
+    "react-eject": "react-scripts eject",
+    "electron-build": "electron-builder",
+    "release": "yarn react-build && electron-builder --publish=always",
+    "build": "nice -n 10 yarn react-build && nice -n 10 yarn electron-build -w",
+    "buildmac": "yarn react-build && yarn electron-build -m",
+    "build:dev": "yarn react-build && electron-builder -c.extraMetadata.version=${CURRENT_VERSION} --win --config config/dev.json",
+    "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "publish": "nice -n 10 yarn react-build && nice -n 10 node --max-old-space-size=16384 node_modules/.bin/electron-builder --win -p always",
+    "publish-only": "nice -n 10 electron-builder --win -p always",
+    "secure-asar": "node --max-old-space-size=16384 secure-asar.js"
+  },
   "build": {
     "appId": "ph.com.veridata.hims-dev-2",
     "files": [
@@ -28,25 +48,6 @@
         "channel": "latest"
       }
     ]
-  },
-  "homepage": "./",
-  "engines": {
-    "node": ">=10",
-    "npm": ">=6"
-  },
-  "scripts": {
-    "react-start": "react-scripts start",
-    "react-build": "env $(cat .env | xargs) react-scripts build",
-    "react-test": "react-scripts test --env=jsdom",
-    "react-eject": "react-scripts eject",
-    "electron-build": "electron-builder",
-    "release": "yarn react-build && electron-builder --publish=always",
-    "build": "nice -n 10 yarn react-build && nice -n 10 yarn electron-build -w",
-    "buildmac": "yarn react-build && yarn electron-build -m",
-    "build:dev": "yarn react-build && electron-builder -c.extraMetadata.version=${CURRENT_VERSION} --win --config config/dev.json",
-    "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "publish": "nice -n 10 yarn react-build && nice -n 10 electron-builder --win -p always",
-    "publish-only": "nice -n 10 electron-builder --win -p always"
   },
   "private": true,
   "jest": {
@@ -84,10 +85,13 @@
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
+    "@electron/asar": "^3.2.9",
     "cross-env": "^5.2.1",
     "electron-is-dev": "^1.1.0",
     "electron-pdf-window": "^1.0.12",
     "electron-updater": "^4.2.0",
+    "javascript-obfuscator": "^4.1.0",
+    "ololog": "^1.1.175",
     "react": "^16.9.0",
     "react-avatar-edit": "^0.8.3",
     "react-dom": "^16.9.0",
