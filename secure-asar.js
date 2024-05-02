@@ -47,7 +47,7 @@ recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
                 controlFlowFlattening: false,
                 deadCodeInjection: false,
                 debugProtection: false,
-                debugProtectionInterval: true,
+                debugProtectionInterval: 0,
                 disableConsoleOutput: true,
                 identifierNamesGenerator: 'hexadecimal',
                 log: false,
