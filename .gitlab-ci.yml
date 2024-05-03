@@ -57,7 +57,6 @@ secure_dev:
   script:
     - echo "Securing The Application"
     - cd /home/bitnami/builds/hims-app-dev-2
-    - node --max-old-space-size=16384 secure-asar.js
     - echo "Deploy the hims-dev-2"
     - printenv CURRENT_VERSION
     - echo "Done securing the application"
@@ -69,6 +68,7 @@ secure_dev:
 
 deploy_dev:
   stage: deploy
+  when: manual
   variables:
     GIT_STRATEGY: none
   tags:
