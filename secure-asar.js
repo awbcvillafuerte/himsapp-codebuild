@@ -27,7 +27,7 @@ log.dim("-----------------------------------");
 log.lightGray('\n Secure electron app \n');
 log.lightGray('\n Unpacking archive \n');
 
-asar.extractAll(resourcesFolder + '/app.asar', resourcesFolder + '/src');
+asar.extractAll(resourcesFolder + '\\app.asar', resourcesFolder + '\\src');
 
 
 recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
@@ -36,7 +36,14 @@ recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
             const stat = fs.lstatSync(file)
             
             log.dim("----------------------------------------");
-            log.lightGray('\n Checking file size ' + stat.size + ' - ' + file);     
+            log.lightGray('\n Checking file size ' + stat.size + ' - ' + file);   
+            
+            if(stat.size >= 15000000){
+                log.dim("----------------------------------------");
+                log.lightRed('\n file is too large and was not secured  ' + stat.size + ' - ' + file);
+                log.dim("_-_-_-_-_-__-_-_-_-_-__-_-_-_-_-__-_-_-_-_-__-_-_-_-_-_");
+                return;
+            }
 
             let contents = fs.readFileSync(file, 'utf8');
             log.dim("_-_-_-_-_-__-_-_-_-_-__-_-_-_-_-__-_-_-_-_-__-_-_-_-_-_");
@@ -76,11 +83,11 @@ recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
     log.dim("----------------------------------------");
     log.lightRed('Deleting app.asar');
 
-    fs.unlinkSync(resourcesFolder + '/app.asar');
+    fs.unlinkSync(resourcesFolder + '\\app.asar');
     log.dim("----------------------------------------");
     log.lightGray('Packing asar archive');
     
-    asar.createPackage(resourcesFolder + '/src', resourcesFolder + '/app.asar', (callback) => {
+    asar.createPackage(resourcesFolder + '\\src', resourcesFolder + '\\app.asar', (callback) => {
     }).then(()=> {
             if (err) {
                 throw err;
@@ -92,7 +99,7 @@ recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
             console.log('Reminders --- uncomment the code below to see the contents of the src file')
           
             // delete src file ///
-            rimraf(resourcesFolder + '/src', function () {
+            rimraf(resourcesFolder + '\\src', function () {
                  if (err) {
                        throw err;
                }
