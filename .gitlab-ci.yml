@@ -102,8 +102,14 @@ sync_dev:
   script:
     - echo "Syncing Web Application for DEV2"
     - cd /hims/
+    - rm -rf dev.tar hims-app
+    - mv /tmp/dev2.tar ./
+    - rm -rf hims-app
+    - tar -xvf dev2.tar
+    - mv build ./hims-app
+    - rm -rf dev2.tar
     - ls -al
-    - pwd
+    - echo "Done Syncing Web Application"
   only:
     refs:
       - dev-2
