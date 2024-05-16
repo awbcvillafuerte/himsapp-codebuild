@@ -81,6 +81,7 @@ deploy_dev:
     - printenv CURRENT_VERSION
     - npx electron-builder --win --prepackaged dist/win-unpacked --publish always
     - echo "Build on ProcessMaker DevServer"
+    - echo "Prepare websync.."
   only:
     refs:
       - dev-2
@@ -96,9 +97,9 @@ sync_dev:
   needs: ["deploy_dev"]
   script:
     - echo "Syncing Web Application for DEV2"
-    - rm -rf /tmp/dev2.tar
+    - rm -rf ~/builds
     - cd /home/bitnami/builds/hims-app-dev-2
-    - tar cvf /tmp/dev2.tar ./build
+    - tar cvf ~/builds/dev2.tar ./build
   only:
     refs:
       - dev-2
