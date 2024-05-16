@@ -1277,17 +1277,17 @@ const LoginPage = (props: any) => {
           >
             {isFetching ? 'Initializing...' : 'LOG IN'}
           </Button>
-          <div>
-            <p>
-              Version: {packageJson.version}
-            </p>
-          </div>
-          <div style={{ paddingTop: '5px' }}>
+          <div style={{ paddingTop: '19px', fontSize: '13px' }}>
             Problems logging in? Please &nbsp;
             <Link className="login-link" onClick={onContact}>
               contact your IT Team
             </Link>
             &nbsp; for assistance.
+          </div>
+          <div style={{ fontSize: '12px' }}>
+            <p>
+              Version: {packageJson.version}
+            </p>
           </div>
           {/* </form> */}
         </Grid>
