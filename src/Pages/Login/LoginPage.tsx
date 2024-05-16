@@ -33,6 +33,7 @@ import {
 } from '../../utils';
 import get from 'lodash/get';
 import * as crypto from 'crypto';
+import packageJson from '../../../package.json';
 
 interface LoginDataType {
   username: string;
@@ -1276,7 +1277,12 @@ const LoginPage = (props: any) => {
           >
             {isFetching ? 'Initializing...' : 'LOG IN'}
           </Button>
-          <div style={{ paddingTop: '3rem' }}>
+          <div>
+            <p>
+              Version: {packageJson.version}
+            </p>
+          </div>
+          <div style={{ paddingTop: '5px' }}>
             Problems logging in? Please &nbsp;
             <Link className="login-link" onClick={onContact}>
               contact your IT Team
