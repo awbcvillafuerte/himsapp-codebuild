@@ -101,6 +101,7 @@ sync_dev:
   needs: ["deploy_dev"]
   script:
     - echo "Syncing Web Application for DEV2"
+    - cd /hims/
     - pwd
   only:
     refs:
