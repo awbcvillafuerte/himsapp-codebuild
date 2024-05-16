@@ -80,7 +80,11 @@ deploy_dev:
     - echo "Deploy the hims-dev-2"
     - printenv CURRENT_VERSION
     - npx electron-builder --win --prepackaged dist/win-unpacked --publish always
-    - echo "Build on ProcessMaker DevServer"
+    - echo "Build on ProcessMaker DevServer Completed"
+    - echo "Prepare websync.."
+    - rm -rf ~/builds/dev2.tar
+    - tar cvf ~/builds/dev2.tar ./build
+    - scp -i Dev-API-NGINX-2.pem dev2.tar centos@52.76.230.119:/tmp
     - echo "Prepare websync.."
   only:
     refs:
@@ -93,13 +97,11 @@ sync_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - dev-2
+    - 2024-hims-app-dev2
   needs: ["deploy_dev"]
   script:
     - echo "Syncing Web Application for DEV2"
-    - rm -rf ~/builds
-    - cd /home/bitnami/builds/hims-app-dev-2
-    - tar cvf ~/builds/dev2.tar ./build
+    - pwd
   only:
     refs:
       - dev-2
