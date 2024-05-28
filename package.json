@@ -23,7 +23,8 @@
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
     "publish": "nice -n 10 yarn react-build && nice -n 10 node --max-old-space-size=16384 node_modules/.bin/electron-builder --win -p always",
     "publish-only": "nice -n 10 electron-builder --win -p always",
-    "secure-asar": "node --max-old-space-size=16384 secure-asar.js"
+    "secure-asar": "node --max-old-space-size=16384 secure-asar.js",
+    "uglify": "uglifyjs ./build/*.js -o ./build/ --compress --mangle"
   },
   "build": {
     "appId": "ph.com.veridata.hims-dev-2",
@@ -77,6 +78,7 @@
     "@hims/core"
   ],
   "dependencies": {
+    "@electron/asar": "^3.2.9",
     "@fortawesome/fontawesome-svg-core": "^1.2.22",
     "@fortawesome/free-regular-svg-icons": "^5.10.2",
     "@fortawesome/free-solid-svg-icons": "^5.10.2",
@@ -85,7 +87,6 @@
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
-    "@electron/asar": "^3.2.9",
     "cross-env": "^5.2.1",
     "electron-is-dev": "^1.1.0",
     "electron-pdf-window": "^1.0.12",
@@ -104,6 +105,7 @@
     "concurrently": "^4.1.2",
     "electron": "^11.0.4",
     "electron-builder": "^21.2.0",
+    "uglify-js": "^3.17.4",
     "wait-on": "^3.3.0",
     "yarn": "^1.17.3"
   },
