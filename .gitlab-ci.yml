@@ -40,6 +40,8 @@ build_dev:
   script:
     - echo "This job builds hims-dev-2 after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev-2
+    - echo "Minifify UND"
+    - node terser.js
     - yarn build
   only:
     refs:
@@ -57,8 +59,6 @@ secure_dev:
   script:
     - echo "Securing The Application"
     - cd /home/bitnami/builds/hims-app-dev-2
-    - echo "Minifify UND"
-    - node terser.js
     - printenv CURRENT_VERSION
     - echo "Obfuscate files"
     - node --max-old-space-size=16384 secure-asar.js
