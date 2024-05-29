@@ -15,13 +15,14 @@ function msToTime(s) {
     let hrs = (s - mins) / 60;
   
     return hrs + ':' + mins + ':' + secs + '.' + ms;
-  }
+}
 
 // Set your time duration, resources folder, and ignore folders
 const startTime = new Date().getTime();
 const resourcesFolder = '/home/bitnami/builds/hims-app-dev-2/dist/win-unpacked/resources';
 // Enter the directories to be ignored
 const toIgnore = ["node_modules", "app"];
+const underwritingFolder = "underwriting"; // Add the underwriting folder name here
 
 log.dim("-----------------------------------");
 log.lightGray('\n Secure electron app \n');
@@ -29,18 +30,24 @@ log.lightGray('\n Unpacking archive \n');
 
 asar.extractAll(resourcesFolder + '/app.asar', resourcesFolder + '/src');
 
-
 recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
     files.forEach(file => {
+        // Skip files in the underwriting folder
+        if (file.includes(underwritingFolder)) {
+            log.dim("----------------------------------------");
+            log.lightGray('\n Skipping underwriting folder file: ' + file);
+            return;
+        }
+
         if (path.extname(file) === '.js') {
-            const stat = fs.lstatSync(file)
+            const stat = fs.lstatSync(file);
             
             log.dim("----------------------------------------");
             log.lightGray('\n Checking file size ' + stat.size + ' - ' + file);   
             
-            if(stat.size >= 15000000){
+            if (stat.size >= 15000000) {
                 log.dim("----------------------------------------");
-                log.lightRed('\n file is too large and was not secured  ' + stat.size + ' - ' + file);
+                log.lightRed('\n File is too large and was not secured ' + stat.size + ' - ' + file);
                 log.dim("_-_-_-_-_-__-_-_-_-_-__-_-_-_-_-__-_-_-_-_-__-_-_-_-_-_");
                 return;
             }
@@ -88,10 +95,10 @@ recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
     log.lightGray('Packing asar archive');
     
     asar.createPackage(resourcesFolder + '/src', resourcesFolder + '/app.asar', (callback) => {
-    }).then(()=> {
+    }).then(() => {
             if (err) {
                 throw err;
-              }
+            }
             
             log.lightGray('Created new secure asar archive');
             log.dim("-----------------------------------");
@@ -106,9 +113,9 @@ recursive(resourcesFolder + '/src', toIgnore, function (err, files) {
                log.dim("--------------- Done! Finished removing source files. --------------------");
             });
            // delete src file ///
-    })
+    });
 
     const endTime = new Date().getTime();
-    const durationTime = endTime-startTime
-    console.log('Time elapsed in securing files', msToTime(durationTime))
+    const durationTime = endTime - startTime;
+    console.log('Time elapsed in securing files', msToTime(durationTime));
 });
