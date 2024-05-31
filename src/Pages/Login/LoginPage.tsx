@@ -852,7 +852,7 @@ const LoginPage = (props: any) => {
             })
             .catch(err => console.log(err));
 
-          if (data.login.needs_password_update && !data.login.access_token) {
+          if (data.login.needs_password_update && data.login.access_token) {
             setpwSetupModal(true);
           } else if (
             data.login.needs_password_update &&
@@ -1186,7 +1186,7 @@ const LoginPage = (props: any) => {
   const classes = useStyles();
 
   return (
-    <form onSubmit={onLogin}>
+    <form onSubmit={onLogin} id="login-form-main">
       {isChanging && <LoadingIndicator />}
       <Grid container className="login-main">
         <img
@@ -1211,6 +1211,7 @@ const LoginPage = (props: any) => {
           <div className={`login-input-area ${classes.fields}`}>
             <span className="login-text">Username</span>
             <OutlinedInput
+              id="login-username"
               error={isError}
               className={classes.inputField}
               autoFocus
@@ -1227,12 +1228,17 @@ const LoginPage = (props: any) => {
                 Password
               </Grid>
               <Grid item xs={6} style={{ textAlign: 'right' }}>
-                <Link className="login-link" onClick={onForgotPassword}>
+                <Link
+                  className="login-link"
+                  onClick={onForgotPassword}
+                  id="forgot-password"
+                >
                   Forgot Password
                 </Link>
               </Grid>
             </Grid>
             <OutlinedInput
+              id="login-password"
               error={isError}
               className={classes.inputField}
               fullWidth
@@ -1274,6 +1280,7 @@ const LoginPage = (props: any) => {
             disabled={isFetching ? true : false}
             className="login-button"
             type="submit"
+            id="login-button"
           >
             {isFetching ? 'Initializing...' : 'LOG IN'}
           </Button>
@@ -1285,9 +1292,7 @@ const LoginPage = (props: any) => {
             &nbsp; for assistance.
           </div>
           <div style={{ fontSize: '12px' }}>
-            <p>
-              Version: {packageJson.version}
-            </p>
+            <p>Version: {packageJson.version}</p>
           </div>
           {/* </form> */}
         </Grid>
