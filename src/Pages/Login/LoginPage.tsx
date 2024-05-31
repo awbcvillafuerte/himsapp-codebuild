@@ -1186,7 +1186,7 @@ const LoginPage = (props: any) => {
   const classes = useStyles();
 
   return (
-    <form onSubmit={onLogin}>
+    <form onSubmit={onLogin} id="login-form-main">
       {isChanging && <LoadingIndicator />}
       <Grid container className="login-main">
         <img
