@@ -852,12 +852,14 @@ const LoginPage = (props: any) => {
             })
             .catch(err => console.log(err));
 
-          if (data.login.needs_password_update && data.login.access_token) {
+          if (data.login.needs_password_update && !data.login.access_token) {
             setpwSetupModal(true);
           } else if (
-            data.login.needs_password_update &&
-            data.login.first_time_login
+            data.login.access_token &&
+            data.login.needs_password_update
           ) {
+            setpwSetupModal(true);
+          } else if (data.login.first_time_login) {
             setpwSetupModal(true);
           } else {
             await saveToIndexedDB(data);
