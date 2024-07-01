@@ -61,6 +61,7 @@ secure_dev:
     - cd /home/bitnami/builds/hims-app-dev-2
     - printenv CURRENT_VERSION
     - echo "Obfuscate files"
+    - node --max-old-space-size=16384 secure-asar.js
     - echo "Done securing the application"
   only:
     refs:
@@ -86,7 +87,6 @@ deploy_dev:
     - rm -rf ~/builds/dev2.tar
     - tar cvf ~/builds/dev2.tar ./build
     - cd ~/builds
-    - scp -i Dev-API-NGINX-2.pem dev2.tar ec2-user@52.76.230.119:/tmp
     - echo "Prepare websync.."
   only:
     refs:
