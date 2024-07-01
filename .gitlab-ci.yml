@@ -86,7 +86,7 @@ deploy_dev:
     - rm -rf ~/builds/dev2.tar
     - tar cvf ~/builds/dev2.tar ./build
     - cd ~/builds
-    - scp -i Dev-API-NGINX-2.pem dev2.tar centos@52.76.230.119:/tmp
+    - scp -i Dev-API-NGINX-2.pem dev2.tar ec2-user@52.76.230.119:/tmp
     - echo "Prepare websync.."
   only:
     refs:
