@@ -99,7 +99,7 @@ sync_dev:
   variables:
     GIT_STRATEGY: none
   tags:
-    - 2024-hims-app-dev2
+    - dev-2
   needs: ["deploy_dev"]
   script:
     - echo "Syncing Web Application for DEV2"
