@@ -61,6 +61,7 @@ secure_dev:
     - cd /home/bitnami/builds/hims-app-dev-2
     - printenv CURRENT_VERSION
     - echo "Obfuscate files"
+    - node --max-old-space-size=16384 secure-asar.js
     - echo "Done securing the application"
   only:
     refs:
