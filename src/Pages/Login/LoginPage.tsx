@@ -1086,7 +1086,7 @@ const LoginPage = (props: any) => {
   };
 
   const onContact = async () => {
-    alert('onContact() clicked');
+    console.log('placeholder value for onContact function')
   };
 
   const handleModalClose = () => {
@@ -1288,7 +1288,7 @@ const LoginPage = (props: any) => {
           </Button>
           <div style={{ paddingTop: '19px', fontSize: '13px' }}>
             Problems logging in? Please &nbsp;
-            <Link className="login-link" onClick={onContact}>
+            <Link onClick={onContact}>
               contact your IT Team
             </Link>
             &nbsp; for assistance.
