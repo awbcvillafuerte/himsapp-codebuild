@@ -43,6 +43,8 @@ build_dev:
     - echo "Minifify UND"
     - node terser.js
     - yarn build
+    - find ./build -type f -name "*.map" -exec rm -f {} \;
+    - find ./public -type f -name "*.map" -exec rm -f {} \;
   only:
     refs:
       - dev-2
@@ -61,6 +63,7 @@ secure_dev:
     - cd /home/bitnami/builds/hims-app-dev-2
     - printenv CURRENT_VERSION
     - echo "Obfuscate files"
+    - node --max-old-space-size=16384 secure-asar.js
     - echo "Done securing the application"
   only:
     refs:
