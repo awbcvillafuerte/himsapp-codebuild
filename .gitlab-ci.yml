@@ -40,7 +40,7 @@ build_dev:
   script:
     - echo "This job builds hims-dev-2 after fetch_dev"
     - cd /home/bitnami/builds/hims-app-dev-2
-    - echo "Minifify UND"
+    - echo "Obfuscate UND"
     - node terser.js
     - yarn build
     - find ./build -type f -name "*.map" -exec rm -f {} \;
