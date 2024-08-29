@@ -16,7 +16,6 @@ fetch_dev:
   script:
     - echo "This job fetches hims_app dev branch. "
     - whoami
-    - node -v
     - nvm use v10.17.0
     - nvm alias default v10.17.0
     - echo "pulling submodules"
