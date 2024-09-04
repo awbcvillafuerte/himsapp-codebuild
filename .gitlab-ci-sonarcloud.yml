@@ -1,16 +1,20 @@
 stages:
   - fetch
 review_code:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
   stage: fetch
   tags:
-    - code-review
+    - rhel8-himsapp-sonar
   variables:
     GIT_STRATEGY: fetch
+    SONAR_HOST_URL: https://sonarcloud.io
   script:
     - whoami
     - export NVM_DIR=""$HOME/.nvm"" && . ""$NVM_DIR/nvm.sh"" --no-use #load nvm
     - eval [ -s ""$NVM_DIR/nvm.sh"" ] && \. ""$NVM_DIR/nvm.sh""
-    - nvm use 16
-    - /home/bitnami/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner
+    - nvm use 20
+    - ~/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner -Dsonar.sources=src -Dsonar.organization=veridata-hims-app -Dsonar.projectKey=hims-code-review_hims-app-dev -Dsonar.verbose=true
   only:
     - dev-2
