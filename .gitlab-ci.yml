@@ -82,6 +82,8 @@ deploy_dev:
     - echo "Prepare websync.."
     - rm -rf ~/builds/dev2.tar
     - tar cvf ~/builds/dev2.tar ./build
+    - rm -rf /tmp/dev2.tar
+    - tar cvf /tmp/dev2.tar ./build
     - cd ~/builds
     - echo "Prepare websync.."
   only:
