@@ -77,8 +77,10 @@ function createWindow() {
         webPreferences: {
           nodeIntegration: true,
           preload: `${__dirname}/preload.js`,
+          enableRemoteModule: true, // Ensure remote modules are accessible
           enableBlinkFeatures: 'WebAssemblySynchronousCompilation',  // Enable synchronous WebAssembly compilation
-          // partition: 'persist:himsDb'
+          contextIsolation: false, // Disable context isolation to allow async operations
+          // partition: 'persist:himsD  b'
         }
     });
     mainWindow.setIcon(path.join(__dirname, "../build/hims-dev.png"));
