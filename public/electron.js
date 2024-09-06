@@ -77,6 +77,7 @@ function createWindow() {
         webPreferences: {
           nodeIntegration: true,
           preload: `${__dirname}/preload.js`,
+          enableBlinkFeatures: 'WebAssemblySynchronousCompilation',  // Enable synchronous WebAssembly compilation
           // partition: 'persist:himsDb'
         }
     });
