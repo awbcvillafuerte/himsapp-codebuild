@@ -35,6 +35,7 @@ build_dev:
     GIT_STRATEGY: none
   tags:
     - dev-2
+  when: manual
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev-2 after fetch_dev"
