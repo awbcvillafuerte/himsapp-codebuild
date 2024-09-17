@@ -35,11 +35,12 @@ build_dev:
     GIT_STRATEGY: none
   tags:
     - dev-2
-  when: manual
   needs: ["fetch_dev"]
   script:
     - echo "This job builds hims-dev-2 after fetch_dev"
+    - nvm use v14.15.0 && nvm alias default v14.15.0 
     - cd /home/bitnami/builds/hims-app-dev-2
+    - yarn add electron@32.0.0 --dev --ignore-workspace-root-check --ignore-engines
     - yarn build
   only:
     refs:
