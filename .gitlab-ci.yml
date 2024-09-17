@@ -41,6 +41,8 @@ build_dev:
     - nvm install v14.15.0 && nvm use v14.15.0 && nvm alias default v14.15.0 
     - cd /home/bitnami/builds/hims-app-dev-2
     - yarn add electron@32.0.0 --dev --ignore-workspace-root-check --ignore-engines
+    - nvm use v12.16.3
+    - nvm alias default v12.16.3
     - yarn build
   only:
     refs:
